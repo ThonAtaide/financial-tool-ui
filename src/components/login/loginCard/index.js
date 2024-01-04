@@ -1,5 +1,5 @@
 import { useState, React } from 'react';
-import { Button, CardMedia, Grid, TextField, Popper, Fade, Paper, Alert, Container } from '@mui/material';
+import { Button, CardMedia, Grid, TextField } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,18 +7,15 @@ import logo from '../../../lotus.webp'
 import { USER_NAME_LOCAL_STORAGE } from '../../../constants/index'
 import { login } from '../../../utils/backend-client';
 
-const LoginCard = ({ changeToRegisterCard }) => {
+const LoginCard = ({ changeToRegisterCard, showAlert }) => {
 
-  const [email, setEmail] = useState(null);
+  const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertType, setAlertType] = useState('success');
-  const [alertMessage, setAlertMessage] = useState();
 
   const navigate = useNavigate();
 
-  const onChangeEmail = (value) => {
-    setEmail(value)
+  const onChangeUsername = (value) => {
+    setUsername(value)
   }
 
   const onChangePassword = (value) => {
@@ -27,38 +24,22 @@ const LoginCard = ({ changeToRegisterCard }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    login(email, password)
-      .then(response => {
-        if (response.statusCode === 200) {          
-          localStorage.setItem(USER_NAME_LOCAL_STORAGE, response.data.name);
-          console.log(response)
-          setShowAlert(true);
-          setAlertType('success');
-          setAlertMessage('Usuário logado com sucesso!')
-          navigate('/');
-        } else {
-          setShowAlert(true);
-          setAlertType('error');
-          setAlertMessage('Usuário ou senha incorretos!')
-        }
+    login(username, password)
+      .then(name => {          
+          localStorage.setItem(USER_NAME_LOCAL_STORAGE, name);
+          console.log('Dando sucesso response')
+          showAlert({alertType: 'success', message: 'Usuário logado com sucesso!'});
+          setTimeout(()=> {
+            navigate('/');
+          }, 1000);
       }).catch(err => {
-        console.log(err);
-        setShowAlert(true);
-        setAlertType('error');
-        setAlertMessage('erro de outro tipo!')
+        showAlert({ alertType: 'error', message: 'Houve um erro. Por favor, tente novamente !'});
       });
     
   }
 
   return (
-    <Grid item xs={12} md={6} component="form" onSubmit={handleSubmit}>
-      <Container sx={{ display: 'flex', justifyContent: 'center', backgroundColor: 'magenta', width: '100%' }}>
-        <Popper open={showAlert} transition >
-          <Paper>
-            <Alert severity={alertType}>{alertMessage}</Alert>
-          </Paper>
-        </Popper>
-      </Container>
+    <Grid item xs={12} md={6} component="form" onSubmit={handleSubmit}>      
       <Box
         sx={{
           display: 'flex',
@@ -108,12 +89,12 @@ const LoginCard = ({ changeToRegisterCard }) => {
         }}
       >
         <TextField
-          id="email-field"
+          id="username-field"
           fullWidth
-          label="E-mail"
+          label="Username"
           variant="outlined"
           size='small'
-          onChange={(e) => onChangeEmail(e.target.value)}
+          onChange={(e) => onChangeUsername(e.target.value)}
         />
       </Box>
       <Box

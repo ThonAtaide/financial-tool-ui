@@ -88,6 +88,21 @@ const RegisterCard = ({changeToLoginCard}) => {
         <TextField
           id="outlined-basic"
           fullWidth
+          label="Username"
+          variant="outlined"
+          size='small'
+        />
+      </Box>
+      <Box
+        mt={3}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+      >
+        <TextField
+          id="outlined-basic"
+          fullWidth
           label="Senha"
           variant="outlined"
           size='small'

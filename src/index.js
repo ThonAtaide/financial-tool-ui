@@ -1,21 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './components/app/App';
 import reportWebVitals from './reportWebVitals';
-import ResponsiveAppBar from './components/header';
 import LoginPage from './components/login'
-import Home from './components/home'
+import Home from './components/homePage'
 import {
   createBrowserRouter,
-  RouterProvider,
+  RouterProvider,  
 } from "react-router-dom";
+import { userExpenseLoaderById, userExpensesLoader } from './utils/router-loaders'
+import ErrorPage from './components/error';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home/>,
-    errorElement: <div>Ops something is wrong</div>
+    errorElement: <ErrorPage/>,
+    // loader: userExpensesLoader
   },
   {
     path: "/login",
@@ -25,14 +29,24 @@ const router = createBrowserRouter([
     path: "/register",
     element: <LoginPage showRegisterForm={true}/>,
   },
+  {
+    path: "/error",
+    element: <ErrorPage/>
+  },
+  // {
+  //   path: "/dashboard/:groupId",
+  //   element: <DashboardPage />,
+  //   errorElement: <ErrorPage/>,
+  //   loader: expenseGroupLoader
+  // }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <LoginPage/> */}
-    {/* <App /> */}
-    <RouterProvider router={router} />
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+      <RouterProvider router={router} />
+    </LocalizationProvider>
   </React.StrictMode>
 );
 

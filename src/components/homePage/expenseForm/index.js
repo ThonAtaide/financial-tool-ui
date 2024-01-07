@@ -36,8 +36,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(999999);
-
-  const [expenseId, setExpenseId] = useState(expenseIdentifier || null);
+  
   const [description, setDescription] = useState(null);
   const [amount, setAmount] = useState(null);
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
@@ -52,8 +51,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const loadExpenseCategories = () => {
     fetchExpenseCategories({})
     .then(response => {
-      const categories = response && response._embedded
-        && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } }) || [];
+      const categories = (response && response._embedded
+        && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } })) || [];
       setExpenseCategories(categories);
     }).catch(err => {
       if (err && err.status === 401) {
@@ -84,7 +83,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
     e.preventDefault();
     // if (description && description.length > 0) 
     console.log(description)
-    console.log(expenseId)
+    // console.log(expenseId)
     console.log(amount)
     console.log(purchaseDate)
     console.log(isFixed)

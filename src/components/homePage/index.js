@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
 import { Box, Grid, Typography, Fab, Modal } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -21,10 +21,11 @@ const HomePage = () => {
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);  
   const [reportDateRange, setReportDateRange] = useState(dayjs(new Date()));
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(7);
+  
+  const pageSize = 7;
 
   const selectReportDateRange = (value) => {
-    if (value != reportDateRange) {
+    if (value !== reportDateRange) {
       setReportDateRange(value);
     }
   }

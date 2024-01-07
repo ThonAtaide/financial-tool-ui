@@ -112,7 +112,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
         <TablePagination
           rowsPerPageOptions={[7]}
           component="div"
-          count={expensesPage && expensesPage.totalElements || 0}
+          count={(expensesPage && expensesPage.totalElements) || 0}
           rowsPerPage={7}
           page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber}
           onPageChange={(e, newPage) => changePage(e, newPage)}

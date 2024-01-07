@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid } from '@mui/material';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid, FormHelperText } from '@mui/material';
 import { createUserExpenses, getExpenseById, updateExpense } from '../../../utils/backend-client/expenses';
 import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCategories';
 import MaskedInput from 'react-text-mask';
@@ -35,17 +35,43 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const navigate = useNavigate();
 
   const [expenseCategories, setExpenseCategories] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(999999);
   
-  const [description, setDescription] = useState(null);
-  const [amount, setAmount] = useState(null);
+  const [description, setDescription] = useState({value: null, helperText: null});
+  const [amount, setAmount] = useState({value: null, helperText: null});
+  const [selectedCategoryId, setSelectedCategoryId] = useState({value: 999999, helperText: null});
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
+  
+  const validateDescription = () => {    
+    if (!description || !description.value ||description.value.length < 2) {
+      setDescription({...description, helperText: 'A Descrição deve conter ao menos 2 caracteres.'});
+      return false;
+    } else if(description && description.value && description.value.length > 50) {
+      setDescription({...description, helperText: 'A Descrição não deve exceder 50 caracteres.'})
+      return false;
+    }
+    return true;
+  }
+
+  const validateAmount = () => {    
+    if (!amount || !amount.value) {
+      setAmount({...amount, helperText: 'É preciso informar um valor.'});
+      return false;
+    } 
+    return true;
+  }
+
+  const validateSelectedCategory = () => {    
+    if (!selectedCategoryId || !selectedCategoryId.value || selectedCategoryId.value === 999999) {
+      setSelectedCategoryId({...selectedCategoryId, helperText: 'É preciso selecionar uma categoria.'});
+      return false;
+    } 
+    return true;
+  }
 
   useEffect(() => {
     loadExpenseCategories();
     fetchExpenseByIdAndSetFields();
-    console.log('Data: ' + dayjs(new Date()).format('YYYY-MM-DD'))
   }, []);
 
   const loadExpenseCategories = () => {
@@ -66,10 +92,10 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
     if (expenseIdentifier) {
       getExpenseById(expenseIdentifier)
         .then(response => {
-          setDescription(response.description);
-          setAmount(response.amount.toString());
+          setDescription({...description, value: response.description});
+          setAmount({value: response.amount.toString(), helperText: null});
           setIsFixed(response.fixedExpense);
-          setSelectedCategoryId(response.expenseCategory.id)
+          setSelectedCategoryId({value: response.expenseCategory.id, helperText: null})
           setPurchaseDate(dayjs(response.datPurchase).format('YYYY-MM-DD'));
         });
     }
@@ -79,49 +105,55 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
     ...defaultMaskOptions
   })
 
+  const registerNewExpense = () => {
+    createUserExpenses(
+          {
+            description: description.value,
+            amount: amount.value.replace('.', '').replace(',', '.'),
+            datPurchase: purchaseDate,
+            fixedExpense: isFixed,
+            expenseCategory: selectedCategoryId.value
+          }
+        ).then(response => closeExpenseFormModal(true))
+        .catch(err => {
+          if (err && err.status === 401) {
+            navigate("/login");
+          }
+        });
+  }
+
+  const updateExistedExpense = () => {
+    updateExpense(
+          {
+            expenseId: expenseIdentifier,
+            description: description.value,
+            amount: amount.value.replace('.', '').replace(',', '.'),
+            datPurchase: purchaseDate,
+            fixedExpense: isFixed,
+            expenseCategory: selectedCategoryId.value
+          }
+        ).then(response => {
+          console.log(response)
+          closeExpenseFormModal(true);
+        }).catch(err => {
+          if (err && err.status === 401) {
+            navigate("/login");
+          }
+        });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (description && description.length > 0) 
-    console.log(description)
-    // console.log(expenseId)
-    console.log(amount)
-    console.log(purchaseDate)
-    console.log(isFixed)
+    const descriptionIsOk = validateDescription();
+    const amountIsOk = validateAmount();
+    const categoryIsOk = validateSelectedCategory();
+
+    if(!descriptionIsOk || !amountIsOk || !categoryIsOk) return;
+    
     if (!expenseIdentifier) {
-      createUserExpenses(
-        {
-          description,
-          amount: amount.replace('.', '').replace(',', '.'),
-          datPurchase: purchaseDate,
-          fixedExpense: isFixed,
-          expenseCategory: selectedCategoryId
-        }
-      ).then(response => {
-        console.log(response)
-        closeExpenseFormModal(true);
-      }).catch(err => {
-        if (err && err.status === 401) {
-          navigate("/login");
-        }
-      });
+      registerNewExpense();
     } else {
-      updateExpense(
-        {
-          expenseId: expenseIdentifier,
-          description,
-          amount: amount.replace('.', '').replace(',', '.'),
-          datPurchase: purchaseDate,
-          fixedExpense: isFixed,
-          expenseCategory: selectedCategoryId
-        }
-      ).then(response => {
-        console.log(response)
-        closeExpenseFormModal(true);
-      }).catch(err => {
-        if (err && err.status === 401) {
-          navigate("/login");
-        }
-      });
+      updateExistedExpense();
     }
   }
 
@@ -147,8 +179,9 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
           <TextField
             id="group-name-field"
             fullWidth
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={description.value}
+            onChange={(e) => setDescription({value: e.target.value, helperText: null})}
+            helperText={description.helperText}
             label="Descrição da despesa"
             variant="standard"
             size='small'
@@ -166,11 +199,11 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
           >
             <MaskedInput
               id="masked-input-amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value.substring(2))}
+              value={amount.value}
+              onChange={(e) => setAmount({value: e.target.value.substring(2), helperText: null})}
               mask={currencyMask}
               inputMode='numeric'
-              InputLabelProps={{ shrink: amount }}
+              InputLabelProps={{ shrink: amount.value }}
               render={(innerRef, props) => (
                 <TextField
                   {...props}
@@ -178,6 +211,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
                   id="amount-name-field"
                   fullWidth
                   label="Valor"
+                  helperText={amount.helperText}
                   variant="standard"
                   size='small'
                 />
@@ -213,8 +247,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
               <Select
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
-                value={selectedCategoryId}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
+                value={selectedCategoryId.value}                
+                onChange={(e) => setSelectedCategoryId({value: e.target.value, helperText: null})}
                 label="Categoria"
               >
                 <MenuItem value={999999}>
@@ -222,6 +256,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
                 </MenuItem>
                 {expenseCategories.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
               </Select>
+              {selectedCategoryId.helperText && <FormHelperText>{selectedCategoryId.helperText}</FormHelperText>}
             </FormControl>
           </Grid>
           <Grid

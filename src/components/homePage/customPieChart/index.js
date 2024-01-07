@@ -12,28 +12,30 @@ const CustomPieChart = ({title, data}) => {
           fontFamily: 'var(--bs-font-sans-serif)',
           fontWeight: '600'
         }}
+        mb={2}
       >
         {title}
       </Typography>
           <PieChart
-            // sx={{border: 'solid'}}
+            // sx={{maxWidth: '90%'}}
             series={[
                 { 
                   data,     
                   innerRadius: 20,
-                  outerRadius: 170,
                   paddingAngle: 3,
                   cornerRadius: 5,    
                 },
               ]}
               margin={ {right: 10} }
-              // slotProps={{
-              //   legend: {
-              //     direction: 'row',
-              //     position: { vertical: 'bottom', horizontal: 'right' },
-              //     padding: 0,
-              //   },
-              // }}
+                          
+              slotProps={{
+                legend: {
+                  direction: 'row',
+                  position: { vertical: 'bottom', horizontal: 'center'  },
+                  padding: 0
+                }                
+              }}
+
                   
           />  
           </div>     

@@ -1,4 +1,4 @@
-import { fetchUserExpenses, getExpenseGroupById } from "../backend-client";
+import { fetchUserExpenses, getExpenseById } from "../backend-client";
 import { redirect } from "react-router-dom";
 
 export const userExpensesLoader = async ({ request }, args) => {
@@ -22,7 +22,7 @@ export const userExpensesLoader = async ({ request }, args) => {
 export const userExpenseLoaderById = async ({params}) => {
     const { expenseId } = params;
     try {
-        const data = await getExpenseGroupById(expenseId);
+        const data = await getExpenseById(expenseId);
         return data;
     } catch (err) {        
         if (err.status === 401) {

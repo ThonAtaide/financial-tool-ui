@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Paper, Typography } from '@mui/material';
+import { Box, Button, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,29 +7,49 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import dayjs from 'dayjs';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import { deleteExpense } from '../../../utils/backend-client';
 
-// const columns = [
-//     { field: 'description', headerName: 'Descrição', sortable: false, },
-//     { field: 'amount', headerName: 'Valor', sortable: false, },
-//     { field: 'expenseCategory', headerName: 'Categoria', valueGetter: (params) =>  params.row.expenseCategory.name, sortable: false, },
-//     { field: 'datPurchase', headerName: 'Data', sortable: false, }
-//   ];
+const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseToUpdate }) => {
 
-const columns = [
-  { id: 'description', label: 'Descrição', align: 'center' },
-  { id: 'amount', label: 'Valor', align: 'center', format: (value) => `R$${value.toFixed(2)}` },
-  { id: 'expenseCategory', label: 'Categoria', align: 'center' },
-  { id: 'datPurchase', label: 'Data', align: 'center' }
-];
+  const columns = [
+    { id: 'description', label: 'Descrição', align: 'center' },
+    { id: 'amount', label: 'Valor', align: 'center', format: (value) => `${formatBRLCurrency(value)}` },
+    { id: 'expenseCategory', label: 'Categoria', align: 'center' },
+    { id: 'datPurchase', label: 'Data', align: 'center', format: (value) => dayjs(value).format('DD/MM/YYYY') },
+    { id: 'id', label: '', align: 'center', format: (value) => buildSettingsColumn(value) }
+  ];
 
+  const updateExpense = (id) => {
+    selectExpenseToUpdate(id);
+  }
 
-const StatementTable = ({ expenseList }) => {
-
-  const [userExpenses, setUserExpenses] = useState([]);
-  const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(0);
+  const removeExpense = (id) => {
+    deleteExpense(id)
+      .then(response => pageRefresh())
+      .catch(err => console.log(err));
+  }
   
+  const buildSettingsColumn = (id) => {
+    return (
+      <Box display="flex">
+        <Tooltip title="Editar">
+          <IconButton onClick={() => updateExpense(id)}>
+            <ModeEditOutlineOutlinedIcon sx={{ cursor: 'pointer' }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Remover">
+          <IconButton onClick={() => removeExpense(id)}>
+            <DeleteOutlinedIcon sx={{ cursor: 'pointer' }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    )
+  }
+
   return (
     <div>
       <Typography
@@ -42,24 +62,24 @@ const StatementTable = ({ expenseList }) => {
       >
         Despesas
       </Typography>
-      <Paper 
+      <Paper
         maxWidth
-        sx={{ 
+        sx={{
           height: '32em',
           maxHeight: '32em',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
-          
+
         }}
       >
         <TableContainer >
-          <Table sx={{borderRadius: '10px'}} stickyHeader aria-label="sticky table">
-            <TableHead sx={{borderRadius: '10px'}}>
+          <Table sx={{ borderRadius: '10px' }} stickyHeader aria-label="sticky table">
+            <TableHead sx={{ borderRadius: '10px' }}>
               <TableRow>
                 {columns.map((column) => (
                   <TableCell
-                    sx={{fontWeight: 'bold'}}
+                    sx={{ fontWeight: 'bold' }}
                     key={column.id}
                     align={column.align}
                   >
@@ -69,7 +89,7 @@ const StatementTable = ({ expenseList }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {expenseList
+              {expensesPage && expensesPage.content
                 .map((row) => {
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
@@ -78,32 +98,29 @@ const StatementTable = ({ expenseList }) => {
                         if (column.id === 'expenseCategory') {
                           value = value.name
                         };
-
-
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                              ? column.format(value)
-                              : value}
+                            {column.format ? column.format(value) : value}
                           </TableCell>
                         );
                       })}
+                      {/* <TableCell key={1} align="center">
+                        
+
+                      </TableCell> */}
                     </TableRow>
                   );
                 })}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination       
-
-          rowsPerPageOptions={[8]}
+        <TablePagination
+          rowsPerPageOptions={[7]}
           component="div"
-          count={expenseList.length}
-          rowsPerPage={8}
-          page={0}
-          // sx={{position: 'absolute', margin: 0}}
-          // onPageChange={handleChangePage}
-          // onRowsPerPageChange={handleChangeRowsPerPage}
+          count={expensesPage && expensesPage.totalElements || 0}
+          rowsPerPage={7}
+          page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber}
+          onPageChange={(e, newPage) => changePage(e, newPage)}
         />
       </Paper>
 

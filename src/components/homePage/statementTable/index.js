@@ -11,7 +11,7 @@ import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import dayjs from 'dayjs';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import { deleteExpense } from '../../../utils/backend-client';
+import { deleteExpense } from '../../../utils/backend-client/expenses';
 
 const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseToUpdate }) => {
 

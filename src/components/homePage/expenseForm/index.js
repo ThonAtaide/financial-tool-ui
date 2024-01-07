@@ -1,8 +1,8 @@
 import { React, useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid } from '@mui/material';
-
-import { createUserExpenses, fetchExpenseCategories, getExpenseById, updateExpense } from '../../../utils/backend-client';
+import { createUserExpenses, getExpenseById, updateExpense } from '../../../utils/backend-client/expenses';
+import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCategories';
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import dayjs from 'dayjs';

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
 import { Box, Grid, Typography, Fab, Modal } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { fetchUserExpenses, fetchUserExpensesGroupedByCategory } from '../../utils/backend-client';
+import { fetchUserExpenses, fetchUserExpensesGroupedByCategory } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
 import StatementTable from './statementTable';

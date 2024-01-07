@@ -9,12 +9,7 @@ export const DashboardPage = () => {
   return (
     <Box>
       <ResponsiveAppBar />
-      <Box
-        maxWidth
-        display='flex'
-        justifyContent='center'
-        mt={4}
-      >
+      
         <Typography
           variant='h5'
           sx={{

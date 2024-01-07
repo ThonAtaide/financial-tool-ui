@@ -1,11 +1,10 @@
 import { React, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import ResponsiveAppBar from '../header'
-import { Box, Grid, Typography, Fab, Modal, TextField, Button, Alert, Pagination, PaginationItem } from '@mui/material';
+import { Box, Grid, Typography, Fab, Modal } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { fetchUserExpenses, updateExpense, fetchUserExpensesGroupedByCategory } from '../../utils/backend-client';
+import { fetchUserExpenses, fetchUserExpensesGroupedByCategory } from '../../utils/backend-client';
 import dayjs from 'dayjs';
-import 'dayjs/locale/pt-br';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
 import StatementTable from './statementTable';
 import CustomPieChart from './customPieChart';
@@ -14,19 +13,15 @@ import ExpenseForm from './expenseForm';
 
 
 const HomePage = () => {
-  // const expenses = useLoaderData();
   const navigate = useNavigate();
-  const location = useLocation();
   const [userExpensesPage, setUserExpensesPage] = useState(null);
   const [userExpensesGroupedByCategory, setUserExpensesGroupedByCategory] = useState([]);
   const [userBalance, setUserBalance] = useState(0);
   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
-
-  const [currentExpenseGroup, setCurrentExpenseGroup] = useState(null);
-  const [isExpenseGroupModalOpen, setExpenseGroupModalOpen] = useState(false);
+  const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);  
+  const [reportDateRange, setReportDateRange] = useState(dayjs(new Date()));
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(7);
-  const [reportDateRange, setReportDateRange] = useState(dayjs(new Date()));
 
   const selectReportDateRange = (value) => {
     if (value != reportDateRange) {
@@ -36,33 +31,23 @@ const HomePage = () => {
 
   const selectExpenseToUpdate = (id) => {
     setIdFromExpenseToUpdate(id);
-    setExpenseGroupModalOpen(true);
+    setExpenseModalOpen(true);
   }
 
   const cleanExpenseToUpdate = () => {
     setIdFromExpenseToUpdate(null);
-  }
+  }    
 
-  const selectExpenseGroupToEdit = (expenseGroup) => {
-    setCurrentExpenseGroup(expenseGroup);
-    setExpenseGroupModalOpen(true);
-  }
-
-  const createNewExpenseGroup = () => {
-    setCurrentExpenseGroup({ name: '' });
-    setExpenseGroupModalOpen(true);
+  const createNewExpense = () => {
+    setExpenseModalOpen(true);
   }
 
   const closeExpenseGroupModal = (refresh = false) => {
     if (refresh) pageRefresh();
-    setIdFromExpenseToUpdate(null);
-    setCurrentExpenseGroup(null);
-    setExpenseGroupModalOpen(false);
+    cleanExpenseToUpdate();
+    setExpenseModalOpen(false);
   }
-
-  const onChangeExpenseGroupName = (value) => {
-    setCurrentExpenseGroup({ ...currentExpenseGroup, name: value });
-  }  
+  
 
   const loadUserExpenses = () => {
     const until = reportDateRange.startOf('month').format('YYYY-MM-DD')
@@ -165,8 +150,11 @@ const HomePage = () => {
             key='pieChart'
             item
             xs={12}
-            lg={4}
-            padding={5}
+            sm={12}
+            md={6}
+            lg={6}
+            xl={4}
+            pt={5}
             sx={{ textAlign: 'center' }}
           >
             <CustomPieChart title="Despesas por categoria" data={userExpensesGroupedByCategory} />
@@ -175,7 +163,11 @@ const HomePage = () => {
             key='extrato'
             item
             xs={12}
-            lg={4}
+            sm={12}
+            md={6}
+            lg={6}
+            xl={4}
+            pt={5}
             sx={{ textAlign: 'center' }}
           >
             <StatementTable 
@@ -189,8 +181,11 @@ const HomePage = () => {
             key='balance'
             item
             xs={12}
-            lg={4}
-            padding={5}
+            sm={12}
+            md={6}
+            lg={6}
+            xl={4}
+            pt={5}
             sx={{ textAlign: 'center' }}
           >
             <UserBalancePane balance={userBalance} />
@@ -200,13 +195,13 @@ const HomePage = () => {
       <Fab
         color="primary"
         aria-label="add"
-        onClick={createNewExpenseGroup}
+        onClick={createNewExpense}
         sx={{ position: 'fixed', bottom: 16, right: 16, height: '6rem', width: '6rem' }}>
         <AddIcon sx={{ height: '3rem', width: '3rem' }} />
       </Fab>      
 
       <Modal
-        open={isExpenseGroupModalOpen}
+        open={isExpenseModalOpen}
         onClose={closeExpenseGroupModal}        
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"

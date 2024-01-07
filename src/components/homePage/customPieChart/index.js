@@ -1,45 +1,47 @@
 import { React } from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 
-const CustomPieChart = ({title, data}) => {
-    return(
-        
-      <div style={{width:'100%', height: '25em'}}>
+const pieParams = { height: 500, margin: { right: 0, bottom: 75 } };
+
+const CustomPieChart = ({ title, data }) => {
+  return (
+    <Box >
       <Typography
         variant='h5'
         sx={{
           fontFamily: 'var(--bs-font-sans-serif)',
           fontWeight: '600'
         }}
-        mb={2}
+        mb={5}
       >
         {title}
       </Typography>
-          <PieChart
-            // sx={{maxWidth: '90%'}}
-            series={[
-                { 
-                  data,     
-                  innerRadius: 20,
-                  paddingAngle: 3,
-                  cornerRadius: 5,    
-                },
-              ]}
-              margin={ {right: 10} }
-                          
-              slotProps={{
-                legend: {
-                  direction: 'row',
-                  position: { vertical: 'bottom', horizontal: 'center'  },
-                  padding: 0
-                }                
-              }}
 
-                  
-          />  
-          </div>     
-        
-    );
+      <PieChart
+        {...pieParams}
+        series={[
+          {
+            valueFormatter: (item) => formatBRLCurrency(item.value),
+            data,
+            highlightScope: { faded: 'global', highlighted: 'item' },
+            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+            innerRadius: 20,
+            paddingAngle: 3,
+            cornerRadius: 5,
+          },
+        ]}
+        slotProps={{
+          legend: {
+            direction: 'row',
+            position: { vertical: 'bottom', horizontal: 'center' },
+            
+          }
+        }}
+      />
+    </Box>
+
+  );
 }
 export default CustomPieChart

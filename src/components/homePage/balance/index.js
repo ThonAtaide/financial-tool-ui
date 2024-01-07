@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { React } from 'react';
+import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 
 const UserBalancePane = ({ balance }) => {
 
@@ -8,13 +9,12 @@ const UserBalancePane = ({ balance }) => {
       <Box        
         sx={{  
           width: '80%',       
-          backgroundColor: 'white',
+          backgroundColor: '#a5d7d6',
           borderRadius: '0.5em', 
           height: '5em', 
           display: 'flex', 
           justifyContent: 'center', 
-          alignItems: 'center', 
-          borderColor: '#a3a3a3',          
+          alignItems: 'center'    
         }}
         mb={4}
       >
@@ -32,7 +32,7 @@ const UserBalancePane = ({ balance }) => {
   };
 
   return (
-    <Box sx={{height: '100%'}}>
+    <Box >
       <Typography
         variant='h5'
         sx={{
@@ -41,16 +41,14 @@ const UserBalancePane = ({ balance }) => {
         }}
         mb={2}
       >
-        Total Mensal
+        Informações
       </Typography>
       <Box
         display='flex'
         flexDirection='column'
         alignItems='center'
       >
-        {balanceCard(`Mês Anterior R$ ${balance.toFixed(2)}`)}
-        {balanceCard(`Mês Atual R$ ${balance.toFixed(2)}`)}
-        {balanceCard(`Mês Seguinte R$ ${balance.toFixed(2)}`)}
+        {balanceCard(`Gasto Total ${formatBRLCurrency(balance)}`)}
       </Box>
       
 

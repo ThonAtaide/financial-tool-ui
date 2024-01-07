@@ -1,5 +1,5 @@
-import { React, useState, useEffect } from 'react';
-import { Box, Button, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { React } from 'react';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -51,7 +51,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
   }
 
   return (
-    <div>
+    <Box >
       <Typography
         variant='h5'
         sx={{
@@ -70,7 +70,6 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
-
         }}
       >
         <TableContainer >
@@ -104,10 +103,6 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
                           </TableCell>
                         );
                       })}
-                      {/* <TableCell key={1} align="center">
-                        
-
-                      </TableCell> */}
                     </TableRow>
                   );
                 })}
@@ -123,8 +118,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
           onPageChange={(e, newPage) => changePage(e, newPage)}
         />
       </Paper>
-
-    </div>
+    </Box>
   );
 };
 export default StatementTable;

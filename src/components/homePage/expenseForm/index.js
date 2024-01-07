@@ -44,20 +44,23 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const [isFixed, setIsFixed] = useState(false);
 
   useEffect(() => {
-    fetchExpenseCategories({})
-      .then(response => {
-        console.log(response)
-        const categories = response && response._embedded
-          && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } }) || [];
-        setExpenseCategories(categories);
-      }).catch(err => {
-        if (err && err.status === 401) {
-          navigate("/login");
-        }
-      });
+    loadExpenseCategories();
     fetchExpenseByIdAndSetFields();
     console.log('Data: ' + dayjs(new Date()).format('YYYY-MM-DD'))
   }, []);
+
+  const loadExpenseCategories = () => {
+    fetchExpenseCategories({})
+    .then(response => {
+      const categories = response && response._embedded
+        && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } }) || [];
+      setExpenseCategories(categories);
+    }).catch(err => {
+      if (err && err.status === 401) {
+        navigate("/login");
+      }
+    });
+  }
 
   const fetchExpenseByIdAndSetFields = () => {
 

@@ -1,9 +1,9 @@
 import { React, useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
 import { Box, Grid, Typography, Fab, Modal } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { fetchUserExpenses, fetchUserExpensesGroupedByCategory } from '../../utils/backend-client/expenses';
+import { fetchUserExpenses, fetchUserExpensesGroupedByCategory, fetchUserExpensesGroupedByFixedOrNot } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
 import StatementTable from './statementTable';
@@ -16,6 +16,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [userExpensesPage, setUserExpensesPage] = useState(null);
   const [userExpensesGroupedByCategory, setUserExpensesGroupedByCategory] = useState([]);
+  const [fixedExpenseInfo, setFixedExpenseInfo] = useState({amountTotal: 0, fixedTotal: 0});
   const [userBalance, setUserBalance] = useState(0);
   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);  
@@ -76,7 +77,6 @@ const HomePage = () => {
             data.push({ id: item.label, label: item.label, value: item.amount })
           });
         }
-
         setUserExpensesGroupedByCategory(data);
         setUserBalance(balance);
       })
@@ -88,6 +88,21 @@ const HomePage = () => {
       });
   }
 
+  const loadUserExpensesGroupedByFixedOrNot = () => {
+    const from = reportDateRange.format('YYYY-MM')
+    fetchUserExpensesGroupedByFixedOrNot({ from })
+      .then(response => {
+        const amountTotal = response.reduce((total, item) => total + item.amount, 0);
+        const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
+        setFixedExpenseInfo({amountTotal, fixedTotal: fixedExpenseAmountTotal});
+        
+      }).catch(err => {
+        if (err && err.status === 401) {
+          Navigate("/login");
+        }
+      });
+  }
+
   const handlePageChange = (event, value) => { 
     setPageNumber(parseInt(value));
   }
@@ -95,6 +110,7 @@ const HomePage = () => {
   const pageRefresh = () => {    
     loadUserExpenses();
     loadUserExpensesGroupedByCategory();
+    loadUserExpensesGroupedByFixedOrNot();
   }
 
   useEffect(() => {
@@ -189,7 +205,7 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <UserBalancePane balance={userBalance} date={reportDateRange} />
+            <UserBalancePane balance={userBalance} fixedExpenseInfo={fixedExpenseInfo}/>
           </Grid>
         </Grid>
       </Box>

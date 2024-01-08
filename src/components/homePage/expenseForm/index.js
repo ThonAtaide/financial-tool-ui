@@ -185,7 +185,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             label="Descrição da despesa"
             variant="standard"
             size='small'
-            InputLabelProps={{ shrink: description }}
+            InputLabelProps={{ shrink: description.value }}
           />
         </Box>
         <Grid

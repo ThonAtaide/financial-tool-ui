@@ -1,32 +1,17 @@
 import { Box, Typography } from '@mui/material';
-import { React, useEffect, useState } from 'react';
+import { React } from 'react';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchUserExpensesGroupedByFixedOrNot } from '../../../utils/backend-client/expenses';
-import { Navigate } from 'react-router-dom';
 
-const UserBalancePane = ({ balance, date }) => {
+const UserBalancePane = ({ balance, fixedExpenseInfo }) => {  
 
-  const [fixedChartValue, setFixedChartValue] = useState(0);
-
-  useEffect(() => {
-    const from = date.format('YYYY-MM')
-    fetchUserExpensesGroupedByFixedOrNot({ from })
-      .then(response => {
-        const amountTotal = response.reduce((total, item) => total + item.amount, 0);
-        const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-        
-        if (!amountTotal || amountTotal === 0){
-          setFixedChartValue(0);
-        } else {
-          setFixedChartValue((fixedExpenseAmountTotal / amountTotal) * 100);
-        }
-      }).catch(err => {
-        if (err && err.status === 401) {
-          Navigate("/login");
-        }
-      });
-  }, [balance]);
+  const getFixedExpenseChartValue = ({amountTotal, fixedTotal}) => {
+    if (!amountTotal || amountTotal === 0){
+      return 0;
+    } else {
+      return (fixedTotal / amountTotal) * 100;
+    }
+  }
 
   const balanceCard = (text) => {
     return (
@@ -111,9 +96,9 @@ const UserBalancePane = ({ balance, date }) => {
         display='flex'
         flexDirection='column'
         alignItems='center'
-      >
+      >        
         {balanceCard(`Despesas Totais ${formatBRLCurrency(balance)}`)}
-        {linearChart(`Despesas Fixas - ${fixedChartValue}%`, fixedChartValue)}
+        {linearChart(`Despesas Fixas - ${getFixedExpenseChartValue(fixedExpenseInfo).toFixed(2)}%`, getFixedExpenseChartValue(fixedExpenseInfo))}
       </Box>
 
     </Box>

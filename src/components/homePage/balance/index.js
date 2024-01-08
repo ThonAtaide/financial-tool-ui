@@ -3,7 +3,7 @@ import { React, useEffect, useState } from 'react';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchUserExpensesGroupedByFixedOrNot } from '../../../utils/backend-client/expenses';
-import dayjs from 'dayjs';
+import { Navigate } from 'react-router-dom';
 
 const UserBalancePane = ({ balance, date }) => {
 
@@ -13,21 +13,20 @@ const UserBalancePane = ({ balance, date }) => {
     const from = date.format('YYYY-MM')
     fetchUserExpensesGroupedByFixedOrNot({ from })
       .then(response => {
-        console.log()
         const amountTotal = response.reduce((total, item) => total + item.amount, 0);
         const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-        console.log('Total: ' + amountTotal);
-        console.log('fixed: ' + fixedExpenseAmountTotal);
-        console.log('dividido: ' + (fixedExpenseAmountTotal / amountTotal) * 100);
+        
         if (!amountTotal || amountTotal === 0){
-          console.log('Caso 1');
           setFixedChartValue(0);
         } else {
-          console.log('Caso 2');
           setFixedChartValue((fixedExpenseAmountTotal / amountTotal) * 100);
         }
-      }).catch(err => console.log(err))
-  }, []);
+      }).catch(err => {
+        if (err && err.status === 401) {
+          Navigate("/login");
+        }
+      });
+  }, [balance]);
 
   const balanceCard = (text) => {
     return (
@@ -56,7 +55,7 @@ const UserBalancePane = ({ balance, date }) => {
     );
   };
 
-  const linearChart = (text) => {
+  const linearChart = (text, value) => {
     return (
       <Box
         display='flex'
@@ -85,7 +84,12 @@ const UserBalancePane = ({ balance, date }) => {
           justifyContent='center'
           maxWidth
         >
-          <LinearProgress variant="determinate" color='primary' sx={{ height: '1.5em', width: '20em', borderRadius: '4px' }} value={fixedChartValue} />
+          <LinearProgress
+            variant="determinate" 
+            color='primary' 
+            sx={{ height: '1.5em', width: '20em', borderRadius: '4px' }} 
+            value={value}                        
+          />
         </Box>
       </Box>
     );
@@ -108,8 +112,8 @@ const UserBalancePane = ({ balance, date }) => {
         flexDirection='column'
         alignItems='center'
       >
-        {balanceCard(`Gasto Total ${formatBRLCurrency(balance)}`)}
-        {linearChart('Despesas fixas')}
+        {balanceCard(`Despesas Totais ${formatBRLCurrency(balance)}`)}
+        {linearChart(`Despesas Fixas - ${fixedChartValue}%`, fixedChartValue)}
       </Box>
 
     </Box>

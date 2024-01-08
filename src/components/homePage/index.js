@@ -189,7 +189,7 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <UserBalancePane balance={userBalance} />
+            <UserBalancePane balance={userBalance} date={reportDateRange} />
           </Grid>
         </Grid>
       </Box>

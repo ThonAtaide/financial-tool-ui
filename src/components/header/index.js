@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,32 +12,35 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { USER_NAME_LOCAL_STORAGE } from '../../constants';
-import { logout } from '../../utils/backend-client';
+import { logout } from '../../utils/backend-client/authentication';
+import { Alert } from '@mui/material';
 
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [logged_user_name, setLoggedUserName] = useState(null);
+  const [alertData, setAlertData] = useState({ show: false, type: null, message: null });
 
   const navigate = useNavigate();
 
-  const logoutUser = () => {
-    console.log('Saindo')
-    logout()
-      .then(res => {        
-        if (res.statusCode === 204) {
-          navigate("/login");
-        }
-      }).then(err => {
-        console.log(err);
-      });
+  const logoutUser = async () => {
+    console.log("chmando logout")
+    try {
+      await logout({});
+      localStorage.clear();
+      navigate("/login")
+    } catch (err) {
+      showAlert({type: 'error', message: err.errors[0]});
+      localStorage.clear();
+      navigate("/login");
+    }
   }
 
   const pages = ['Grupos', 'Contas', 'Despesas'];
   const settings = [
-    { text: 'Perfil', action: () => logoutUser() },
-    { text: 'Sair', action: () => logoutUser() }
+    { text: 'Perfil', action: async () => logoutUser() },
+    { text: 'Sair', action: async () => logoutUser() }
   ];
 
   useEffect(() => {
@@ -45,9 +48,8 @@ function ResponsiveAppBar() {
     if (current_user_name) {
       setLoggedUserName(current_user_name.split(" ")[0]);
     } else {
-      console.log("Local storage vazio");
+      logoutUser();
     }
-
   }, [])
 
   const handleOpenNavMenu = (event) => {
@@ -62,14 +64,43 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseUserMenu = (action) => {
+    console.log("Menu foi chamado ")
+    console.log(action)
     action();
-    console.log('passando aqui')
     setAnchorElUser(null);
   };
+
+  const showAlert = ({ type, message }) => {
+    setAlertData({ show: true, type, message });
+    setTimeout(() => {
+      hideAlert()
+    }, 3000)    
+  }
+
+  const hideAlert = () => {
+    setAlertData({ show: false, type: null, message: null });
+  }
 
   return (
     <AppBar position="static">
       <Container maxWidth>
+        {alertData.show && <Box
+          maxWidth
+          sx={{
+            position: 'fixed',
+            display: 'flex',
+            justifyContent: 'center',
+            top: 0,
+            width: '100%'
+          }}
+        >
+          <Alert
+            severity={alertData.type}
+            onClose={() => hideAlert()}
+          >
+            {alertData.message}
+          </Alert>
+        </Box>}
         <Toolbar disableGutters>
           <Typography
             variant="h6"

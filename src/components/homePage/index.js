@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
-import { Box, Grid, Typography, Fab, Modal } from '@mui/material';
+import { Box, Grid, Typography, Fab, Modal, Alert } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { fetchUserExpenses, fetchUserExpensesGroupedByCategory, fetchUserExpensesGroupedByFixedOrNot } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
@@ -10,20 +10,25 @@ import StatementTable from './statementTable';
 import CustomPieChart from './customPieChart';
 import UserBalancePane from './balance';
 import ExpenseForm from './expenseForm';
+import 'dayjs/locale/pt-br';
 
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [userExpensesPage, setUserExpensesPage] = useState(null);
   const [userExpensesGroupedByCategory, setUserExpensesGroupedByCategory] = useState([]);
-  const [fixedExpenseInfo, setFixedExpenseInfo] = useState({amountTotal: 0, fixedTotal: 0});
+  const [fixedExpenseInfo, setFixedExpenseInfo] = useState({ amountTotal: 0, fixedTotal: 0 });
   const [userBalance, setUserBalance] = useState(0);
   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
-  const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);  
+  const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
   const [reportDateRange, setReportDateRange] = useState(dayjs(new Date()));
   const [pageNumber, setPageNumber] = useState(0);
-  
+  const [alertData, setAlertData] = useState({ show: false })
+
   const pageSize = 7;
+
+  const showAlert = ({ message, type }) => setAlertData({ show: true, type, message });
+  const hideAlert = () => setAlertData({ show: false });
 
   const selectReportDateRange = (value) => {
     if (value !== reportDateRange) {
@@ -38,7 +43,7 @@ const HomePage = () => {
 
   const cleanExpenseToUpdate = () => {
     setIdFromExpenseToUpdate(null);
-  }    
+  }
 
   const createNewExpense = () => {
     setExpenseModalOpen(true);
@@ -49,12 +54,11 @@ const HomePage = () => {
     cleanExpenseToUpdate();
     setExpenseModalOpen(false);
   }
-  
 
   const loadUserExpenses = () => {
     const until = reportDateRange.startOf('month').format('YYYY-MM-DD')
     const from = reportDateRange.endOf('month').format('YYYY-MM-DD');
-    fetchUserExpenses({ page: pageNumber, pageSize, from, until })
+    fetchUserExpenses({ page: pageNumber, pageSize, from, until, unnathorized_redirect: () => navigate("/login") })
       .then(response => {
         setUserExpensesPage(response);
       })
@@ -94,8 +98,8 @@ const HomePage = () => {
       .then(response => {
         const amountTotal = response.reduce((total, item) => total + item.amount, 0);
         const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-        setFixedExpenseInfo({amountTotal, fixedTotal: fixedExpenseAmountTotal});
-        
+        setFixedExpenseInfo({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
+
       }).catch(err => {
         if (err && err.status === 401) {
           Navigate("/login");
@@ -103,11 +107,11 @@ const HomePage = () => {
       });
   }
 
-  const handlePageChange = (event, value) => { 
+  const handlePageChange = (event, value) => {
     setPageNumber(parseInt(value));
   }
 
-  const pageRefresh = () => {    
+  const pageRefresh = () => {
     loadUserExpenses();
     loadUserExpensesGroupedByCategory();
     loadUserExpensesGroupedByFixedOrNot();
@@ -124,6 +128,23 @@ const HomePage = () => {
   return (
     <Box >
       <ResponsiveAppBar />
+      {alertData.show && <Box
+        maxWidth
+        sx={{
+          position: 'fixed',
+          display: 'flex',
+          justifyContent: 'center',
+          top: 0,
+          width: '100%'
+        }}
+      >
+        <Alert
+          severity={alertData.type}
+          onClose={() => hideAlert()}
+        >
+          {alertData.message}
+        </Alert>
+      </Box>}
       <Box
         padding={4}
         sx={{
@@ -148,22 +169,22 @@ const HomePage = () => {
           }}
         />
       </Box>
-      <Box 
+      <Box
         maxWidth
-        display='flex' 
-        justifyContent='center' 
+        display='flex'
+        justifyContent='center'
         padding={4}
       >
         <Grid
           container
           spacing={2}
-          border='solid'          
+          border='solid'
           borderRadius={2}
           padding={2}
           sx={{ backgroundColor: '#e9f0ff', borderWidth: 'thin', borderColor: '#a3a3a3' }}
           pb={5}
         >
-          <Grid
+          {userExpensesGroupedByCategory && userExpensesGroupedByCategory.length > 0 && <Grid
             key='pieChart'
             item
             xs={12}
@@ -175,7 +196,7 @@ const HomePage = () => {
             sx={{ textAlign: 'center' }}
           >
             <CustomPieChart title="Despesas por categoria" data={userExpensesGroupedByCategory} />
-          </Grid>
+          </Grid>}
           <Grid
             key='extrato'
             item
@@ -187,9 +208,9 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <StatementTable 
-              expensesPage={userExpensesPage} 
-              changePage={handlePageChange} 
+            <StatementTable
+              expensesPage={userExpensesPage}
+              changePage={handlePageChange}
               pageRefresh={pageRefresh}
               selectExpenseToUpdate={selectExpenseToUpdate}
             />
@@ -205,7 +226,7 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <UserBalancePane balance={userBalance} fixedExpenseInfo={fixedExpenseInfo}/>
+            <UserBalancePane balance={userBalance} fixedExpenseInfo={fixedExpenseInfo} />
           </Grid>
         </Grid>
       </Box>
@@ -215,15 +236,15 @@ const HomePage = () => {
         onClick={createNewExpense}
         sx={{ position: 'fixed', bottom: 16, right: 16, height: '6rem', width: '6rem' }}>
         <AddIcon sx={{ height: '3rem', width: '3rem' }} />
-      </Fab>      
+      </Fab>
 
       <Modal
         open={isExpenseModalOpen}
-        onClose={closeExpenseGroupModal}        
+        onClose={closeExpenseGroupModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <ExpenseForm expenseIdentifier={idFromExpenseToUpdate} closeExpenseFormModal={closeExpenseGroupModal}/>
+        <ExpenseForm showAlert={showAlert} hideAlert={hideAlert} expenseIdentifier={idFromExpenseToUpdate} closeExpenseFormModal={closeExpenseGroupModal} />
       </Modal>
     </Box>
   );

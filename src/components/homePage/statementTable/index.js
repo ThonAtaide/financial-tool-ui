@@ -12,9 +12,11 @@ import dayjs from 'dayjs';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import { deleteExpense } from '../../../utils/backend-client/expenses';
+import { useNavigate } from "react-router-dom";
 
 const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseToUpdate }) => {
 
+  const navigate = useNavigate();
   const columns = [
     { id: 'description', label: 'Descrição', align: 'center' },
     { id: 'amount', label: 'Valor', align: 'center', format: (value) => `${formatBRLCurrency(value)}` },
@@ -28,7 +30,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
   }
 
   const removeExpense = (id) => {
-    deleteExpense(id)
+    deleteExpense({expenseId: id, unnathorized_redirect: () => navigate("/login")})
       .then(response => pageRefresh())
       .catch(err => console.log(err));
   }

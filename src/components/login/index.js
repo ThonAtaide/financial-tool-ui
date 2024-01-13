@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, AlertTitle, Container, Grid, Paper } from '@mui/material';
+import { Alert, Container, Grid, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import './style.css'
@@ -50,7 +50,6 @@ const LoginPage = ({ showRegisterForm = false }) => {
         <Alert
           severity={alertProperties.alertType}
           onClose={() => hideAlert()}
-
         >
           {alertProperties.message}
         </Alert>
@@ -120,7 +119,7 @@ const LoginPage = ({ showRegisterForm = false }) => {
           </Grid>
 
           {renderLoginCard ?
-            <LoginCard showAlert={showAlertWithProperties} changeToRegisterCard={setToRenderRegisterCard} /> :
+            <LoginCard showAlert={showAlertWithProperties} changeToRegisterCard={setToRenderRegisterCard} hideAlert={hideAlert}/> :
             <RegisterCard changeToLoginCard={setToRenderLoginCard} />
           }
 

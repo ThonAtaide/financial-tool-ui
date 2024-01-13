@@ -1,52 +1,43 @@
-export const BACKEND_HOST = "http://localhost:8080";
+const UNNAUTHORIZED_STATUS_CODE = 401;
 
+const unexpectedError = () => { return { title: 'Houve um erro inesperado.', errors: ['Não foi possível atender a requisição. Por favor tente novamente.'] } };
 
-export const hookCheckAuthentication = async (request, expectedStatus = 200) => {
-    return request()
-        .then(response => {
-            if (response.status === 401) {
-                localStorage.clear();
-                throw response;
-            } else if (response.status !== expectedStatus) {
-                throw response;
-            }
-            return response
-        })
+const decodeResponse = async (response) => {
+    const status = response.status;
+    let body = {}
+    try {
+        const body_text = await response.text();
+        if (body_text && body_text.length > 0) {
+            body = JSON.parse(body_text);
+        }
+    } catch (err) {
+        console.log(`Error to parse response ${err}`);
+        body = unexpectedError();
+    } finally {
+        return { status, body }
+    }
 }
 
-export const login = (username, password) => {
-    return fetch("http://localhost:8080/sign-in", {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        withCredntials: true,
-        credentials: 'include',
-        body: JSON.stringify({ username, password })
-    }).then(response => {
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            throw response;
+export const hookCheckAuthentication = async ({ request, expected_status = 200, unnathorized_redirect }) => {
+    let extracted_response;
+    try {
+        const response = await request();
+        extracted_response = await decodeResponse(response);        
+    } catch (err) {
+        throw {
+            title: 'Servidor indisponível.',
+            errors: ['Não foi possível acessar o servidor. Por favor tente mais tarde.']
         }
-    }).then(data => data.nickname);
-};
-
-export const logout = async () => {
-    const response = await fetch("http://localhost:8080/sign-out", {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        withCredntials: true,
-        credentials: 'include'
-    });
-    return {
-        statusCode: response.status
+    } finally {
+        if (extracted_response.status === UNNAUTHORIZED_STATUS_CODE) {
+            localStorage.clear();
+            if (unnathorized_redirect && unnathorized_redirect instanceof Function) {                
+                unnathorized_redirect();                
+            }
+            throw extracted_response.body;
+        } else if (extracted_response.status !== expected_status) {
+            throw extracted_response.body;
+        }
+        return extracted_response.body;
     }
-};
-
-
-
+}

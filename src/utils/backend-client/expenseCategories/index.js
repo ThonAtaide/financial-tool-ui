@@ -1,13 +1,19 @@
-import { BACKEND_HOST, hookCheckAuthentication } from ".."
+import { hookCheckAuthentication } from "..";
+import { config } from '../../properties';
+const { BACKEND_URL } = config;
 const EXPENSES_CATEGORIES_RESOURCE = "expenseCategories";
 
-export const fetchExpenseCategories = async ({ pageSize = 100 }) => {
-    return hookCheckAuthentication(() => fetch(`${BACKEND_HOST}/${EXPENSES_CATEGORIES_RESOURCE}?size=${pageSize}`, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        withCredntials: true,
-        credentials: 'include'
-    })).then(response => response.json())
+export const fetchExpenseCategories = async ({ pageSize = 100, unnathorized_redirect }) => {
+    return hookCheckAuthentication({
+        request: () => fetch(`${BACKEND_URL}/${EXPENSES_CATEGORIES_RESOURCE}?size=${pageSize}`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            withCredntials: true,
+            credentials: 'include'
+        }),
+        expected_status: 200,
+        unnathorized_redirect
+    });
 }

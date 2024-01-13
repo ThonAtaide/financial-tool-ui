@@ -5,9 +5,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import logo from '../../../lotus.webp'
 import { USER_NAME_LOCAL_STORAGE } from '../../../constants/index'
-import { login } from '../../../utils/backend-client';
+import { login } from '../../../utils/backend-client/authentication';
 
-const LoginCard = ({ changeToRegisterCard, showAlert }) => {
+const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
 
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
@@ -24,22 +24,24 @@ const LoginCard = ({ changeToRegisterCard, showAlert }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    login(username, password)
-      .then(name => {          
-          localStorage.setItem(USER_NAME_LOCAL_STORAGE, name);
-          console.log('Dando sucesso response')
-          showAlert({alertType: 'success', message: 'Usuário logado com sucesso!'});
-          setTimeout(()=> {
-            navigate('/');
-          }, 1000);
-      }).catch(err => {
-        showAlert({ alertType: 'error', message: 'Houve um erro. Por favor, tente novamente !'});
-      });
-    
+    try {
+      const user_data = await login({username, password});      
+      localStorage.setItem(USER_NAME_LOCAL_STORAGE, user_data.nickname);
+      showAlert({ alertType: 'success', message: 'Usuário logado com sucesso.' });
+      setTimeout(()=> {
+        navigate('/')
+      }, 2000);
+    } catch (err) {
+      
+      showAlert({ alertType: 'error', message: err.errors[0] || 'Houve um erro. Por favor, tente novamente !' });
+      setTimeout(() => {
+        hideAlert();
+      }, 2000);
+    }
   }
 
   return (
-    <Grid item xs={12} md={6} component="form" onSubmit={handleSubmit}>      
+    <Grid item xs={12} md={6} component="form" onSubmit={handleSubmit}>
       <Box
         sx={{
           display: 'flex',

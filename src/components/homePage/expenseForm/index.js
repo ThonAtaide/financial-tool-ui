@@ -31,7 +31,7 @@ const defaultMaskOptions = {
   allowLeadingZeroes: false
 }
 
-const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
+const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdentifier }) => {
   const navigate = useNavigate();
 
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -42,6 +42,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
   
+  const actionIfUnnauthorized = () => navigate("/login");
+
   const validateDescription = () => {    
     if (!description || !description.value ||description.value.length < 2) {
       setDescription({...description, helperText: 'A Descrição deve conter ao menos 2 caracteres.'});
@@ -75,22 +77,21 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   }, []);
 
   const loadExpenseCategories = () => {
-    fetchExpenseCategories({})
+    fetchExpenseCategories({unnathorized_redirect: actionIfUnnauthorized})
     .then(response => {
       const categories = (response && response._embedded
         && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } })) || [];
       setExpenseCategories(categories);
     }).catch(err => {
-      if (err && err.status === 401) {
-        navigate("/login");
-      }
+      showAlert({type: "error", message: err.errors && err.errors.length > 0 && err.errors[0] || 'Houve um erro. Por favor tente novamente.'})
+      setTimeout(() => hideAlert(), 2000);
     });
   }
 
   const fetchExpenseByIdAndSetFields = () => {
 
     if (expenseIdentifier) {
-      getExpenseById(expenseIdentifier)
+      getExpenseById({expenseId: expenseIdentifier, unnathorized_redirect: actionIfUnnauthorized})
         .then(response => {
           setDescription({...description, value: response.description});
           setAmount({value: response.amount.toString(), helperText: null});
@@ -112,7 +113,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             amount: amount.value.replace('.', '').replace(',', '.'),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value
+            expenseCategory: selectedCategoryId.value,
+            unnathorized_redirect: actionIfUnnauthorized
           }
         ).then(response => closeExpenseFormModal(true))
         .catch(err => {
@@ -130,7 +132,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             amount: amount.value.replace('.', '').replace(',', '.'),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value
+            expenseCategory: selectedCategoryId.value,
+            unnathorized_redirect: actionIfUnnauthorized
           }
         ).then(response => {
           console.log(response)
@@ -144,11 +147,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const descriptionIsOk = validateDescription();
-    const amountIsOk = validateAmount();
-    const categoryIsOk = validateSelectedCategory();
 
-    if(!descriptionIsOk || !amountIsOk || !categoryIsOk) return;
+    if(!validateDescription() || !validateAmount() || !validateSelectedCategory()) return;
     
     if (!expenseIdentifier) {
       registerNewExpense();

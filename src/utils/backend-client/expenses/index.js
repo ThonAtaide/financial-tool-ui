@@ -8,11 +8,11 @@ export const createUserExpenses = async ({ description, amount, fixedExpense, da
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/${EXPENSES_RESOURCE}`, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include',
             body: JSON.stringify({ description, amount, fixedExpense, datPurchase, expenseCategory })
         }),
@@ -24,13 +24,13 @@ export const createUserExpenses = async ({ description, amount, fixedExpense, da
 export const fetchUserExpenses = async ({ page = 0, pageSize = 15, from, until, unnathorized_redirect }) => {
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/${EXPENSES_RESOURCE}?from=${from}&until=${until}`, {
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'page': page,
                 'pageSize': pageSize
             },
-            withCredntials: true,
             credentials: 'include',
         }),
         expected_status: 200,
@@ -42,11 +42,11 @@ export const fetchUserExpensesGroupedByCategory = async ({ from, unnathorized_re
 
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/${EXPENSES_RESOURCE}/grouped-by-categories?monthRange=${from}`, {
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include'
         }),
         expected_status: 200,
@@ -58,11 +58,11 @@ export const fetchUserExpensesGroupedByFixedOrNot = async ({ from, unnathorized_
 
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/${EXPENSES_RESOURCE}/grouped-by-is-fixed?monthRange=${from}`, {
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include'
         }),
         expected_status: 200,
@@ -74,11 +74,11 @@ export const deleteExpense = async ({ expenseId, unnathorized_redirect }) => {
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/expenses/${expenseId}`, {
             method: 'DELETE',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json'           
             },
-            withCredntials: true,
             credentials: 'include'
         }),
         expected_status: 204,
@@ -90,11 +90,11 @@ export const updateExpense = ({ expenseId, description, amount, fixedExpense, da
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/expenses/${expenseId}`, {
             method: 'PUT',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include',
             body: JSON.stringify({ id: expenseId, description, amount, fixedExpense, datPurchase, expenseCategory })
         }),
@@ -106,12 +106,12 @@ export const updateExpense = ({ expenseId, description, amount, fixedExpense, da
 export const getExpenseById = ({ expenseId, unnathorized_redirect }) => {
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/expenses/${expenseId}`, {
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
-            credentials: 'include',
+            credentials: 'include',            
         }),
         expected_status: 200,
         unnathorized_redirect

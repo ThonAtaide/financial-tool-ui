@@ -6,11 +6,11 @@ export const login = async ({username, password, unnathorized_redirect}) => {
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/sign-in`, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include',
             body: JSON.stringify({ username, password })
         }),
@@ -23,11 +23,11 @@ export const logout = async ({unnathorized_redirect}) => {
     return hookCheckAuthentication({
         request: () => fetch(`${BACKEND_URL}/sign-out`, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            withCredntials: true,
             credentials: 'include'
         }),
         expected_status: 204,

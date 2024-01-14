@@ -25,14 +25,15 @@ const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const user_data = await login({username, password});      
+      const user_data = await login({username, password}); 
+      console.log(user_data)     
       localStorage.setItem(USER_NAME_LOCAL_STORAGE, user_data.nickname);
       showAlert({ alertType: 'success', message: 'Usuário logado com sucesso.' });
       setTimeout(()=> {
         navigate('/')
       }, 2000);
     } catch (err) {
-      
+      console.log(err)
       showAlert({ alertType: 'error', message: err.errors[0] || 'Houve um erro. Por favor, tente novamente !' });
       setTimeout(() => {
         hideAlert();

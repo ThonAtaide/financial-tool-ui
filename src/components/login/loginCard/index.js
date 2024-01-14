@@ -25,8 +25,7 @@ const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const user_data = await login({username, password}); 
-      console.log(user_data)     
+      const user_data = await login({username, password});    
       localStorage.setItem(USER_NAME_LOCAL_STORAGE, user_data.nickname);
       showAlert({ alertType: 'success', message: 'Usuário logado com sucesso.' });
       setTimeout(()=> {

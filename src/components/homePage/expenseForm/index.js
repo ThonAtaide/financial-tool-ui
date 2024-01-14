@@ -6,6 +6,7 @@ import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCate
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import dayjs from 'dayjs';
+import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 
 const style = {
   position: 'absolute',
@@ -26,7 +27,7 @@ const defaultMaskOptions = {
   allowDecimal: true,
   decimalSymbol: ',',
   decimalLimit: 2, // how many digits allowed after the decimal
-  integerLimit: 7, // limit length of integer numbers
+  integerLimit: 17, // limit length of integer numbers
   allowNegative: false,
   allowLeadingZeroes: false
 }
@@ -88,13 +89,32 @@ const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdent
     });
   }
 
+  const countDecimalDigits = (value) => {
+    const value_as_string = value.toString();
+    if (!value_as_string.includes(".")) return 0;
+    return value_as_string.length - (value_as_string.indexOf(".") + 1); 
+  }
+
   const fetchExpenseByIdAndSetFields = () => {
 
     if (expenseIdentifier) {
       getExpenseById({expenseId: expenseIdentifier, unnathorized_redirect: actionIfUnnauthorized})
         .then(response => {
+          
+          let value;
+          if (decimalDigitsCount === 0) {
+            console.log(1);
+            value = response.amount.toString().concat(",00")
+          } else if (decimalDigitsCount === 1) {
+            console.log(2);
+            value = response.amount.toString().replace(".", ",").concat("0")
+          } else {
+            console.log(3);
+            value = response.amount.toString().replace(".", ",")
+          }
+          
           setDescription({...description, value: response.description});
-          setAmount({value: response.amount.toString(), helperText: null});
+          setAmount({value: value, helperText: null});
           setIsFixed(response.fixedExpense);
           setSelectedCategoryId({value: response.expenseCategory.id, helperText: null})
           setPurchaseDate(dayjs(response.datPurchase).format('YYYY-MM-DD'));
@@ -106,17 +126,22 @@ const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdent
     ...defaultMaskOptions
   })
 
+  const prepareAmountToSave = (value) => {
+    return value && value.replace('R$', '').replaceAll('.', "").replace(',', '.') || "00.00";
+  }
+
   const registerNewExpense = () => {
+    
     createUserExpenses(
           {
             description: description.value,
-            amount: amount.value.replace('.', '').replace(',', '.'),
+            amount: prepareAmountToSave(amount.value),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
             expenseCategory: selectedCategoryId.value,
             unnathorized_redirect: actionIfUnnauthorized
           }
-        ).then(response => closeExpenseFormModal(true))
+        ).then((res) => closeExpenseFormModal(true))
         .catch(err => {
           if (err && err.status === 401) {
             navigate("/login");
@@ -129,7 +154,7 @@ const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdent
           {
             expenseId: expenseIdentifier,
             description: description.value,
-            amount: amount.value.replace('.', '').replace(',', '.'),
+            amount: prepareAmountToSave(amount.value),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
             expenseCategory: selectedCategoryId.value,

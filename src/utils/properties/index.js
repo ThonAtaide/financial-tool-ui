@@ -3,7 +3,7 @@ const PROD_PROPERTIES = {
 }
 
 const DEV_PROPERTIES = {
-    BACKEND_URL: 'http://localhost:8080'
+    BACKEND_URL: 'http://192.168.0.61:8080'
 }
 
 export const config = process.env.NODE_ENV === 'development' ? DEV_PROPERTIES : PROD_PROPERTIES;

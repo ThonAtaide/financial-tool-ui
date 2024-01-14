@@ -31,7 +31,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
 
   const removeExpense = (id) => {
     deleteExpense({expenseId: id, unnathorized_redirect: () => navigate("/login")})
-      .then(response => pageRefresh())
+      .then(() => pageRefresh())
       .catch(err => console.log(err));
   }
   

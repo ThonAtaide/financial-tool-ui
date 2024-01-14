@@ -1,10 +1,32 @@
+import axios from 'axios';
 import { config } from '../properties';
 const { BACKEND_URL } = config;
 const UNNAUTHORIZED_STATUS_CODE = 401;
 
 export const axios_client = axios.create({
-    baseURL: BACKEND_URL 
-  });
+    baseURL: BACKEND_URL,
+    withCredentials: true,
+    headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+});
+
+export const handle_axios_response_error = (err, unnathorized_redirect) => {
+    console.log(err);
+    if (err.response) {
+        if (err.response === UNNAUTHORIZED_STATUS_CODE && unnathorized_redirect) {
+            unnathorized_redirect();
+            return null;
+        } 
+        throw err.response.data;               
+    }
+    throw {
+        title: 'Servidor indisponível.',
+        errors: ['Não foi possível acessar o servidor. Por favor tente mais tarde.']
+    }
+}
+
 
 const unexpectedError = () => { return { title: 'Houve um erro inesperado.', errors: ['Não foi possível atender a requisição. Por favor tente novamente.'] } };
 
@@ -28,24 +50,24 @@ export const hookCheckAuthentication = async ({ request, expected_status = 200, 
     let extracted_response;
     try {
         const response = await request();
-        extracted_response = await decodeResponse(response);        
+        extracted_response = await decodeResponse(response);
     } catch (err) {
         console.log(err)
         throw {
             title: 'Servidor indisponível.',
             errors: ['Não foi possível acessar o servidor. Por favor tente mais tarde.']
         }
-    } 
+    }
     if (extracted_response.status === UNNAUTHORIZED_STATUS_CODE) {
         console.log(extracted_response);
         localStorage.clear();
-        if (unnathorized_redirect && unnathorized_redirect instanceof Function) {                
-            unnathorized_redirect();                
+        if (unnathorized_redirect && unnathorized_redirect instanceof Function) {
+            unnathorized_redirect();
         }
         throw extracted_response.body;
     } else if (extracted_response.status !== expected_status) {
         throw extracted_response.body;
     }
     return extracted_response.body;
-    
+
 }

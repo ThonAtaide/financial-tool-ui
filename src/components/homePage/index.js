@@ -183,7 +183,7 @@ const HomePage = () => {
           padding={2}
           sx={{ backgroundColor: '#e9f0ff', borderWidth: 'thin', borderColor: '#a3a3a3' }}
           pb={5}
-        >
+        >          
           {userExpensesGroupedByCategory && userExpensesGroupedByCategory.length > 0 && <Grid
             key='pieChart'
             item
@@ -228,6 +228,8 @@ const HomePage = () => {
           >
             <UserBalancePane balance={userBalance} fixedExpenseInfo={fixedExpenseInfo} />
           </Grid>
+          
+          
         </Grid>
       </Box>
       <Fab

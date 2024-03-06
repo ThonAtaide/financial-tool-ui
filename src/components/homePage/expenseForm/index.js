@@ -100,7 +100,7 @@ const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdent
     if (expenseIdentifier) {
       getExpenseById({expenseId: expenseIdentifier, unnathorized_redirect: actionIfUnnauthorized})
         .then(response => {
-          
+          const decimalDigitsCount = countDecimalDigits(response.amount);
           let value;
           if (decimalDigitsCount === 0) {
             console.log(1);

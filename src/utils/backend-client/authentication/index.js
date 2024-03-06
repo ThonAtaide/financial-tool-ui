@@ -6,7 +6,10 @@ export const login = async ({username, password}) => {
     return axios_client.post(
         '/sign-in', 
         JSON.stringify({ username, password })
-    ).then(res => res.data)
+    ).then(res => {
+        console.log(res.headers)
+        return res.data
+    })
     .catch(err => handle_axios_response_error(err));
 };
 

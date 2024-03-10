@@ -1,10 +1,55 @@
 import { Button, CardMedia, Grid, TextField } from '@mui/material';
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import logo from '../../../lotus.webp'
+import { axios_client } from '../../../utils/backend-client';
+import { config } from '../../../utils/properties';
+import { useState } from 'react';
+import { UseBackendApi, useBackendApi } from '../../hook/backend-request';
+import { registerNewUser } from '../../../utils/backend-client/authentication';
+
+const { BACKEND_URL } = config;
 
 const RegisterCard = ({changeToLoginCard}) => {
+
+  const [userRegistryData, setUserRegistryData] = useState({});
+  const { data, callApi } = useBackendApi({apiRequest: registerNewUser})
+
+  const submitUserRegistry = (e) => {
+    e.preventDefault()
+    const {
+      username, password, email, name
+    } = userRegistryData;
+
+    callApi({
+        username,
+        password,
+        email,
+        nickname: name
+    }).then(res => console.log('Deu certo'))
+    .catch(err => {      
+      console.log('Deu ruim meus amigos register');
+      console.log(err);
+    })
+    // registerNewUser({
+    //   username,
+    //   password,
+    //   email,
+    //   nickname: name
+    // })
+  } 
+
+  // const registerNewUser = ({ username, password, email, nickname }) => {
+  //   console.log('calling api new user')
+  //   return axios_client.post(
+  //     '/sign-up',
+  //     JSON.stringify({ username, password, email, nickname }) 
+  //     )
+  //     // .then(res => console.log('Success: ' + res))
+  //     // .catch(err => console.log(err.response.data))
+  // }
+
   return (
     <Grid item xs={12} md={6} >
       <Box
@@ -61,6 +106,8 @@ const RegisterCard = ({changeToLoginCard}) => {
           label="Nome"
           variant="outlined"
           size='small'
+          value={userRegistryData && userRegistryData.name}
+          onChange={e => setUserRegistryData({...userRegistryData, name: e.target.value})}
         />
       </Box>
       <Box
@@ -76,6 +123,8 @@ const RegisterCard = ({changeToLoginCard}) => {
           label="E-mail"
           variant="outlined"
           size='small'
+          value={userRegistryData && userRegistryData.email}
+          onChange={e => setUserRegistryData({...userRegistryData, email: e.target.value})}
         />
       </Box>
       <Box
@@ -91,6 +140,8 @@ const RegisterCard = ({changeToLoginCard}) => {
           label="Username"
           variant="outlined"
           size='small'
+          value={userRegistryData && userRegistryData.username}
+          onChange={e => setUserRegistryData({...userRegistryData, username: e.target.value})}
         />
       </Box>
       <Box
@@ -106,6 +157,9 @@ const RegisterCard = ({changeToLoginCard}) => {
           label="Senha"
           variant="outlined"
           size='small'
+          type='password'
+          value={userRegistryData && userRegistryData.password}
+          onChange={e => setUserRegistryData({...userRegistryData, password: e.target.value})}
         />
       </Box>
       <Box
@@ -120,6 +174,7 @@ const RegisterCard = ({changeToLoginCard}) => {
           size='small'
           fullWidth
           sx={{ textTransform: 'none'}}
+          onClick={submitUserRegistry}
         >
           Me cadastrar
         </Button>

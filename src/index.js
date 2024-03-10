@@ -11,6 +11,8 @@ import {
 import ErrorPage from './components/error';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { PopupProvider } from './components/popup/provider';
+import Popup from './components/popup/component';
 
 
 const router = createBrowserRouter([
@@ -43,7 +45,11 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(  
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
-      <RouterProvider router={router} />
+      <PopupProvider>
+        <Popup/> 
+        <RouterProvider router={router} />
+      </PopupProvider> 
+      
     </LocalizationProvider>
 );
 

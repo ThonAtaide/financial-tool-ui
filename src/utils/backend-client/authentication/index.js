@@ -28,3 +28,10 @@ export const logout = async ({unnathorized_redirect}) => {
         unnathorized_redirect
     });
 };
+
+export const registerNewUser = ({ username, password, email, nickname }) => {    
+    return axios_client.post(
+        '/sign-up',
+        JSON.stringify({ username, password, email, nickname }) 
+        );
+}

@@ -44,13 +44,13 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(  
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
       <PopupProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
         <Popup/> 
         <RouterProvider router={router} />
-      </PopupProvider> 
       
     </LocalizationProvider>
+      </PopupProvider> 
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -4,7 +4,7 @@ const PopupContext = createContext();
 
 export const PopupProvider = ({ children }) => {
   
-   const [value, setValue] = useState(false)
+   const [value, setValue] = useState();
    
    const triggerPopup = ({
     severity,
@@ -14,12 +14,18 @@ export const PopupProvider = ({ children }) => {
     const triggerSuccessPopup = ({
       title,
       message
-    }) => triggerPopup({severity: 'success', title, message})
+    }) => {
+      console.log('calling success pop up')
+      triggerPopup({severity: 'success', title, message})
+    }
 
     const triggerErrorPopup = ({
       title,
       message
-    }) => triggerPopup({severity: 'error', title, message})
+    }) => {
+      console.log('calling error pop up')
+      triggerPopup({severity: 'error', title, message})
+    }
    
     const clearPopup = () => setValue({})
    

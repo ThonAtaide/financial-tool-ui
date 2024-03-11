@@ -1,54 +1,45 @@
 import { Button, CardMedia, Grid, TextField } from '@mui/material';
-import { Link, redirect } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import logo from '../../../lotus.webp'
-import { axios_client } from '../../../utils/backend-client';
 import { config } from '../../../utils/properties';
 import { useState } from 'react';
-import { UseBackendApi, useBackendApi } from '../../hook/backend-request';
+import { useApiRequestSimple } from '../../hook/api-request-simple';
 import { registerNewUser } from '../../../utils/backend-client/authentication';
+import { usePopup } from '../../popup/provider';
+import { USER_NAME_LOCAL_STORAGE } from '../../../constants';
 
 const { BACKEND_URL } = config;
 
 const RegisterCard = ({changeToLoginCard}) => {
 
   const [userRegistryData, setUserRegistryData] = useState({});
-  const { data, callApi } = useBackendApi({apiRequest: registerNewUser})
+  const { isLoading, statelessRequestApi } = useApiRequestSimple({apiRequest: registerNewUser})
+  const { triggerSuccessPopup } = usePopup();
+  const navigate = useNavigate();
 
-  const submitUserRegistry = (e) => {
+  const submitUserRegistry = async (e) => {
     e.preventDefault()
     const {
       username, password, email, name
     } = userRegistryData;
 
-    callApi({
+    statelessRequestApi({
         username,
         password,
         email,
         nickname: name
-    }).then(res => console.log('Deu certo'))
-    .catch(err => {      
-      console.log('Deu ruim meus amigos register');
-      console.log(err);
-    })
-    // registerNewUser({
-    //   username,
-    //   password,
-    //   email,
-    //   nickname: name
-    // })
-  } 
-
-  // const registerNewUser = ({ username, password, email, nickname }) => {
-  //   console.log('calling api new user')
-  //   return axios_client.post(
-  //     '/sign-up',
-  //     JSON.stringify({ username, password, email, nickname }) 
-  //     )
-  //     // .then(res => console.log('Success: ' + res))
-  //     // .catch(err => console.log(err.response.data))
-  // }
+    }).then(data => {      
+      const { nickname } = data;
+      localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
+      triggerSuccessPopup({title: 'Usuário criado com sucesso!', message: `Bem vindo/a ${nickname}`})
+      setTimeout(()=> {
+        console.log('Passou no timeout')
+        navigate('/')
+      }, 2000);
+    }).catch(err => {});    
+  }
 
   return (
     <Grid item xs={12} md={6} >
@@ -101,7 +92,7 @@ const RegisterCard = ({changeToLoginCard}) => {
         }}
       >
         <TextField
-          id="outlined-basic"
+          id="outlined-basic-name"
           fullWidth
           label="Nome"
           variant="outlined"
@@ -118,7 +109,7 @@ const RegisterCard = ({changeToLoginCard}) => {
         }}
       >
         <TextField
-          id="outlined-basic"
+          id="outlined-basic-email"
           fullWidth
           label="E-mail"
           variant="outlined"
@@ -135,7 +126,7 @@ const RegisterCard = ({changeToLoginCard}) => {
         }}
       >
         <TextField
-          id="outlined-basic"
+          id="outlined-basic-username"
           fullWidth
           label="Username"
           variant="outlined"
@@ -152,7 +143,7 @@ const RegisterCard = ({changeToLoginCard}) => {
         }}
       >
         <TextField
-          id="outlined-basic"
+          id="outlined-basic-password"
           fullWidth
           label="Senha"
           variant="outlined"

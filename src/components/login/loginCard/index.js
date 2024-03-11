@@ -5,14 +5,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import logo from '../../../lotus.webp'
 import { USER_NAME_LOCAL_STORAGE } from '../../../constants/index'
-import { login } from '../../../utils/backend-client/authentication';
+import { sign_in } from '../../../utils/backend-client/authentication';
+import { usePopup } from '../../popup/provider';
+import { useApiRequestSimple } from '../../hook/api-request-simple';
 
-const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
+const LoginCard = ({ changeToRegisterCard }) => {
 
-  const [username, setUsername] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
+  const { isLoading, statelessRequestApi } = useApiRequestSimple({apiRequest: sign_in});
+  const { triggerSuccessPopup, triggerErrorPopup} = usePopup();
 
   const onChangeUsername = (value) => {
     setUsername(value)
@@ -22,22 +26,22 @@ const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
     setPassword(value)
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      const user_data = await login({username, password});    
-      localStorage.setItem(USER_NAME_LOCAL_STORAGE, user_data.nickname);
-      showAlert({ alertType: 'success', message: 'Usuário logado com sucesso.' });
-      setTimeout(()=> {
-        navigate('/')
-      }, 2000);
-    } catch (err) {
-      console.log(err)
-      showAlert({ alertType: 'error', message: err.errors[0] || 'Houve um erro. Por favor, tente novamente !' });
-      setTimeout(() => {
-        hideAlert();
-      }, 2000);
-    }
+    statelessRequestApi({username, password})
+      .then(data => {
+        const { nickname } = data;
+        localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
+        triggerSuccessPopup({ title: 'Usuário logado com sucesso.', message: `Bem vindo ${nickname}` });
+        setTimeout(()=> {
+          navigate('/')
+        }, 2000);
+      }).catch(err => {
+        setTimeout(() => {
+          setUsername('');
+          setPassword('');
+        }, 500)
+      });
   }
 
   return (
@@ -96,6 +100,7 @@ const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
           label="Username"
           variant="outlined"
           size='small'
+          value={username}
           onChange={(e) => onChangeUsername(e.target.value)}
         />
       </Box>
@@ -113,6 +118,7 @@ const LoginCard = ({ changeToRegisterCard, showAlert, hideAlert }) => {
           variant="outlined"
           size='small'
           type='password'
+          value={password}
           onChange={(e) => onChangePassword(e.target.value)}
         />
       </Box>

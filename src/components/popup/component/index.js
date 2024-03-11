@@ -3,6 +3,7 @@ import { usePopup } from '../provider'
 import { Alert, AlertTitle, Box } from '@mui/material';
 
 const Popup = () => {
+  console.log('loop')
   const { value, clearPopup } = usePopup();
   const {
     show,
@@ -11,11 +12,14 @@ const Popup = () => {
     message
   } = value || {};
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      clearPopup()
-    }, 3000)
-    return () => clearTimeout(timer)
+  useEffect(() => {    
+    if (show) {
+      const timer = setTimeout(() => {
+        clearPopup()
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+    
   }, [value])
 
   return (show &&

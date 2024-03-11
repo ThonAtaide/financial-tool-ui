@@ -7,22 +7,8 @@ import LoginCard from './loginCard'
 import RegisterCard from './registerCard';
 
 const LoginPage = ({ showRegisterForm = false }) => {
-
-  const [renderLoginCard, setRenderLoginCard] = useState(!showRegisterForm);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertProperties, setAlertProperties] = useState();
-
-  const showAlertWithProperties = ({ alertType, message }) => {
-    setAlertProperties({ alertType, message });
-    setShowAlert(true);
-    setTimeout(() => {
-      hideAlert();
-    }, 50000);
-  }
-
-  const hideAlert = () => {
-    setShowAlert(false);
-  }
+  // console.log('loop login')
+  const [renderLoginCard, setRenderLoginCard] = useState(!showRegisterForm);  
 
   const setToRenderRegisterCard = () => {
     setRenderLoginCard(false)
@@ -36,24 +22,7 @@ const LoginPage = ({ showRegisterForm = false }) => {
     <Container
       className='login-parent-container'
       maxWidth
-    >
-      {showAlert && <Box
-      maxWidth
-        sx={{ 
-          position: 'fixed',
-          display: 'flex', 
-          justifyContent: 'center', 
-          top: 0,
-          width: '100%' 
-        }}
-      >
-        <Alert
-          severity={alertProperties.alertType}
-          onClose={() => hideAlert()}
-        >
-          {alertProperties.message}
-        </Alert>
-      </Box>}
+    >      
       <Box
         sx={{
           marginTop: '2rem',
@@ -119,7 +88,7 @@ const LoginPage = ({ showRegisterForm = false }) => {
           </Grid>
 
           {renderLoginCard ?
-            <LoginCard showAlert={showAlertWithProperties} changeToRegisterCard={setToRenderRegisterCard} hideAlert={hideAlert}/> :
+            <LoginCard changeToRegisterCard={setToRenderRegisterCard} /> :
             <RegisterCard changeToLoginCard={setToRenderLoginCard} />
           }
 

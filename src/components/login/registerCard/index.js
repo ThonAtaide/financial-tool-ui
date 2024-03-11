@@ -35,7 +35,6 @@ const RegisterCard = ({changeToLoginCard}) => {
       localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
       triggerSuccessPopup({title: 'Usuário criado com sucesso!', message: `Bem vindo/a ${nickname}`})
       setTimeout(()=> {
-        console.log('Passou no timeout')
         navigate('/')
       }, 2000);
     }).catch(err => {});    

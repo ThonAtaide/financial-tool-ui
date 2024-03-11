@@ -8,6 +8,7 @@ import { USER_NAME_LOCAL_STORAGE } from '../../../constants/index'
 import { sign_in } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
+import { useGlobalLoading } from '../../loading/global-loading/provider';
 
 const LoginCard = ({ changeToRegisterCard }) => {
 
@@ -17,6 +18,7 @@ const LoginCard = ({ changeToRegisterCard }) => {
   const navigate = useNavigate();
   const { isLoading, statelessRequestApi } = useApiRequestSimple({apiRequest: sign_in});
   const { triggerSuccessPopup, triggerErrorPopup} = usePopup();
+  const { startLoading, finishLoading } = useGlobalLoading();
 
   const onChangeUsername = (value) => {
     setUsername(value)
@@ -28,8 +30,10 @@ const LoginCard = ({ changeToRegisterCard }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    startLoading();
     statelessRequestApi({username, password})
       .then(data => {
+        finishLoading();
         const { nickname } = data;
         localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
         triggerSuccessPopup({ title: 'Usuário logado com sucesso.', message: `Bem vindo ${nickname}` });
@@ -37,6 +41,7 @@ const LoginCard = ({ changeToRegisterCard }) => {
           navigate('/')
         }, 2000);
       }).catch(err => {
+        finishLoading();
         setTimeout(() => {
           setUsername('');
           setPassword('');

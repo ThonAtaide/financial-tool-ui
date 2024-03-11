@@ -6,33 +6,35 @@ import LoginPage from './components/login'
 import Home from './components/homePage'
 import {
   createBrowserRouter,
-  RouterProvider,  
+  RouterProvider,
 } from "react-router-dom";
 import ErrorPage from './components/error';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PopupProvider } from './components/popup/provider';
 import Popup from './components/popup/component';
+import GlobalLoading from './components/loading/global-loading/component';
+import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home/>,
-    errorElement: <ErrorPage/>,
+    element: <Home />,
+    errorElement: <ErrorPage />,
     // loader: userExpensesLoader
   },
   {
     path: "/login",
-    element: <LoginPage showRegisterForm={false}/>,
+    element: <LoginPage showRegisterForm={false} />,
   },
   {
     path: "/register",
-    element: <LoginPage showRegisterForm={true}/>,
+    element: <LoginPage showRegisterForm={true} />,
   },
   {
     path: "/error",
-    element: <ErrorPage/>
+    element: <ErrorPage />
   },
   // {
   //   path: "/dashboard/:groupId",
@@ -43,14 +45,16 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(  
-      <PopupProvider>
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
-        <Popup/> 
+root.render(
+  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+    <PopupProvider>
+      <GlobalLoadingProvider>
+        <Popup />
+        <GlobalLoading />
         <RouterProvider router={router} />
-      
-    </LocalizationProvider>
-      </PopupProvider> 
+      </GlobalLoadingProvider>
+    </PopupProvider>
+  </LocalizationProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

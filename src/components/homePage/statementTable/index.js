@@ -13,10 +13,21 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import { deleteExpense } from '../../../utils/backend-client/expenses';
 import { useNavigate } from "react-router-dom";
+import { useExpenses } from '../expenses-provider';
+import { useGlobalLoading } from '../../loading/global-loading/provider';
+import { useApiRequestSimple } from '../../hook/api-request-simple';
 
-const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseToUpdate }) => {
+const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
 
   const navigate = useNavigate();
+  const { startLoading, finishLoading } = useGlobalLoading();
+  const { statelessRequestApi: deleteExpenseRequest } = useApiRequestSimple({apiRequest: deleteExpense})
+
+  const {
+    updateUserStatementPageNumber,
+    refreshPageData,
+  } = useExpenses();
+
   const columns = [
     { id: 'description', label: 'Descrição', align: 'center' },
     { id: 'amount', label: 'Valor', align: 'center', format: (value) => `${formatBRLCurrency(value)}` },
@@ -29,10 +40,12 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
     selectExpenseToUpdate(id);
   }
 
-  const removeExpense = (id) => {
-    deleteExpense({expenseId: id, unnathorized_redirect: () => navigate("/login")})
-      .then(() => pageRefresh())
-      .catch(err => console.log(err));
+  const removeExpense = async (id) => {
+    startLoading();
+    await deleteExpenseRequest(id)
+      .then(res => refreshPageData())
+      .catch(err => {})
+      .finally(() => finishLoading());
   }
   
   const buildSettingsColumn = (id) => {
@@ -117,7 +130,7 @@ const StatementTable = ({ expensesPage, changePage, pageRefresh, selectExpenseTo
           count={(expensesPage && expensesPage.totalElements) || 0}
           rowsPerPage={7}
           page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber}
-          onPageChange={(e, newPage) => changePage(e, newPage)}
+          onPageChange={(e, newPage) => updateUserStatementPageNumber(newPage)}
         />
       </Paper>
     </Box>

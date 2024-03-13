@@ -15,12 +15,13 @@ import { PopupProvider } from './components/popup/provider';
 import Popup from './components/popup/component';
 import GlobalLoading from './components/loading/global-loading/component';
 import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
+import { ExpensesProvider } from './components/homePage/expenses-provider';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <ExpensesProvider children={<Home />}/>,
     errorElement: <ErrorPage />,
     // loader: userExpensesLoader
   },

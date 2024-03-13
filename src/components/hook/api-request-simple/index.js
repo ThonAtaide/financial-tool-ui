@@ -10,9 +10,8 @@ export const useApiRequestSimple = ({ apiRequest }) => {
 
   const handleError = (err) => {
     console.log(err);
-    setLoading(false);
     if (!err.response) {
-      throw {title: 'Server connection error', message: 'Server connection fail.'}
+      throw Error({title: 'Server connection error', message: 'Server connection fail.'})
     }
 
     const { title, errors } = err.response.data;
@@ -27,11 +26,9 @@ export const useApiRequestSimple = ({ apiRequest }) => {
   const statelessRequestApi = async (requestArguments) => {    
     setLoading(true);
     return await apiRequest(requestArguments)
-      .then((res) => {        
-        setLoading(false);
-        return res.data;
-      })
-      .catch(err => handleError(err));
+      .then((res) => res.data)
+      .catch(err => handleError(err))
+      .finally(() => setLoading(false))
   }
 
   return { isLoading, statelessRequestApi };

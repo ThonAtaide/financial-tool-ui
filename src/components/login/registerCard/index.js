@@ -1,22 +1,22 @@
 import { Button, CardMedia, Grid, TextField } from '@mui/material';
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import logo from '../../../lotus.webp'
-import { config } from '../../../utils/properties';
 import { useState } from 'react';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
 import { registerNewUser } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
 import { USER_NAME_LOCAL_STORAGE } from '../../../constants';
-
-const { BACKEND_URL } = config;
+import { useGlobalLoading } from '../../loading/global-loading/provider';
 
 const RegisterCard = ({changeToLoginCard}) => {
 
   const [userRegistryData, setUserRegistryData] = useState({});
-  const { isLoading, statelessRequestApi } = useApiRequestSimple({apiRequest: registerNewUser})
+  const { statelessRequestApi } = useApiRequestSimple({apiRequest: registerNewUser})
   const { triggerSuccessPopup } = usePopup();
+  const { startLoading, finishLoading } = useGlobalLoading();
+
   const navigate = useNavigate();
 
   const submitUserRegistry = async (e) => {
@@ -25,6 +25,7 @@ const RegisterCard = ({changeToLoginCard}) => {
       username, password, email, name
     } = userRegistryData;
 
+    startLoading();
     statelessRequestApi({
         username,
         password,
@@ -37,7 +38,8 @@ const RegisterCard = ({changeToLoginCard}) => {
       setTimeout(()=> {
         navigate('/')
       }, 2000);
-    }).catch(err => {});    
+    }).catch(err => {})
+    .finally(() => finishLoading());    
   }
 
   return (

@@ -12,8 +12,12 @@ export const createUserExpenses = ({ description, amount, fixedExpense, datPurch
         .catch(err => handle_axios_response_error(err, unnathorized_redirect));
 }
 
-export const fetchUserExpenses = ({ page = 0, pageSize = 15, from, until, unnathorized_redirect }) => {
-    return axios_client.get(
+export const fetchUserExpenses = async ({ page = 0, pageSize = 15, from, until }) => {
+    console.log('page: ' + page)
+    console.log('pageSize: ' + pageSize)
+    console.log('from: ' + from)
+    console.log('until: ' + until)
+    return await axios_client.get(
         `/${EXPENSES_RESOURCE}?from=${from}&until=${until}`,
         {
             headers: {
@@ -22,31 +26,57 @@ export const fetchUserExpenses = ({ page = 0, pageSize = 15, from, until, unnath
             },
             data: {}
         }
-    ).then(res => res.data)
-        .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+    );
 }
 
-export const fetchUserExpensesGroupedByCategory = ({ from, unnathorized_redirect }) => {
-    return axios_client.get(
+// export const fetchUserExpenses = ({ page = 0, pageSize = 15, from, until, unnathorized_redirect }) => {
+//     return axios_client.get(
+//         `/${EXPENSES_RESOURCE}?from=${from}&until=${until}`,
+//         {
+//             headers: {
+//                 "page": page,
+//                 "pageSize": pageSize
+//             },
+//             data: {}
+//         }
+//     ).then(res => res.data)
+//         .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+// }
+
+export const fetchUserExpensesGroupedByCategory = async ({ from }) => {
+    return await axios_client.get(
         `/${EXPENSES_RESOURCE}/grouped-by-categories?monthRange=${from}`,
         { data: {} }
-    ).then(res => res.data)
-        .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+    );
 }
 
-export const fetchUserExpensesGroupedByFixedOrNot = ({ from, unnathorized_redirect }) => {
-    return axios_client.get(
+// export const fetchUserExpensesGroupedByCategory = ({ from, unnathorized_redirect }) => {
+//     return axios_client.get(
+//         `/${EXPENSES_RESOURCE}/grouped-by-categories?monthRange=${from}`,
+//         { data: {} }
+//     ).then(res => res.data)
+//         .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+// }
+
+export const fetchUserExpensesGroupedByFixedOrNot = async ({ from }) => {
+    return await axios_client.get(
         `/${EXPENSES_RESOURCE}/grouped-by-is-fixed?monthRange=${from}`,
         { data: {} }
 
-    ).then(res => res.data)
-        .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+    );
 }
 
-export const deleteExpense = ({ expenseId, unnathorized_redirect }) => {
-    return axios_client.delete(`/${EXPENSES_RESOURCE}/${expenseId}`, { data: {} })
-        .then(() => { })
-        .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+// export const fetchUserExpensesGroupedByFixedOrNot = ({ from, unnathorized_redirect }) => {
+//     return axios_client.get(
+//         `/${EXPENSES_RESOURCE}/grouped-by-is-fixed?monthRange=${from}`,
+//         { data: {} }
+
+//     ).then(res => res.data)
+//         .catch(err => handle_axios_response_error(err, unnathorized_redirect));
+// }
+
+export const deleteExpense = async (expenseId) => {
+    return await axios_client.delete(`/${EXPENSES_RESOURCE}/${expenseId}`, { data: {} });
 }
 
 export const updateExpense = ({ expenseId, description, amount, fixedExpense, datPurchase, expenseCategory, unnathorized_redirect }) => {

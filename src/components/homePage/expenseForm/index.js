@@ -32,7 +32,7 @@ const defaultMaskOptions = {
   allowLeadingZeroes: false
 }
 
-const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdentifier }) => {
+const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const navigate = useNavigate();
 
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -84,8 +84,9 @@ const ExpenseForm = ({ showAlert, hideAlert, closeExpenseFormModal, expenseIdent
         && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } })) || [];
       setExpenseCategories(categories);
     }).catch(err => {
-      showAlert({type: "error", message: err.errors && err.errors.length > 0 && err.errors[0] || 'Houve um erro. Por favor tente novamente.'})
-      setTimeout(() => hideAlert(), 2000);
+      console.log('deu erro')
+      // showAlert({type: "error", message: err.errors && err.errors.length > 0 && err.errors[0] || 'Houve um erro. Por favor tente novamente.'})
+      // setTimeout(() => hideAlert(), 2000);
     });
   }
 

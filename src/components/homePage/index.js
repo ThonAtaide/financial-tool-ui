@@ -11,29 +11,52 @@ import CustomPieChart from './customPieChart';
 import UserBalancePane from './balance';
 import ExpenseForm from './expenseForm';
 import 'dayjs/locale/pt-br';
+import { useApiRequestWithStateResult } from '../hook/api-request-statefull';
+import { useExpenses } from './expenses-provider';
 
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [userExpensesPage, setUserExpensesPage] = useState(null);
-  const [userExpensesGroupedByCategory, setUserExpensesGroupedByCategory] = useState([]);
-  const [fixedExpenseInfo, setFixedExpenseInfo] = useState({ amountTotal: 0, fixedTotal: 0 });
-  const [userBalance, setUserBalance] = useState(0);
+  const {
+    selectedExpensesMonth,
+    updateSelectedExpensesMonth,
+    updateSelectedCategories,
+    userStatementPageNumber,
+    updateUserStatementPageNumber,
+    userExpensesStatementData,
+    isLoadinguserExpensesStatementData,
+    userExpensesSumByCategoryData,
+    loadUserExpensesSumByCategoryData,
+    userExpensesSumByFixedOrNot,
+    loadUserExpensesGroupedByFixedOrNot,
+    refreshPageData,
+  } = useExpenses();
+  
   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
-  const [reportDateRange, setReportDateRange] = useState(dayjs(new Date()));
-  const [pageNumber, setPageNumber] = useState(0);
-  const [alertData, setAlertData] = useState({ show: false })
 
-  const pageSize = 7;
+  const getUserBalance = () => {
+    return userExpensesSumByCategoryData
+      && userExpensesSumByCategoryData
+      .map(item => item.amount)
+      .reduce((total, item) => total + item);
+  }
 
-  const showAlert = ({ message, type }) => setAlertData({ show: true, type, message });
-  const hideAlert = () => setAlertData({ show: false });
+  const getUserExpensesByCategoryDataFormatted = () => {
+    return userExpensesSumByCategoryData && userExpensesSumByCategoryData.map((item) => {
+      return { id: item.label, label: item.label, value: item.amount }
+    });
+  }
 
-  const selectReportDateRange = (value) => {
-    if (value !== reportDateRange) {
-      setReportDateRange(value);
+  const getUserExpenseOrNotFormatted = () => {
+    if (!userExpensesSumByFixedOrNot) {
+      return { amountTotal: 0, fixedTotal: 0 }
     }
+    const amountTotal = userExpensesSumByFixedOrNot
+      .reduce((total, item) => total + item.amount, 0); 
+    const fixedExpenseAmountTotal = userExpensesSumByFixedOrNot
+    .filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
+    return({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
   }
 
   const selectExpenseToUpdate = (id) => {
@@ -50,101 +73,78 @@ const HomePage = () => {
   }
 
   const closeExpenseGroupModal = (refresh = false) => {
-    if (refresh) pageRefresh();
+    if (refresh) refreshPageData();
     cleanExpenseToUpdate();
     setExpenseModalOpen(false);
   }
 
-  const loadUserExpenses = () => {
-    const until = reportDateRange.startOf('month').format('YYYY-MM-DD')
-    const from = reportDateRange.endOf('month').format('YYYY-MM-DD');
-    fetchUserExpenses({ page: pageNumber, pageSize, from, until, unnathorized_redirect: () => navigate("/login") })
-      .then(response => {
-        setUserExpensesPage(response);
-      })
-      .catch(err => {
-        if (err && err.status === 401) {
-          navigate("/login");
-        }
-      });
-  }
+  // const loadUserExpenses = async () => {
+  //   const until = reportDateRange.startOf('month').format('YYYY-MM-DD')
+  //   const from = reportDateRange.endOf('month').format('YYYY-MM-DD');
+  //   await statefullRequestApi({ page: pageNumber, pageSize, from, until, unnathorized_redirect: () => navigate("/login") })
+  //     .catch(err => { });
 
-  const loadUserExpensesGroupedByCategory = () => {
-    const from = reportDateRange.format('YYYY-MM')
-    fetchUserExpensesGroupedByCategory({ from })
-      .then(response => {
-        var data = [];
-        var balance = 0;
-        if (response) {
-          response.forEach((item) => {
-            balance += item.amount;
-            data.push({ id: item.label, label: item.label, value: item.amount })
-          });
-        }
-        setUserExpensesGroupedByCategory(data);
-        setUserBalance(balance);
-      })
-      .catch(err => {
-        if (err && err.status === 401) {
-          navigate("/login");
-        }
-        console.log('ERRO')
-      });
-  }
+  // }
 
-  const loadUserExpensesGroupedByFixedOrNot = () => {
-    const from = reportDateRange.format('YYYY-MM')
-    fetchUserExpensesGroupedByFixedOrNot({ from })
-      .then(response => {
-        const amountTotal = response.reduce((total, item) => total + item.amount, 0);
-        const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-        setFixedExpenseInfo({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
+  // const loadUserExpensesGroupedByCategory = () => {
+  //   const from = reportDateRange.format('YYYY-MM')
+  //   fetchUserExpensesGroupedByCategory({ from })
+  //     .then(response => {
+  //       var data = [];
+  //       var balance = 0;
+  //       if (response) {
+  //         response.forEach((item) => {
+  //           balance += item.amount;
+  //           data.push({ id: item.label, label: item.label, value: item.amount })
+  //         });
+  //       }
+  //       setUserExpensesGroupedByCategory(data);
+  //       setUserBalance(balance);
+  //     })
+  //     .catch(err => {
+  //       if (err && err.status === 401) {
+  //         navigate("/login");
+  //       }
+  //       console.log('ERRO')
+  //     });
+  // }
 
-      }).catch(err => {
-        if (err && err.status === 401) {
-          Navigate("/login");
-        }
-      });
-  }
+  // const loadUserExpensesGroupedByFixedOrNot = () => {
+  //   const from = reportDateRange.format('YYYY-MM')
+  //   fetchUserExpensesGroupedByFixedOrNot({ from })
+  //     .then(response => {
+  //       const amountTotal = response.reduce((total, item) => total + item.amount, 0);
+  //       const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
+  //       setFixedExpenseInfo({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
 
-  const handlePageChange = (event, value) => {
-    setPageNumber(parseInt(value));
-  }
+  //     }).catch(err => {
+  //       if (err && err.status === 401) {
+  //         Navigate("/login");
+  //       }
+  //     });
+  // }
 
-  const pageRefresh = () => {
-    loadUserExpenses();
-    loadUserExpensesGroupedByCategory();
-    loadUserExpensesGroupedByFixedOrNot();
-  }
+  // const handlePageChange = (event, value) => {
+  //   setPageNumber(parseInt(value));
+  // }
 
-  useEffect(() => {
-    pageRefresh();
-  }, [reportDateRange]);
+  // const pageRefresh = () => {
+  //   loadUserExpenses();
+  //   loadUserExpensesGroupedByCategory();
+  //   loadUserExpensesGroupedByFixedOrNot();
+  // }
 
-  useEffect(() => {
-    loadUserExpenses();
-  }, [pageNumber]);
+  // useEffect(() => {
+  //   pageRefresh();
+  // }, [reportDateRange]);
+
+  // useEffect(() => {
+  //   loadUserExpenses();
+  // }, [pageNumber]);
 
   return (
     <Box >
       <ResponsiveAppBar />
-      {alertData.show && <Box
-        maxWidth
-        sx={{
-          position: 'fixed',
-          display: 'flex',
-          justifyContent: 'center',
-          top: 0,
-          width: '100%'
-        }}
-      >
-        <Alert
-          severity={alertData.type}
-          onClose={() => hideAlert()}
-        >
-          {alertData.message}
-        </Alert>
-      </Box>}
       <Box
         padding={4}
         sx={{
@@ -161,8 +161,8 @@ const HomePage = () => {
           Minhas Despesas
         </Typography>
         <DatePicker
-          onAccept={(e) => selectReportDateRange(e)}
-          value={dayjs(reportDateRange)}
+          onAccept={(e) => updateSelectedExpensesMonth(e)}
+          value={dayjs(selectedExpensesMonth)}
           views={['month', 'year']}
           slots={{
             openPickerIcon: ArrowDropDownIcon
@@ -183,8 +183,8 @@ const HomePage = () => {
           padding={2}
           sx={{ backgroundColor: '#e9f0ff', borderWidth: 'thin', borderColor: '#a3a3a3' }}
           pb={5}
-        >          
-          {userExpensesGroupedByCategory && userExpensesGroupedByCategory.length > 0 && <Grid
+        >
+          {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
             key='pieChart'
             item
             xs={12}
@@ -195,7 +195,7 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <CustomPieChart title="Despesas por categoria" data={userExpensesGroupedByCategory} />
+            <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
           </Grid>}
           <Grid
             key='extrato'
@@ -209,9 +209,7 @@ const HomePage = () => {
             sx={{ textAlign: 'center' }}
           >
             <StatementTable
-              expensesPage={userExpensesPage}
-              changePage={handlePageChange}
-              pageRefresh={pageRefresh}
+              expensesPage={userExpensesStatementData}
               selectExpenseToUpdate={selectExpenseToUpdate}
             />
           </Grid>
@@ -226,10 +224,10 @@ const HomePage = () => {
             pt={5}
             sx={{ textAlign: 'center' }}
           >
-            <UserBalancePane balance={userBalance} fixedExpenseInfo={fixedExpenseInfo} />
+            <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
           </Grid>
-          
-          
+
+
         </Grid>
       </Box>
       <Fab
@@ -246,7 +244,7 @@ const HomePage = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <ExpenseForm showAlert={showAlert} hideAlert={hideAlert} expenseIdentifier={idFromExpenseToUpdate} closeExpenseFormModal={closeExpenseGroupModal} />
+        <ExpenseForm  expenseIdentifier={idFromExpenseToUpdate} closeExpenseFormModal={closeExpenseGroupModal} />
       </Modal>
     </Box>
   );

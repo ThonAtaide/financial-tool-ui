@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useApiRequestSimple } from "../api-request-simple";
 
-export const useRequestWithStateResult = ({ initialValue = null, apiRequest }) => {
+export const useApiRequestWithStateResult = ({ initialValue = null, apiRequest }) => {
 
   const [data, setData] = useState(initialValue);
   const { statelessRequestApi, isLoading } = useApiRequestSimple({apiRequest});  

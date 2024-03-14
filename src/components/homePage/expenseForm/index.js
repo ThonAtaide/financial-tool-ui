@@ -1,12 +1,14 @@
 import { React, useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid, FormHelperText } from '@mui/material';
-import { createUserExpenses, getExpenseById, updateExpense } from '../../../utils/backend-client/expenses';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid, FormHelperText, Backdrop, CircularProgress } from '@mui/material';
+import { createUserExpense, getExpenseById, updateExpense } from '../../../utils/backend-client/expenses';
 import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCategories';
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import dayjs from 'dayjs';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
+import { useApiRequestSimple } from '../../hook/api-request-simple';
+import { useGlobalLoading } from '../../loading/global-loading/provider';
 
 const style = {
   position: 'absolute',
@@ -33,7 +35,6 @@ const defaultMaskOptions = {
 }
 
 const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
-  const navigate = useNavigate();
 
   const [expenseCategories, setExpenseCategories] = useState([]);
   
@@ -43,7 +44,11 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
   
-  const actionIfUnnauthorized = () => navigate("/login");
+  const { isLoading: isLoadingCreateExpense, statelessRequestApi: createExpenseRequest } = useApiRequestSimple({apiRequest: createUserExpense})
+  const { isLoading: isLoadingUpdateExpense, statelessRequestApi: updateExpenseRequest } = useApiRequestSimple({apiRequest: updateExpense})
+  const { isLoading: isLoadingExpenseById, statelessRequestApi: fetchExpenseByIdRequest } = useApiRequestSimple({apiRequest: getExpenseById})
+  const { isLoading: isLoadingExpenseCategories, statelessRequestApi: fetchExpenseCategoriesRequest } = useApiRequestSimple({apiRequest: fetchExpenseCategories})
+    
 
   const validateDescription = () => {    
     if (!description || !description.value ||description.value.length < 2) {
@@ -78,16 +83,12 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   }, []);
 
   const loadExpenseCategories = () => {
-    fetchExpenseCategories({unnathorized_redirect: actionIfUnnauthorized})
+    fetchExpenseCategoriesRequest({})
     .then(response => {
       const categories = (response && response._embedded
         && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } })) || [];
       setExpenseCategories(categories);
-    }).catch(err => {
-      console.log('deu erro')
-      // showAlert({type: "error", message: err.errors && err.errors.length > 0 && err.errors[0] || 'Houve um erro. Por favor tente novamente.'})
-      // setTimeout(() => hideAlert(), 2000);
-    });
+    }).catch(err => {});
   }
 
   const countDecimalDigits = (value) => {
@@ -99,7 +100,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const fetchExpenseByIdAndSetFields = () => {
 
     if (expenseIdentifier) {
-      getExpenseById({expenseId: expenseIdentifier, unnathorized_redirect: actionIfUnnauthorized})
+      fetchExpenseByIdRequest({expenseId: expenseIdentifier})
         .then(response => {
           const decimalDigitsCount = countDecimalDigits(response.amount);
           let value;
@@ -119,7 +120,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
           setIsFixed(response.fixedExpense);
           setSelectedCategoryId({value: response.expenseCategory.id, helperText: null})
           setPurchaseDate(dayjs(response.datPurchase).format('YYYY-MM-DD'));
-        });
+        }).catch(err => {});
     }
   }
 
@@ -132,43 +133,31 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   }
 
   const registerNewExpense = () => {
-    
-    createUserExpenses(
+    createExpenseRequest(
           {
             description: description.value,
             amount: prepareAmountToSave(amount.value),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value,
-            unnathorized_redirect: actionIfUnnauthorized
+            expenseCategory: selectedCategoryId.value
           }
         ).then((res) => closeExpenseFormModal(true))
-        .catch(err => {
-          if (err && err.status === 401) {
-            navigate("/login");
-          }
-        });
+        .catch(err => {});
   }
 
   const updateExistedExpense = () => {
-    updateExpense(
+    updateExpenseRequest(
           {
             expenseId: expenseIdentifier,
             description: description.value,
             amount: prepareAmountToSave(amount.value),
             datPurchase: purchaseDate,
             fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value,
-            unnathorized_redirect: actionIfUnnauthorized
+            expenseCategory: selectedCategoryId.value
           }
         ).then(response => {
-          console.log(response)
           closeExpenseFormModal(true);
-        }).catch(err => {
-          if (err && err.status === 401) {
-            navigate("/login");
-          }
-        });
+        }).catch(err => {});
   }
 
   const handleSubmit = async (e) => {
@@ -186,6 +175,14 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   return (
     <Box sx={style}>
+      <Box sx={{ display: 'flex' }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoadingCreateExpense || isLoadingUpdateExpense || isLoadingExpenseById || isLoadingExpenseCategories}
+      >
+        <CircularProgress color="primary" />
+      </Backdrop>
+    </Box>
       <Typography
         id="modal-modal-title"
         variant="h6"

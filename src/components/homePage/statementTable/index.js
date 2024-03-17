@@ -80,8 +80,8 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
       </Typography>
       <Paper
         sx={{
-          height: '34em',
-          maxHeight: '34em',
+          height: '35em',
+          maxHeight: '35em',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
@@ -125,8 +125,9 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[7]}
+        <TablePagination   
+          sx={{ height: '5em'}}       
+          rowsPerPageOptions={[8]}
           component="div"
           count={(expensesPage && expensesPage.totalElements) || 0}
           rowsPerPage={8}

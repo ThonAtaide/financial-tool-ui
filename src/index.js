@@ -16,12 +16,13 @@ import Popup from './components/popup/component';
 import GlobalLoading from './components/loading/global-loading/component';
 import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 import { ExpensesProvider } from './components/homePage/expenses-provider';
+import { AuthDataProvider } from './components/auth-provider';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <ExpensesProvider children={<Home />}/>,
+    element: <ExpensesProvider children={<Home />} />,
     errorElement: <ErrorPage />,
     // loader: userExpensesLoader
   },
@@ -47,15 +48,17 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
-    <PopupProvider>
-      <GlobalLoadingProvider>
-        <Popup />
-        <GlobalLoading />
-        <RouterProvider router={router} />
-      </GlobalLoadingProvider>
-    </PopupProvider>
-  </LocalizationProvider>
+  <AuthDataProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+      <PopupProvider>
+        <GlobalLoadingProvider>
+          <Popup />
+          <GlobalLoading />
+          <RouterProvider router={router} />
+        </GlobalLoadingProvider>
+      </PopupProvider>
+    </LocalizationProvider>
+  </AuthDataProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

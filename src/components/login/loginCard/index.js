@@ -1,5 +1,5 @@
 import { useState, React } from 'react';
-import { Button, CardMedia, Grid, TextField } from '@mui/material';
+import { Button, CardMedia, Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,16 +9,20 @@ import { sign_in } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
+import { useAuthData } from '../../auth-provider';
+import { Visibility, VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
 
 const LoginCard = ({ changeToRegisterCard }) => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate();
   const { statelessRequestApi } = useApiRequestSimple({apiRequest: sign_in});
-  const { triggerSuccessPopup } = usePopup();
   const { startLoading, finishLoading } = useGlobalLoading();
+  const { triggerSuccessPopup } = usePopup();
+  const { storeUserData } = useAuthData();
+  const navigate = useNavigate();
 
   const onChangeUsername = (value) => {
     setUsername(value)
@@ -28,13 +32,17 @@ const LoginCard = ({ changeToRegisterCard }) => {
     setPassword(value)
   }
 
+  const handlePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     startLoading();
     statelessRequestApi({username, password})
       .then(data => {        
         const { nickname } = data;
-        localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
+        storeUserData({ nickname });
         triggerSuccessPopup({ title: 'Usuário logado com sucesso.', message: `Bem vindo ${nickname}` });
         setTimeout(()=> {
           navigate('/')
@@ -118,9 +126,15 @@ const LoginCard = ({ changeToRegisterCard }) => {
           id="password-field"
           fullWidth
           label="Senha"
-          variant="outlined"
+          variant="outlined"          
+          InputProps={{
+            endAdornment: <IconButton onClick={handlePasswordVisibility}>
+              {showPassword? <VisibilityOutlined />: <VisibilityOffOutlined/>}
+              </IconButton>,
+          }}
+          
           size='small'
-          type='password'
+          type={showPassword? 'text' : 'password'}
           value={password}
           onChange={(e) => onChangePassword(e.target.value)}
         />

@@ -67,14 +67,16 @@ const UserBalancePane = ({ balance, fixedExpenseInfo }) => {
         <Box
           display='flex'
           justifyContent='center'
-          maxWidth
-        >
+          sx={{ width: '100%'}}        >
+          
           <LinearProgress
             variant="determinate" 
             color='primary' 
-            sx={{ height: '1.5em', width: '20em', borderRadius: '4px' }} 
+            sx={{ height: '1.5em', width: '90%', borderRadius: '4px' }} 
             value={value}                        
           />
+          
+          
         </Box>
       </Box>
     );

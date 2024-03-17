@@ -9,6 +9,7 @@ import { registerNewUser } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
 import { USER_NAME_LOCAL_STORAGE } from '../../../constants';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
+import { useAuthData } from '../../auth-provider';
 
 const RegisterCard = ({changeToLoginCard}) => {
 
@@ -16,6 +17,7 @@ const RegisterCard = ({changeToLoginCard}) => {
   const { statelessRequestApi } = useApiRequestSimple({apiRequest: registerNewUser})
   const { triggerSuccessPopup } = usePopup();
   const { startLoading, finishLoading } = useGlobalLoading();
+  const { storeUserData } = useAuthData();
 
   const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ const RegisterCard = ({changeToLoginCard}) => {
         nickname: name
     }).then(data => {      
       const { nickname } = data;
-      localStorage.setItem(USER_NAME_LOCAL_STORAGE, nickname);
+      storeUserData({ nickname });
       triggerSuccessPopup({title: 'Usuário criado com sucesso!', message: `Bem vindo/a ${nickname}`})
       setTimeout(()=> {
         navigate('/')

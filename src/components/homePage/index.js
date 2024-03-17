@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
-import { Box, Grid, Typography, Fab, Modal, Alert } from '@mui/material';
+import { Box, Grid, Typography, Fab, Modal, Alert, Backdrop, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { fetchUserExpenses, fetchUserExpensesGroupedByCategory, fetchUserExpensesGroupedByFixedOrNot } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
@@ -26,8 +26,10 @@ const HomePage = () => {
     userExpensesStatementData,
     isLoadinguserExpensesStatementData,
     userExpensesSumByCategoryData,
+    isLoadingUserExpensesSumByCategoryData,
     loadUserExpensesSumByCategoryData,
     userExpensesSumByFixedOrNot,
+    isLoadingUserExpensesSumByFixedOrNot,
     loadUserExpensesGroupedByFixedOrNot,
     refreshPageData,
   } = useExpenses();
@@ -36,15 +38,16 @@ const HomePage = () => {
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
 
   const getUserBalance = () => {
-    return userExpensesSumByCategoryData
+    return userExpensesSumByCategoryData 
+      && userExpensesSumByCategoryData.length > 0
       && userExpensesSumByCategoryData
       .map(item => item.amount)
-      .reduce((total, item) => total + item);
+      .reduce((total, item) => total + item) || 0;
   }
 
   const getUserExpensesByCategoryDataFormatted = () => {
     return userExpensesSumByCategoryData && userExpensesSumByCategoryData.map((item) => {
-      return { id: item.label, label: item.label, value: item.amount }
+      return { id: item.identifier, label: item.label, value: item.amount }
     });
   }
 
@@ -78,73 +81,17 @@ const HomePage = () => {
     setExpenseModalOpen(false);
   }
 
-  // const loadUserExpenses = async () => {
-  //   const until = reportDateRange.startOf('month').format('YYYY-MM-DD')
-  //   const from = reportDateRange.endOf('month').format('YYYY-MM-DD');
-  //   await statefullRequestApi({ page: pageNumber, pageSize, from, until, unnathorized_redirect: () => navigate("/login") })
-  //     .catch(err => { });
-
-  // }
-
-  // const loadUserExpensesGroupedByCategory = () => {
-  //   const from = reportDateRange.format('YYYY-MM')
-  //   fetchUserExpensesGroupedByCategory({ from })
-  //     .then(response => {
-  //       var data = [];
-  //       var balance = 0;
-  //       if (response) {
-  //         response.forEach((item) => {
-  //           balance += item.amount;
-  //           data.push({ id: item.label, label: item.label, value: item.amount })
-  //         });
-  //       }
-  //       setUserExpensesGroupedByCategory(data);
-  //       setUserBalance(balance);
-  //     })
-  //     .catch(err => {
-  //       if (err && err.status === 401) {
-  //         navigate("/login");
-  //       }
-  //       console.log('ERRO')
-  //     });
-  // }
-
-  // const loadUserExpensesGroupedByFixedOrNot = () => {
-  //   const from = reportDateRange.format('YYYY-MM')
-  //   fetchUserExpensesGroupedByFixedOrNot({ from })
-  //     .then(response => {
-  //       const amountTotal = response.reduce((total, item) => total + item.amount, 0);
-  //       const fixedExpenseAmountTotal = response.filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-  //       setFixedExpenseInfo({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
-
-  //     }).catch(err => {
-  //       if (err && err.status === 401) {
-  //         Navigate("/login");
-  //       }
-  //     });
-  // }
-
-  // const handlePageChange = (event, value) => {
-  //   setPageNumber(parseInt(value));
-  // }
-
-  // const pageRefresh = () => {
-  //   loadUserExpenses();
-  //   loadUserExpensesGroupedByCategory();
-  //   loadUserExpensesGroupedByFixedOrNot();
-  // }
-
-  // useEffect(() => {
-  //   pageRefresh();
-  // }, [reportDateRange]);
-
-  // useEffect(() => {
-  //   loadUserExpenses();
-  // }, [pageNumber]);
+  
 
   return (
     <Box >
       <ResponsiveAppBar />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoadinguserExpensesStatementData || isLoadingUserExpensesSumByCategoryData || isLoadingUserExpensesSumByFixedOrNot}
+      >
+        <CircularProgress color="primary" />
+      </Backdrop>
       <Box
         padding={4}
         sx={{
@@ -169,8 +116,7 @@ const HomePage = () => {
           }}
         />
       </Box>
-      <Box
-        maxWidth
+      <Box        
         display='flex'
         justifyContent='center'
         padding={4}
@@ -197,7 +143,7 @@ const HomePage = () => {
           >
             <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
           </Grid>}
-          <Grid
+          {userExpensesStatementData && <Grid
             key='extrato'
             item
             xs={12}
@@ -212,8 +158,8 @@ const HomePage = () => {
               expensesPage={userExpensesStatementData}
               selectExpenseToUpdate={selectExpenseToUpdate}
             />
-          </Grid>
-          <Grid
+          </Grid>}
+          {userExpensesSumByFixedOrNot && <Grid
             key='balance'
             item
             xs={12}
@@ -225,26 +171,30 @@ const HomePage = () => {
             sx={{ textAlign: 'center' }}
           >
             <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
-          </Grid>
-
-
+          </Grid>}
         </Grid>
       </Box>
       <Fab
         color="primary"
         aria-label="add"
         onClick={createNewExpense}
-        sx={{ position: 'fixed', bottom: 16, right: 16, height: '6rem', width: '6rem' }}>
+        sx={{ position: 'fixed', bottom: 16, right: 16, height: '6rem', width: '6rem' }}
+      >
         <AddIcon sx={{ height: '3rem', width: '3rem' }} />
       </Fab>
 
       <Modal
         open={isExpenseModalOpen}
         onClose={closeExpenseGroupModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        aria-labelledby="modal-expense-register"
+        aria-describedby="modal-form-to-register-or-edit-user-expenses"
       >
-        <ExpenseForm  expenseIdentifier={idFromExpenseToUpdate} closeExpenseFormModal={closeExpenseGroupModal} />
+        <>
+        <ExpenseForm  
+          expenseIdentifier={idFromExpenseToUpdate} 
+          closeExpenseFormModal={closeExpenseGroupModal} 
+          />
+          </>
       </Modal>
     </Box>
   );

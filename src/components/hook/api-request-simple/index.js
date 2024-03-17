@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { usePopup } from "../../popup/provider";
+import { useAuthData } from "../../auth-provider";
 
 export const useApiRequestSimple = ({ apiRequest }) => {
   
   const [isLoading, setLoading] = useState(false);
   const { triggerErrorPopup } = usePopup();
   const navigate = useNavigate();
+  const { clearUserData } = useAuthData();
 
   const handleError = (err) => {
     console.log(err);
@@ -17,7 +19,8 @@ export const useApiRequestSimple = ({ apiRequest }) => {
     const { title, errors } = err.response.data;
     triggerErrorPopup({ title, message: errors[0] })
     
-    if (err.response.status === 401) {      
+    if (err.response.status === 401) {    
+      clearUserData();  
       navigate('/login');
     }
     throw err;

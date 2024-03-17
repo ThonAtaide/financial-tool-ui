@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 const ExpensesContext = createContext({});
 
 export const ExpensesProvider = ({ children }) => {
-  const statementTablePageSize = 7;
+  const statementTablePageSize = 8;
   const [userStatementPageNumber, setUserStatementPageNumber] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedExpensesMonth, setSelectedExpensesMonth] = useState(dayjs(new Date()));
@@ -31,7 +31,13 @@ export const ExpensesProvider = ({ children }) => {
 
   useEffect(() => {
     refreshPageData();
+    setUserStatementPageNumber(0);
+    setSelectedCategories([]);
   }, [selectedExpensesMonth]);
+
+  useEffect(() => {
+    loadUserExpensesStatementData();
+  }, [selectedCategories]);
 
   useEffect(() => {
     loadUserExpensesStatementData();
@@ -44,10 +50,11 @@ export const ExpensesProvider = ({ children }) => {
   }
 
   const updateSelectedCategories = (category) => {
-    if (selectedCategories.include(category)) {
-      setSelectedCategories(selectedCategories.map(item => item !== category))
+    if (selectedCategories.map(item => item.id).includes(category.id)) {
+      setSelectedCategories(selectedCategories.filter(item => item.id !== category.id))
     } else {
-      selectedCategories.push(category);
+      console.log('Entrei 2')
+      setSelectedCategories([...selectedCategories, category])
     }
   }
 
@@ -58,7 +65,7 @@ export const ExpensesProvider = ({ children }) => {
   const loadUserExpensesStatementData = () => {
     const until = selectedExpensesMonth.startOf('month').format('YYYY-MM-DD')
     const from = selectedExpensesMonth.endOf('month').format('YYYY-MM-DD');
-    requestUserExpensesStatement({ page: userStatementPageNumber, pageSize: statementTablePageSize, from, until })
+    requestUserExpensesStatement({ page: userStatementPageNumber, pageSize: statementTablePageSize, from, until, selectedCategories })
       .catch(err => { });
   }
 
@@ -83,6 +90,7 @@ export const ExpensesProvider = ({ children }) => {
   return (
     <ExpensesContext.Provider
       value={{
+        selectedCategories,
         selectedExpensesMonth,
         updateSelectedExpensesMonth,
         updateSelectedCategories,
@@ -91,8 +99,10 @@ export const ExpensesProvider = ({ children }) => {
         userExpensesStatementData,
         isLoadinguserExpensesStatementData,
         userExpensesSumByCategoryData,
+        isLoadingUserExpensesSumByCategoryData,
         loadUserExpensesSumByCategoryData,
         userExpensesSumByFixedOrNot,
+        isLoadingUserExpensesSumByFixedOrNot,
         loadUserExpensesGroupedByFixedOrNot,
         refreshPageData,
       }}

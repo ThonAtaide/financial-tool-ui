@@ -3,7 +3,6 @@ import { usePopup } from '../provider'
 import { Alert, AlertTitle, Box } from '@mui/material';
 
 const Popup = () => {
-  console.log('loop')
   const { value, clearPopup } = usePopup();
   const {
     show,
@@ -29,6 +28,7 @@ const Popup = () => {
         position: 'fixed',
         display: 'flex',
         justifyContent: 'center',
+        textAlign: 'center',
         top: 0,
         width: '100%'
       }}

@@ -11,45 +11,49 @@ import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { USER_NAME_LOCAL_STORAGE } from '../../constants';
 import { logout } from '../../utils/backend-client/authentication';
 import { Alert } from '@mui/material';
+import { useApiRequestSimple } from '../hook/api-request-simple';
+import { useGlobalLoading } from '../loading/global-loading/provider';
+import { useAuthData } from '../auth-provider';
 
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [logged_user_name, setLoggedUserName] = useState(null);
   const [alertData, setAlertData] = useState({ show: false, type: null, message: null });
+  const { statelessRequestApi: logoutRequest } = useApiRequestSimple({apiRequest: logout});
+  const { startLoading, finishLoading } = useGlobalLoading();
+  const { userData, clearUserData } = useAuthData();
 
   const navigate = useNavigate();
 
   const logoutUser = async () => {
-    console.log("chmando logout")
-    try {
-      await logout({});
-      localStorage.clear();
-      navigate("/login")
-    } catch (err) {
-      showAlert({type: 'error', message: err.errors[0]});
-      localStorage.clear();
-      navigate("/login");
-    }
+    startLoading();
+    logoutRequest()
+      .then(res => {
+        clearUserData();
+        navigate('/login')
+      })
+      .catch(err => {})
+      .finally(()=> finishLoading());   
   }
 
   const pages = ['Grupos', 'Contas', 'Despesas'];
   const settings = [
-    { text: 'Perfil', action: async () => logoutUser() },
-    { text: 'Sair', action: async () => logoutUser() }
+    { text: 'Sair', action: () => logoutUser() }
   ];
 
   useEffect(() => {
-    const current_user_name = localStorage.getItem(USER_NAME_LOCAL_STORAGE);
-    if (current_user_name) {
-      setLoggedUserName(current_user_name.split(" ")[0]);
-    } else {
+    if (!useAuthData) {
       logoutUser();
     }
+    // const current_user_name = useAuthData;
+    // if (current_user_name) {
+    //   setLoggedUserName(current_user_name.split(" ")[0]);
+    // } else {
+    //   logoutUser();
+    // }
   }, [])
 
   const handleOpenNavMenu = (event) => {
@@ -63,9 +67,7 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = (action) => {
-    console.log("Menu foi chamado ")
-    console.log(action)
+  const onClickSettingsMenu = (action) => {
     action();
     setAnchorElUser(null);
   };
@@ -191,7 +193,7 @@ function ResponsiveAppBar() {
                 textDecoration: 'none',
               }}
             >
-              {logged_user_name}
+              {userData && userData.nickname.split(" ")[0]}
             </Typography>
           </Box>
 
@@ -215,10 +217,10 @@ function ResponsiveAppBar() {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={() => setAnchorElUser(null)}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting.text} onClick={() => handleCloseUserMenu(setting.action)}>
+                <MenuItem key={setting.text} onClick={() => onClickSettingsMenu(setting.action)}>
                   <Typography textAlign="center">{setting.text}</Typography>
                 </MenuItem>
               ))}

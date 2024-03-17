@@ -38,8 +38,8 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   const [expenseCategories, setExpenseCategories] = useState([]);
   
-  const [description, setDescription] = useState({value: null, helperText: null});
-  const [amount, setAmount] = useState({value: null, helperText: null});
+  const [description, setDescription] = useState({value: '', helperText: null});
+  const [amount, setAmount] = useState({value: '', helperText: null});
   const [selectedCategoryId, setSelectedCategoryId] = useState({value: 999999, helperText: null});
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
@@ -208,7 +208,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             label="Descrição da despesa"
             variant="standard"
             size='small'
-            InputLabelProps={{ shrink: description.value }}
+            InputLabelProps={{ shrink: description.value && description.value !== ''? true:false }}
           />
         </Box>
         <Grid
@@ -226,7 +226,7 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
               onChange={(e) => setAmount({value: e.target.value.substring(2), helperText: null})}
               mask={currencyMask}
               inputMode='numeric'
-              InputLabelProps={{ shrink: amount.value }}
+              InputLabelProps={{ shrink: amount.value && amount.value !== ''? true:false }}
               render={(innerRef, props) => (
                 <TextField
                   {...props}

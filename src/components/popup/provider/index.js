@@ -23,7 +23,6 @@ export const PopupProvider = ({ children }) => {
       title,
       message
     }) => {
-      console.log('calling error pop up')
       triggerPopup({severity: 'error', title, message})
     }
    

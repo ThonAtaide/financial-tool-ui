@@ -11,6 +11,7 @@ import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import dayjs from 'dayjs';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import { deleteExpense } from '../../../utils/backend-client/expenses';
 import { useNavigate } from "react-router-dom";
 import { useExpenses } from '../expenses-provider';
@@ -53,14 +54,14 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
       <Box display="flex">
         <Tooltip title="Editar">
           <IconButton onClick={() => updateExpense(id)}>
-            <ModeEditOutlineOutlinedIcon sx={{ cursor: 'pointer' }} />
+            <ModeEditOutlineOutlinedIcon  />
           </IconButton>
         </Tooltip>
         <Tooltip title="Remover">
           <IconButton onClick={() => removeExpense(id)}>
-            <DeleteOutlinedIcon sx={{ cursor: 'pointer' }} />
+            <DeleteOutlinedIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip>        
       </Box>
     )
   }
@@ -78,10 +79,9 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
         Despesas
       </Typography>
       <Paper
-        maxWidth
         sx={{
-          height: '32em',
-          maxHeight: '32em',
+          height: '34em',
+          maxHeight: '34em',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
@@ -106,9 +106,10 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
               {expensesPage && expensesPage.content
                 .map((row) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                      {columns.map((column) => {
+                    <TableRow sx={{backgroundColor: row.fixedExpense?'lightyellow':'inherit'}} hover role="checkbox" tabIndex={-1} key={row.id}>
+                      {columns.map((column) => {                        
                         let value = row[column.id];
+                        let isFixed = row['fixedExpense'];
                         if (column.id === 'expenseCategory') {
                           value = value.name
                         };
@@ -128,8 +129,8 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
           rowsPerPageOptions={[7]}
           component="div"
           count={(expensesPage && expensesPage.totalElements) || 0}
-          rowsPerPage={7}
-          page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber}
+          rowsPerPage={8}
+          page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber || 0}
           onPageChange={(e, newPage) => updateUserStatementPageNumber(newPage)}
         />
       </Paper>

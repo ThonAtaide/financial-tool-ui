@@ -19,10 +19,11 @@ export const createUserExpense = async ({ description, amount, fixedExpense, dat
 //         .catch(err => handle_axios_response_error(err, unnathorized_redirect));
 // }
 
-export const fetchUserExpenses = async ({ page = 0, pageSize = 15, from, until }) => {
-    
+export const fetchUserExpenses = async ({ page = 0, pageSize = 15, from, until, selectedCategories = [] }) => {
+    const categories = selectedCategories && selectedCategories.length > 0 && selectedCategories.map(item => item.id).toString() || []
+    console.log(categories);
     return await axios_client.get(
-        `/${EXPENSES_RESOURCE}?from=${from}&until=${until}`,
+        `/${EXPENSES_RESOURCE}?from=${from}&until=${until}&categories=${categories}`,
         {
             headers: {
                 "page": page,

@@ -79,9 +79,7 @@ const HomePage = () => {
     if (refresh) refreshPageData();
     cleanExpenseToUpdate();
     setExpenseModalOpen(false);
-  }
-
-  
+  }  
 
   return (
     <Box >
@@ -113,7 +111,7 @@ const HomePage = () => {
           views={['month', 'year']}
           slots={{
             openPickerIcon: ArrowDropDownIcon
-          }}
+          }}          
         />
       </Box>
       <Box        

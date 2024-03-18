@@ -66,7 +66,7 @@ export const ExpensesProvider = ({ children }) => {
     const until = selectedExpensesMonth.startOf('month').format('YYYY-MM-DD')
     const from = selectedExpensesMonth.endOf('month').format('YYYY-MM-DD');
     requestUserExpensesStatement({ page: userStatementPageNumber, pageSize: statementTablePageSize, from, until, selectedCategories })
-      .catch(err => { });
+      .catch(err => {});
   }
 
   const loadUserExpensesSumByCategoryData = () => {

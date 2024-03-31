@@ -3,7 +3,7 @@ const PROD_PROPERTIES = {
 }
 
 const DEV_PROPERTIES = {
-    BACKEND_URL: 'https://164.68.122.5:443'
+    BACKEND_URL: 'https://kathon.click/api'
 }
 
 export const config = process.env.NODE_ENV === 'development' ? DEV_PROPERTIES : PROD_PROPERTIES;

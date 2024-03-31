@@ -53,9 +53,9 @@ export const ExpensesProvider = ({ children }) => {
     if (selectedCategories.map(item => item.id).includes(category.id)) {
       setSelectedCategories(selectedCategories.filter(item => item.id !== category.id))
     } else {
-      console.log('Entrei 2')
       setSelectedCategories([...selectedCategories, category])
     }
+    updateUserStatementPageNumber(0);
   }
 
   const updateUserStatementPageNumber = (pageNumber) => {

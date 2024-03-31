@@ -1,16 +1,15 @@
 import { useState, React } from 'react';
-import { Button, CardMedia, Grid, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Button, CardMedia, Grid, IconButton, TextField } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import logo from '../../../lotus.webp'
-import { USER_NAME_LOCAL_STORAGE } from '../../../constants/index'
+import logo from '../../../lotus.webp';
 import { sign_in } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
 import { useAuthData } from '../../auth-provider';
-import { Visibility, VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
+import {  VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
 
 const LoginCard = ({ changeToRegisterCard }) => {
 
@@ -70,7 +69,7 @@ const LoginCard = ({ changeToRegisterCard }) => {
         />
       </Box>
       <Typography
-        variant='h5'
+        variant='h4'
         sx={{
           fontFamily: 'var(--bs-font-sans-serif)',
           fontWeight: '600',
@@ -81,14 +80,14 @@ const LoginCard = ({ changeToRegisterCard }) => {
         Kathon Finanças
       </Typography>
       <Box
-        mt={5}
+        mt={4}
         sx={{
           display: 'flex',
           justifyContent: 'center'
         }}
       >
         <Typography
-          variant='body1'
+          variant='h6'
           sx={{
             fontFamily: 'var(--bs-font-sans-serif)',
             color: 'inherit',
@@ -149,7 +148,7 @@ const LoginCard = ({ changeToRegisterCard }) => {
         <Button variant="contained" size='small' fullWidth type='submit'>Entrar</Button>
       </Box>
       <Box
-        mt={2}
+        mt={3}
         sx={{
           display: 'flex',
           justifyContent: 'center'
@@ -158,9 +157,10 @@ const LoginCard = ({ changeToRegisterCard }) => {
         <a href='#'>Esqueceu a senha?</a>
       </Box>
       <Box
-        mt={4}
+        mt={3}
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row'}, 
           justifyContent: 'center',
           alignItems: 'center'
         }}
@@ -170,15 +170,16 @@ const LoginCard = ({ changeToRegisterCard }) => {
           sx={{
             fontFamily: 'var(--bs-font-sans-serif)',
             color: 'inherit',
-            textAlign: 'center'
+            textAlign: 'center',
+            padding: '0 1rem 0 1rem'           
           }}
         >
           Não possui conta?
-        </Typography>
+        </Typography>        
         <Link to={`/register`}>
           <Button
             variant="outlined"
-            sx={{ color: 'red', marginLeft: '1rem', borderColor: 'red', textTransform: 'none' }}
+            sx={{ color: 'red', borderColor: 'red', textTransform: 'none' }}
             onClick={() => changeToRegisterCard()}
           >
             Registre-se

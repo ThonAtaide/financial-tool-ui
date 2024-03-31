@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
-import { Box, Grid, Typography, Fab, Modal, Alert, Backdrop, CircularProgress } from '@mui/material';
+import { Box, Grid, Typography, Fab, Modal, Alert, Backdrop, CircularProgress, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { fetchUserExpenses, fetchUserExpensesGroupedByCategory, fetchUserExpensesGroupedByFixedOrNot } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
@@ -33,16 +33,16 @@ const HomePage = () => {
     loadUserExpensesGroupedByFixedOrNot,
     refreshPageData,
   } = useExpenses();
-  
+
   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
 
   const getUserBalance = () => {
-    return userExpensesSumByCategoryData 
+    return userExpensesSumByCategoryData
       && userExpensesSumByCategoryData.length > 0
       && userExpensesSumByCategoryData
-      .map(item => item.amount)
-      .reduce((total, item) => total + item) || 0;
+        .map(item => item.amount)
+        .reduce((total, item) => total + item) || 0;
   }
 
   const getUserExpensesByCategoryDataFormatted = () => {
@@ -56,10 +56,10 @@ const HomePage = () => {
       return { amountTotal: 0, fixedTotal: 0 }
     }
     const amountTotal = userExpensesSumByFixedOrNot
-      .reduce((total, item) => total + item.amount, 0); 
+      .reduce((total, item) => total + item.amount, 0);
     const fixedExpenseAmountTotal = userExpensesSumByFixedOrNot
-    .filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-    return({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
+      .filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
+    return ({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
   }
 
   const selectExpenseToUpdate = (id) => {
@@ -79,7 +79,7 @@ const HomePage = () => {
     if (refresh) refreshPageData();
     cleanExpenseToUpdate();
     setExpenseModalOpen(false);
-  }  
+  }
 
   return (
     <Box >
@@ -111,66 +111,69 @@ const HomePage = () => {
           views={['month', 'year']}
           slots={{
             openPickerIcon: ArrowDropDownIcon
-          }}          
+          }}
         />
       </Box>
-      <Box        
+      <Box
         display='flex'
         justifyContent='center'
         padding={4}
       >
-        <Grid
-          container
-          spacing={2}
-          border='solid'
-          borderRadius={2}
-          padding={2}
-          sx={{ backgroundColor: '#e9f0ff', borderWidth: 'thin', borderColor: '#a3a3a3' }}
-          pb={5}
+        <Paper
+          square={false}
+          elevation={6}
+          sx={{ backgroundColor: '#e9f0ff', width: '97%' }}
         >
-          {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
-            key='pieChart'
-            item
-            xs={12}
-            sm={12}
-            md={6}
-            lg={6}
-            xl={4}
-            pt={5}
-            sx={{ textAlign: 'center' }}
+          <Grid
+            container
+            sx={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0, 1rem 0 1rem' }}
+            pb={5}
           >
-            <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
-          </Grid>}
-          {userExpensesStatementData && <Grid
-            key='extrato'
-            item
-            xs={12}
-            sm={12}
-            md={6}
-            lg={6}
-            xl={4}
-            pt={5}
-            sx={{ textAlign: 'center' }}
-          >
-            <StatementTable
-              expensesPage={userExpensesStatementData}
-              selectExpenseToUpdate={selectExpenseToUpdate}
-            />
-          </Grid>}
-          {userExpensesSumByFixedOrNot && <Grid
-            key='balance'
-            item
-            xs={12}
-            sm={12}
-            md={6}
-            lg={6}
-            xl={4}
-            pt={5}
-            sx={{ textAlign: 'center' }}
-          >
-            <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
-          </Grid>}
-        </Grid>
+            {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
+              key='pieChart'
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={6}
+              xl={4}
+              pt={5}
+              sx={{ textAlign: 'center' }}
+            >
+              <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
+            </Grid>}
+            {userExpensesStatementData && <Grid
+              key='extrato'
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={6}
+              xl={4}
+              pt={5}
+              sx={{ textAlign: 'center' }}
+            >
+              <StatementTable
+                expensesPage={userExpensesStatementData}
+                selectExpenseToUpdate={selectExpenseToUpdate}
+              />
+            </Grid>}
+            {userExpensesSumByFixedOrNot && <Grid
+              key='balance'
+              item
+              xs={12}
+              sm={12}
+              md={6}
+              lg={6}
+              xl={4}
+              pt={5}
+              sx={{ textAlign: 'center' }}
+            >
+              <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
+            </Grid>}
+          </Grid>
+        </Paper>
+
       </Box>
       <Fab
         color="primary"
@@ -188,11 +191,11 @@ const HomePage = () => {
         aria-describedby="modal-form-to-register-or-edit-user-expenses"
       >
         <>
-        <ExpenseForm  
-          expenseIdentifier={idFromExpenseToUpdate} 
-          closeExpenseFormModal={closeExpenseGroupModal} 
+          <ExpenseForm
+            expenseIdentifier={idFromExpenseToUpdate}
+            closeExpenseFormModal={closeExpenseGroupModal}
           />
-          </>
+        </>
       </Modal>
     </Box>
   );

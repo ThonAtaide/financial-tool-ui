@@ -28,7 +28,7 @@ const CustomPieChart = ({ title, data }) => {
     return selectedCategories
       && selectedCategories.length > 0
       && selectedCategories.map(item =>
-        <Tooltip          
+        <Tooltip
           title={item.formattedValue
           }
           placement='top'
@@ -51,10 +51,10 @@ const CustomPieChart = ({ title, data }) => {
 
   const handleClick = (event, item, pieArc) => {
     console.log(pieArc);
-    updateSelectedCategories({ 
-      id: pieArc.id, 
-      label: pieArc.label, 
-      color: pieArc.color, 
+    updateSelectedCategories({
+      id: pieArc.id,
+      label: pieArc.label,
+      color: pieArc.color,
       formattedValue: pieArc.formattedValue
     });
   };
@@ -65,13 +65,13 @@ const CustomPieChart = ({ title, data }) => {
         variant='h5'
         sx={{
           fontFamily: 'var(--bs-font-sans-serif)',
-          fontWeight: '600'
+          fontWeight: '600',
+          textAlign: 'center'
         }}
         mb={5}
       >
         {title}
       </Typography>
-
       <PieChart
         {...pieParams}
         colors={colors}
@@ -98,6 +98,8 @@ const CustomPieChart = ({ title, data }) => {
         }}
       />
       {categoriesChips()}
+
+
     </Box>
 
   );

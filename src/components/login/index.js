@@ -24,7 +24,6 @@ const LoginPage = ({ showRegisterForm = false }) => {
       maxWidth={false}
     >
       <Box
-        justifyContent="center"
         sx={{
           marginTop: '2rem',
           display: 'flex',

@@ -6,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
@@ -19,7 +18,6 @@ import { useAuthData } from '../auth-provider';
 
 
 function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [alertData, setAlertData] = useState({ show: false, type: null, message: null });
   const { statelessRequestApi: logoutRequest } = useApiRequestSimple({apiRequest: logout});
@@ -39,7 +37,6 @@ function ResponsiveAppBar() {
       .finally(()=> finishLoading());   
   }
 
-  const pages = ['Grupos', 'Contas', 'Despesas'];
   const settings = [
     { text: 'Sair', action: () => logoutUser() }
   ];
@@ -48,36 +45,17 @@ function ResponsiveAppBar() {
     if (!useAuthData) {
       logoutUser();
     }
-    // const current_user_name = useAuthData;
-    // if (current_user_name) {
-    //   setLoggedUserName(current_user_name.split(" ")[0]);
-    // } else {
-    //   logoutUser();
-    // }
-  }, [])
+  })
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const onClickSettingsMenu = (action) => {
     action();
     setAnchorElUser(null);
-  };
-
-  const showAlert = ({ type, message }) => {
-    setAlertData({ show: true, type, message });
-    setTimeout(() => {
-      hideAlert()
-    }, 3000)    
-  }
+  };  
 
   const hideAlert = () => {
     setAlertData({ show: false, type: null, message: null });

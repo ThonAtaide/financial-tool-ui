@@ -1,10 +1,8 @@
-import { React, useState } from 'react';
-import { PieArc, PieArcLabel, PieArcPlot, PieChart, PiePlot } from '@mui/x-charts/PieChart';
+import { React } from 'react';
+import { PieChart } from '@mui/x-charts/PieChart';
 import { Box, Chip, Tooltip, Typography } from '@mui/material';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
-import { ChartsTooltip } from '@mui/x-charts';
 import { useExpenses } from '../expenses-provider';
-import { Brightness1 } from '@mui/icons-material';
 
 const pieParams = { height: 500, margin: { right: 0, bottom: 75 } };
 const colors = ['#a6cee3',

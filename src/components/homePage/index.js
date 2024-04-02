@@ -1,9 +1,8 @@
-import { React, useEffect, useState } from 'react';
-import { Navigate, useNavigate } from "react-router-dom";
+import { React, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
-import { Box, Grid, Typography, Fab, Modal, Alert, Backdrop, CircularProgress, Paper } from '@mui/material';
+import { Box, Grid, Typography, Fab, Modal, Backdrop, CircularProgress, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { fetchUserExpenses, fetchUserExpensesGroupedByCategory, fetchUserExpensesGroupedByFixedOrNot } from '../../utils/backend-client/expenses';
 import dayjs from 'dayjs';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
 import StatementTable from './statementTable';
@@ -11,7 +10,6 @@ import CustomPieChart from './customPieChart';
 import UserBalancePane from './balance';
 import ExpenseForm from './expenseForm';
 import 'dayjs/locale/pt-br';
-import { useApiRequestWithStateResult } from '../hook/api-request-statefull';
 import { useExpenses } from './expenses-provider';
 
 
@@ -20,17 +18,12 @@ const HomePage = () => {
   const {
     selectedExpensesMonth,
     updateSelectedExpensesMonth,
-    updateSelectedCategories,
-    userStatementPageNumber,
-    updateUserStatementPageNumber,
     userExpensesStatementData,
     isLoadinguserExpensesStatementData,
     userExpensesSumByCategoryData,
     isLoadingUserExpensesSumByCategoryData,
-    loadUserExpensesSumByCategoryData,
     userExpensesSumByFixedOrNot,
     isLoadingUserExpensesSumByFixedOrNot,
-    loadUserExpensesGroupedByFixedOrNot,
     refreshPageData,
   } = useExpenses();
 
@@ -126,8 +119,9 @@ const HomePage = () => {
         >
           <Grid
             container
-            sx={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0, 1rem 0 1rem' }}
-            pb={5}
+            sx={{ width: '100%', padding: '0, 1rem 0 1rem' }}
+            display="flex"
+            justifyContent="flex-start"
           >
             {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
               key='pieChart'
@@ -137,7 +131,7 @@ const HomePage = () => {
               md={6}
               lg={6}
               xl={4}
-              pt={5}
+              p={3}
               sx={{ textAlign: 'center' }}
             >
               <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
@@ -150,7 +144,7 @@ const HomePage = () => {
               md={6}
               lg={6}
               xl={4}
-              pt={5}
+              p={3}
               sx={{ textAlign: 'center' }}
             >
               <StatementTable
@@ -166,7 +160,7 @@ const HomePage = () => {
               md={6}
               lg={6}
               xl={4}
-              pt={5}
+              p={3}
               sx={{ textAlign: 'center' }}
             >
               <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
@@ -183,6 +177,7 @@ const HomePage = () => {
       >
         <AddIcon sx={{ height: '3rem', width: '3rem' }} />
       </Fab>
+      
 
       <Modal
         open={isExpenseModalOpen}

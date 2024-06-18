@@ -1,6 +1,4 @@
-import { axios_client, handle_axios_response_error, hookCheckAuthentication } from "..";
-import { config } from '../../properties';
-const { BACKEND_URL } = config;
+import { axios_client } from "..";
 
 export const sign_in = async ({ username, password }) => {
   return await axios_client.post(

@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
 import { registerNewUser } from '../../../utils/backend-client/authentication';
 import { usePopup } from '../../popup/provider';
-import { USER_NAME_LOCAL_STORAGE } from '../../../constants';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
 import { useAuthData } from '../../auth-provider';
 

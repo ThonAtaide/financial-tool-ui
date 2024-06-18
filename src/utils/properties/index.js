@@ -1,9 +1,9 @@
 const PROD_PROPERTIES = {
-    BACKEND_URL: process.env.BACKEND_URL
+    BACKEND_URL: 'replace'
 }
 
 const DEV_PROPERTIES = {
-    BACKEND_URL: 'https://kathon.click/api'
+    BACKEND_URL: 'http:localhost:8080'
 }
 
 export const config = process.env.NODE_ENV === 'development' ? DEV_PROPERTIES : PROD_PROPERTIES;

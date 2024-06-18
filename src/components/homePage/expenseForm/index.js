@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid, FormHelperText, Backdrop, CircularProgress } from '@mui/material';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, Grid, FormHelperText, Backdrop, CircularProgress, ListSubheader } from '@mui/material';
 import { createUserExpense, getExpenseById, updateExpense } from '../../../utils/backend-client/expenses';
-import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCategories';
+import { fetchExpenseCategories } from '../../../utils/backend-client/expenseCategories';
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import dayjs from 'dayjs';
@@ -34,43 +34,44 @@ const defaultMaskOptions = {
 const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   const [expenseCategories, setExpenseCategories] = useState([]);
-  
-  const [description, setDescription] = useState({value: '', helperText: null});
-  const [amount, setAmount] = useState({value: '', helperText: null});
-  const [selectedCategoryId, setSelectedCategoryId] = useState({value: 999999, helperText: null});
+
+  const [description, setDescription] = useState({ value: '', helperText: null });
+  const [amount, setAmount] = useState({ value: '', helperText: null });
+  const [selectedCategoryId, setSelectedCategoryId] = useState({ value: '', helperText: null });
+  const [selectedExpenseTypeId, setSelectedExpenseTypeId] = useState({ value: 999999, helperText: null });
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
-  
-  const { isLoading: isLoadingCreateExpense, statelessRequestApi: createExpenseRequest } = useApiRequestSimple({apiRequest: createUserExpense})
-  const { isLoading: isLoadingUpdateExpense, statelessRequestApi: updateExpenseRequest } = useApiRequestSimple({apiRequest: updateExpense})
-  const { isLoading: isLoadingExpenseById, statelessRequestApi: fetchExpenseByIdRequest } = useApiRequestSimple({apiRequest: getExpenseById})
-  const { isLoading: isLoadingExpenseCategories, statelessRequestApi: fetchExpenseCategoriesRequest } = useApiRequestSimple({apiRequest: fetchExpenseCategories})
-    
 
-  const validateDescription = () => {    
-    if (!description || !description.value ||description.value.length < 2) {
-      setDescription({...description, helperText: 'A Descrição deve conter ao menos 2 caracteres.'});
+  const { isLoading: isLoadingCreateExpense, statelessRequestApi: createExpenseRequest } = useApiRequestSimple({ apiRequest: createUserExpense })
+  const { isLoading: isLoadingUpdateExpense, statelessRequestApi: updateExpenseRequest } = useApiRequestSimple({ apiRequest: updateExpense })
+  const { isLoading: isLoadingExpenseById, statelessRequestApi: fetchExpenseByIdRequest } = useApiRequestSimple({ apiRequest: getExpenseById })
+  const { isLoading: isLoadingExpenseCategories, statelessRequestApi: fetchExpenseCategoriesRequest } = useApiRequestSimple({ apiRequest: fetchExpenseCategories })
+
+
+  const validateDescription = () => {
+    if (!description || !description.value || description.value.length < 2) {
+      setDescription({ ...description, helperText: 'A Descrição deve conter ao menos 2 caracteres.' });
       return false;
-    } else if(description && description.value && description.value.length > 50) {
-      setDescription({...description, helperText: 'A Descrição não deve exceder 50 caracteres.'})
+    } else if (description && description.value && description.value.length > 50) {
+      setDescription({ ...description, helperText: 'A Descrição não deve exceder 50 caracteres.' })
       return false;
     }
     return true;
   }
 
-  const validateAmount = () => {    
+  const validateAmount = () => {
     if (!amount || !amount.value) {
-      setAmount({...amount, helperText: 'É preciso informar um valor.'});
+      setAmount({ ...amount, helperText: 'É preciso informar um valor.' });
       return false;
-    } 
+    }
     return true;
   }
 
-  const validateSelectedCategory = () => {    
-    if (!selectedCategoryId || !selectedCategoryId.value || selectedCategoryId.value === 999999) {
-      setSelectedCategoryId({...selectedCategoryId, helperText: 'É preciso selecionar uma categoria.'});
+  const validateSelectedCategory = () => {
+    if (!selectedExpenseTypeId || !selectedExpenseTypeId.value || selectedExpenseTypeId.value === 999999) {
+      setSelectedExpenseTypeId({ ...selectedCategoryId, helperText: 'É preciso selecionar uma categoria.' });
       return false;
-    } 
+    }
     return true;
   }
 
@@ -81,87 +82,104 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
 
   const loadExpenseCategories = () => {
     fetchExpenseCategoriesRequest({})
-    .then(response => {
-      const categories = (response && response._embedded
-        && response._embedded.expenseCategories.map(item => { return { id: item.id, name: item.name } })) || [];
-      setExpenseCategories(categories);
-    }).catch(err => {});
+      .then(response => {
+        const categories = (response
+          && response.content.map(item => { return { id: item.id, name: item.name, expenseTypes: item.expenseTypes } })) || [];
+        setExpenseCategories(categories);
+      }).catch(err => { });
   }
 
   const countDecimalDigits = (value) => {
     const value_as_string = value.toString();
     if (!value_as_string.includes(".")) return 0;
-    return value_as_string.length - (value_as_string.indexOf(".") + 1); 
+    return value_as_string.length - (value_as_string.indexOf(".") + 1);
   }
 
   const fetchExpenseByIdAndSetFields = () => {
 
     if (expenseIdentifier) {
-      fetchExpenseByIdRequest({expenseId: expenseIdentifier})
+      fetchExpenseByIdRequest({ expenseId: expenseIdentifier })
         .then(response => {
           const decimalDigitsCount = countDecimalDigits(response.amount);
           let value;
           if (decimalDigitsCount === 0) {
-            console.log(1);
             value = response.amount.toString().concat(",00")
           } else if (decimalDigitsCount === 1) {
-            console.log(2);
             value = response.amount.toString().replace(".", ",").concat("0")
           } else {
-            console.log(3);
             value = response.amount.toString().replace(".", ",")
           }
-          
-          setDescription({...description, value: response.description});
-          setAmount({value: value, helperText: null});
-          setIsFixed(response.fixedExpense);
-          setSelectedCategoryId({value: response.expenseCategory.id, helperText: null})
+
+          setDescription({ ...description, value: response.description });
+          setAmount({ value: value, helperText: null });
+          setIsFixed(response.isFixedExpense);
+          setSelectedExpenseTypeId({ value: response.expenseType.id, helperText: null })
           setPurchaseDate(dayjs(response.datPurchase).format('YYYY-MM-DD'));
-        }).catch(err => {});
+        }).catch(err => { });
     }
   }
+
+  const renderExpenseTypeMenu = () => {
+    const menuItems = []
+    expenseCategories
+      .forEach(categoryGroup => {
+        menuItems.push(<ListSubheader key={`category-${categoryGroup.id}`} value={`categoryGroup-${categoryGroup.id}`}>{categoryGroup.name}</ListSubheader>)
+        categoryGroup.expenseTypes.forEach(expenseType =>
+          menuItems.push(
+            <MenuItem key={expenseType.id} value={expenseType.id}>
+              {expenseType.name}
+            </MenuItem>
+          )
+        )
+      })
+    return menuItems;
+  }  
+
 
   const currencyMask = createNumberMask({
     ...defaultMaskOptions
   })
 
   const prepareAmountToSave = (value) => {
-    return value && value.replace('R$', '').replaceAll('.', "").replace(',', '.') || "00.00";
+    return (value && value.replace('R$', '').replaceAll('.', "").replace(',', '.')) || "00.00";
   }
 
   const registerNewExpense = () => {
     createExpenseRequest(
-          {
-            description: description.value,
-            amount: prepareAmountToSave(amount.value),
-            datPurchase: purchaseDate,
-            fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value
-          }
-        ).then((res) => closeExpenseFormModal(true))
-        .catch(err => {});
+      {
+        description: description.value,
+        amount: prepareAmountToSave(amount.value),
+        datPurchase: purchaseDate,
+        isFixedExpense: isFixed,
+        expenseType: selectedExpenseTypeId.value
+
+      }
+    ).then((res) => closeExpenseFormModal(true))
+      .catch(err => { });
   }
 
   const updateExistedExpense = () => {
+    console.log(purchaseDate)
     updateExpenseRequest(
-          {
-            expenseId: expenseIdentifier,
-            description: description.value,
-            amount: prepareAmountToSave(amount.value),
-            datPurchase: purchaseDate,
-            fixedExpense: isFixed,
-            expenseCategory: selectedCategoryId.value
-          }
-        ).then(response => {
-          closeExpenseFormModal(true);
-        }).catch(err => {});
+      {
+        expenseId: expenseIdentifier,
+        description: description.value,
+        amount: prepareAmountToSave(amount.value),
+        datPurchase: purchaseDate,
+        isFixedExpense: isFixed,
+        expenseType: selectedExpenseTypeId.value
+      }
+    ).then(response => {
+      console.log(response)
+      closeExpenseFormModal(true);
+    }).catch(err => console.log(err));
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!validateDescription() || !validateAmount() || !validateSelectedCategory()) return;
-    
+    if (!validateDescription() || !validateAmount() || !validateSelectedCategory()) return;
+
     if (!expenseIdentifier) {
       registerNewExpense();
     } else {
@@ -173,13 +191,13 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   return (
     <Box sx={style}>
       <Box sx={{ display: 'flex' }}>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoadingCreateExpense || isLoadingUpdateExpense || isLoadingExpenseById || isLoadingExpenseCategories}
-      >
-        <CircularProgress color="primary" />
-      </Backdrop>
-    </Box>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoadingCreateExpense || isLoadingUpdateExpense || isLoadingExpenseById || isLoadingExpenseCategories}
+        >
+          <CircularProgress color="primary" />
+        </Backdrop>
+      </Box>
       <Typography
         id="modal-modal-title"
         variant="h6"
@@ -200,12 +218,12 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             id="group-name-field"
             fullWidth
             value={description.value}
-            onChange={(e) => setDescription({value: e.target.value, helperText: null})}
+            onChange={(e) => setDescription({ value: e.target.value, helperText: null })}
             helperText={description.helperText}
             label="Descrição da despesa"
             variant="standard"
             size='small'
-            InputLabelProps={{ shrink: description.value && description.value !== ''? true:false }}
+            InputLabelProps={{ shrink: description.value && description.value !== '' ? true : false }}
           />
         </Box>
         <Grid
@@ -220,10 +238,10 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             <MaskedInput
               id="masked-input-amount"
               value={amount.value}
-              onChange={(e) => setAmount({value: e.target.value.substring(2), helperText: null})}
+              onChange={(e) => setAmount({ value: e.target.value.substring(2), helperText: null })}
               mask={currencyMask}
               inputMode='numeric'
-              InputLabelProps={{ shrink: amount.value && amount.value !== ''? true:false }}
+              InputLabelProps={{ shrink: amount.value && amount.value !== '' ? true : false }}
               render={(innerRef, props) => (
                 <TextField
                   {...props}
@@ -262,21 +280,23 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
             item
             xs={6}
           >
+            {console.log(selectedExpenseTypeId)}
             <FormControl variant="standard" sx={{ m: 1, minWidth: 130, margin: 0, padding: 0 }}>
               <InputLabel id="demo-simple-select-standard-label">Categoria</InputLabel>
               <Select
                 labelId="demo-simple-select-standard-label"
                 id="demo-simple-select-standard"
-                value={selectedCategoryId.value}                
-                onChange={(e) => setSelectedCategoryId({value: e.target.value, helperText: null})}
+                value={selectedExpenseTypeId.value}
+                onChange={(e) => setSelectedExpenseTypeId({value: e.target.value, helperText: null})}
                 label="Categoria"
               >
                 <MenuItem value={999999}>
                   <em>Selecionar</em>
                 </MenuItem>
-                {expenseCategories.map(item => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
+                {renderExpenseTypeMenu()}
+               
               </Select>
-              {selectedCategoryId.helperText && <FormHelperText>{selectedCategoryId.helperText}</FormHelperText>}
+              {selectedExpenseTypeId.helperText && <FormHelperText>{selectedExpenseTypeId.helperText}</FormHelperText>}
             </FormControl>
           </Grid>
           <Grid

@@ -1,5 +1,4 @@
 import { React, useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import ResponsiveAppBar from '../header'
 import { Box, Grid, Typography, Fab, Modal, Backdrop, CircularProgress, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -14,7 +13,7 @@ import { useExpenses } from './expenses-provider';
 
 
 const HomePage = () => {
-  const navigate = useNavigate();
+
   const {
     selectedExpensesMonth,
     updateSelectedExpensesMonth,
@@ -31,11 +30,11 @@ const HomePage = () => {
   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
 
   const getUserBalance = () => {
-    return userExpensesSumByCategoryData
+    return (userExpensesSumByCategoryData
       && userExpensesSumByCategoryData.length > 0
       && userExpensesSumByCategoryData
         .map(item => item.amount)
-        .reduce((total, item) => total + item) || 0;
+        .reduce((total, item) => total + item)) || 0;
   }
 
   const getUserExpensesByCategoryDataFormatted = () => {

@@ -10,18 +10,18 @@ export const useApiRequestSimple = ({ apiRequest }) => {
   const navigate = useNavigate();
   const { clearUserData } = useAuthData();
 
-  const handleError = (err) => {    
+  const handleError = (err) => {
+    console.log(`Erro: ${err}`)
+    const { title, errorMessage } = (err && err.response && err.response.data) 
+    || { title: 'Server connection error', errorMessage: 'Server connection fail.'};
     
-    const { title, errors } = err && err.response && err.response.data 
-    || { title: 'Server connection error', errors: ['Server connection fail.']};
-    
-    triggerErrorPopup({ title, message: errors[0] })
+    triggerErrorPopup({ title, message: errorMessage })
     
     if (err.response.status === 401) {    
       clearUserData();  
       navigate('/login');
     }
-    throw err;
+    throw Error(err);
   }
 
   const statelessRequestApi = async (requestArguments) => {    

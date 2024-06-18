@@ -24,7 +24,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <ExpensesProvider children={<Home />} />,
     errorElement: <ErrorPage />,
-    // loader: userExpensesLoader
   },
   {
     path: "/login",
@@ -38,12 +37,6 @@ const router = createBrowserRouter([
     path: "/error",
     element: <ErrorPage />
   },
-  // {
-  //   path: "/dashboard/:groupId",
-  //   element: <DashboardPage />,
-  //   errorElement: <ErrorPage/>,
-  //   loader: expenseGroupLoader
-  // }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

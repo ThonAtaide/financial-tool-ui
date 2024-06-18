@@ -11,16 +11,13 @@ import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import dayjs from 'dayjs';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import { deleteExpense } from '../../../utils/backend-client/expenses';
-import { useNavigate } from "react-router-dom";
 import { useExpenses } from '../expenses-provider';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
 import { useApiRequestSimple } from '../../hook/api-request-simple';
 
 const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
 
-  const navigate = useNavigate();
   const { startLoading, finishLoading } = useGlobalLoading();
   const { statelessRequestApi: deleteExpenseRequest } = useApiRequestSimple({apiRequest: deleteExpense})
 
@@ -32,7 +29,7 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
   const columns = [
     { id: 'description', label: 'Descrição', align: 'center' },
     { id: 'amount', label: 'Valor', align: 'center', format: (value) => `${formatBRLCurrency(value)}` },
-    { id: 'expenseCategory', label: 'Categoria', align: 'center' },
+    { id: 'expenseType', label: 'Categoria', align: 'center' },
     { id: 'datPurchase', label: 'Data', align: 'center', format: (value) => dayjs(value).format('DD/MM/YYYY') },
     { id: 'id', label: '', align: 'center', format: (value) => buildSettingsColumn(value) }
   ];
@@ -103,14 +100,13 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {expensesPage && expensesPage.content
-                .map((row) => {
+              {expensesPage && expensesPage.content &&
+              expensesPage.content.map((row) => {
                   return (
                     <TableRow sx={{backgroundColor: row.fixedExpense?'lightyellow':'inherit'}} hover role="checkbox" tabIndex={-1} key={row.id}>
                       {columns.map((column) => {                        
                         let value = row[column.id];
-                        let isFixed = row['fixedExpense'];
-                        if (column.id === 'expenseCategory') {
+                        if (column.id === 'expenseType') {
                           value = value.name
                         };
                         return (
@@ -129,9 +125,9 @@ const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
           sx={{ height: '5em'}}       
           rowsPerPageOptions={[8]}
           component="div"
-          count={(expensesPage && expensesPage.totalElements) || 0}
+          count={(expensesPage && expensesPage.page && expensesPage.page.totalElements) || 0}
           rowsPerPage={8}
-          page={expensesPage && expensesPage.pageable && expensesPage.pageable.pageNumber || 0}
+          page={(expensesPage && expensesPage.page && expensesPage.page.number) || 0}
           onPageChange={(e, newPage) => updateUserStatementPageNumber(newPage)}
         />
       </Paper>

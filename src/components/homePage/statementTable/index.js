@@ -16,13 +16,13 @@ import { deleteExpense } from '../../../utils/backend-client/expenses';
 import { useNavigate } from "react-router-dom";
 import { useExpenses } from '../expenses-provider';
 import { useGlobalLoading } from '../../loading/global-loading/provider';
-import { useApiRequestSimple } from '../../hook/api-request-simple';
+import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 
 const StatementTable = ({ expensesPage, selectExpenseToUpdate }) => {
 
   const navigate = useNavigate();
   const { startLoading, finishLoading } = useGlobalLoading();
-  const { statelessRequestApi: deleteExpenseRequest } = useApiRequestSimple({apiRequest: deleteExpense})
+  const { statelessRequestApi: deleteExpenseRequest } = useApiRequestStatelessHook({apiRequest: deleteExpense})
 
   const {
     updateUserStatementPageNumber,

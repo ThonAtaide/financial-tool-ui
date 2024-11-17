@@ -3,12 +3,12 @@ import { Container, Grid, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import './style.css'
-import LoginCard from './loginCard'
-import RegisterCard from './registerCard';
+import SignInCard from './sign-in'
+//import RegisterCard from './sign-up';
 
-const LoginPage = ({ showRegisterForm = false }) => {
+const SignPage = () => {
 
-  const [renderLoginCard, setRenderLoginCard] = useState(!showRegisterForm);
+  const [renderLoginCard, setRenderLoginCard] = useState<boolean>(true);
 
   const setToRenderRegisterCard = () => {
     setRenderLoginCard(false)
@@ -84,12 +84,11 @@ const LoginPage = ({ showRegisterForm = false }) => {
                 </Typography>
               </Box>
             </Grid>
-
-            {renderLoginCard ?
+            <SignInCard changeForAnotherView={setToRenderRegisterCard} />
+            {/*renderLoginCard ?
               <LoginCard changeToRegisterCard={setToRenderRegisterCard} /> :
               <RegisterCard changeToLoginCard={setToRenderLoginCard} />
-            }
-
+            */}
           </Grid>
         </Paper>
 
@@ -98,4 +97,4 @@ const LoginPage = ({ showRegisterForm = false }) => {
   )
 }
 
-export default LoginPage;
+export default SignPage;

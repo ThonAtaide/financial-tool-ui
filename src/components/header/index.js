@@ -12,7 +12,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { logout } from '../../utils/backend-client/authentication';
 import { Alert } from '@mui/material';
-import { useApiRequestSimple } from '../hook/api-request-simple';
+import { useApiRequestStatelessHook } from '../hook/api-request-simple';
 import { useGlobalLoading } from '../loading/global-loading/provider';
 import { useAuthData } from '../auth-provider';
 
@@ -20,7 +20,7 @@ import { useAuthData } from '../auth-provider';
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [alertData, setAlertData] = useState({ show: false, type: null, message: null });
-  const { statelessRequestApi: logoutRequest } = useApiRequestSimple({apiRequest: logout});
+  const { statelessRequestApi: logoutRequest } = useApiRequestStatelessHook({apiRequest: logout});
   const { startLoading, finishLoading } = useGlobalLoading();
   const { userData, clearUserData } = useAuthData();
 

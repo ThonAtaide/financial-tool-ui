@@ -1,15 +1,15 @@
 import React from 'react'
-import { useGlobalLoading } from '../provider'
+import { GlobalLoadingContextType, useGlobalLoading } from '../provider'
 import { Backdrop, Box, CircularProgress } from '@mui/material';
 
-const GlobalLoading = () => {
-  const { value, finishLoading } = useGlobalLoading();
+const GlobalLoading: React.FC<{}> = () => {
+  const { isLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
 
-  return (value &&
+  return (isLoading &&
     <Box sx={{ display: 'flex' }}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={value}
+        open={isLoading}
         onClick={finishLoading}
       >
         <CircularProgress color="primary" />

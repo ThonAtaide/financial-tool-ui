@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
-import { usePopup } from '../provider'
+import { PopupProviderContextType, usePopup } from '../provider'
 import { Alert, AlertTitle, Box } from '@mui/material';
 
-const Popup = () => {
-  const { value, clearPopup } = usePopup();
+const Popup: React.FC<{}> = ({}) => {
+  const { show, data, clearPopup } = usePopup() as PopupProviderContextType;
   const {
-    show,
     severity,
     title,
     message
-  } = value || {};
+  } = data || {};
 
   useEffect(() => {    
     if (show) {
@@ -19,11 +18,10 @@ const Popup = () => {
       return () => clearTimeout(timer)
     }
     
-  }, [value])
+  }, [show])
 
   return (show &&
-    <Box
-      maxWidth
+    <Box      
       sx={{
         position: 'fixed',
         display: 'flex',

@@ -5,7 +5,7 @@ import {fetchExpenseCategories}  from '../../../utils/backend-client/expenseCate
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import dayjs from 'dayjs';
-import { useApiRequestSimple } from '../../hook/api-request-simple';
+import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 
 const style = {
   position: 'absolute',
@@ -41,10 +41,10 @@ const ExpenseForm = ({ closeExpenseFormModal, expenseIdentifier }) => {
   const [purchaseDate, setPurchaseDate] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [isFixed, setIsFixed] = useState(false);
   
-  const { isLoading: isLoadingCreateExpense, statelessRequestApi: createExpenseRequest } = useApiRequestSimple({apiRequest: createUserExpense})
-  const { isLoading: isLoadingUpdateExpense, statelessRequestApi: updateExpenseRequest } = useApiRequestSimple({apiRequest: updateExpense})
-  const { isLoading: isLoadingExpenseById, statelessRequestApi: fetchExpenseByIdRequest } = useApiRequestSimple({apiRequest: getExpenseById})
-  const { isLoading: isLoadingExpenseCategories, statelessRequestApi: fetchExpenseCategoriesRequest } = useApiRequestSimple({apiRequest: fetchExpenseCategories})
+  const { isLoading: isLoadingCreateExpense, statelessRequestApi: createExpenseRequest } = useApiRequestStatelessHook({apiRequest: createUserExpense})
+  const { isLoading: isLoadingUpdateExpense, statelessRequestApi: updateExpenseRequest } = useApiRequestStatelessHook({apiRequest: updateExpense})
+  const { isLoading: isLoadingExpenseById, statelessRequestApi: fetchExpenseByIdRequest } = useApiRequestStatelessHook({apiRequest: getExpenseById})
+  const { isLoading: isLoadingExpenseCategories, statelessRequestApi: fetchExpenseCategoriesRequest } = useApiRequestStatelessHook({apiRequest: fetchExpenseCategories})
     
 
   const validateDescription = () => {    

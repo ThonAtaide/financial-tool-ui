@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { PopupProviderContextType, usePopup } from '../provider'
 import { Alert, AlertTitle, Box } from '@mui/material';
 
-const Popup: React.FC<{}> = ({}) => {
+const Popup: React.FC = () => {
   const { show, data, clearPopup } = usePopup() as PopupProviderContextType;
   const {
     severity,

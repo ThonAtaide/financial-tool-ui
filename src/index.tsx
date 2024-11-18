@@ -22,14 +22,18 @@ import { PopupProvider } from './components/popup/provider';
 // import Popup from './components/popup/component';
 // import GlobalLoading from './components/loading/global-loading/component';
 // import { AuthDataProvider } from './components/auth-provider';
-import SignPage from './components/sign';
+import SignPage, { SignViewEnum } from './components/sign';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
 const router = createBrowserRouter([
   {
-    path: "/login",
-    element: <SignPage />,
+    path: "/sign-in",
+    element: <SignPage selectedView={SignViewEnum.SIGN_IN} />,
+  },
+  {
+    path: "/sign-up",
+    element: <SignPage selectedView={SignViewEnum.SIGN_UP} />,
   },
 ]);
 

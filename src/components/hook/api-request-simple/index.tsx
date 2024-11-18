@@ -21,7 +21,7 @@ export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {
     const {
       title,
       errorMessage
-    } =( err && err.response && err.response.data as ErrorResponse)
+    } = (err && err.response && err.response.data as ErrorResponse)
       || { title: 'Houve um erro inesperado.', errorMessage: 'Não foi possível atender a requisição. Por favor tente novamente.' };
 
     displayErrorPopup(title, errorMessage)
@@ -31,7 +31,6 @@ export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {
       navigate('/login');
     }
     throw err;
-
   }
 
   const executeStatelessRequest = async (requestArguments: T): Promise<U> => {

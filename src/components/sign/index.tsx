@@ -4,18 +4,24 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import './style.css'
 import SignInCard from './sign-in'
-//import RegisterCard from './sign-up';
+import SignUpCard from './sign-up';
 
-const SignPage = () => {
+export enum SignViewEnum {
+  SIGN_IN,
+  SIGN_UP
+}
 
-  const [renderLoginCard, setRenderLoginCard] = useState<boolean>(true);
+export interface SignPageManagement {
+  selectedView: SignViewEnum
+}
 
-  const setToRenderRegisterCard = () => {
-    setRenderLoginCard(false)
-  }
+const SignPage: React.FC<SignPageManagement> = (signPageManagement: SignPageManagement) => {
 
-  const setToRenderLoginCard = () => {
-    setRenderLoginCard(true)
+  const renderCard = () => {
+    switch(signPageManagement.selectedView) {
+      case SignViewEnum.SIGN_IN: return <SignInCard />
+      case SignViewEnum.SIGN_UP: return <SignUpCard />
+    }
   }
 
   return (
@@ -84,11 +90,8 @@ const SignPage = () => {
                 </Typography>
               </Box>
             </Grid>
-            <SignInCard changeForAnotherView={setToRenderRegisterCard} />
-            {/*renderLoginCard ?
-              <LoginCard changeToRegisterCard={setToRenderRegisterCard} /> :
-              <RegisterCard changeToLoginCard={setToRenderLoginCard} />
-            */}
+            { renderCard() }
+           
           </Grid>
         </Paper>
 

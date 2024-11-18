@@ -14,11 +14,7 @@ import { VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
 import { InputFieldData } from '../../types';
 import { validateEmailWithRegex } from '../../../utils/validations';
 
-interface SignManagement {
-    changeForAnotherView: Function
-}
-
-const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) => {
+const SignInCard: React.FC<{}> = ({}) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [emailFieldData, setEmailFieldData] = useState<InputFieldData<string>>({ data: '', validationMessage: null });
     const [passwordFieldData, setPasswordFieldData] = useState<InputFieldData<string>>({ data: '', validationMessage: null });
@@ -42,7 +38,7 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
 
     const validateEmail = () => {
         if (!validateEmailWithRegex(emailFieldData.data)) {
-            setEmailFieldData({ ...emailFieldData, validationMessage: 'E-mail inválido' });
+            setEmailFieldData({ ...emailFieldData, validationMessage: 'Este E-mail não é válido' });
             return false;
         }
         return true;
@@ -52,7 +48,7 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
         if (!passwordFieldData.data
             || (passwordFieldData.data && passwordFieldData.data.length < 6)
         ) {
-            setPasswordFieldData({ ...passwordFieldData, validationMessage: 'Senha inválida' });
+            setPasswordFieldData({ ...passwordFieldData, validationMessage: 'Senha fora dos padrões' });
             return false;
         }
         return true;
@@ -62,7 +58,7 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
         event.preventDefault();
         if (!validateEmail() || !validatePassword()) {
             return
-        } 
+        }
         startLoading();
         executeStatelessRequest({ email: emailFieldData.data!, password: passwordFieldData.data! })
             .then(data => {
@@ -204,11 +200,10 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
                 >
                     Não possui conta?
                 </Typography>
-                <Link to={`/register`}>
+                <Link to={'/sign-up'}>
                     <Button
                         variant="outlined"
                         sx={{ color: 'red', borderColor: 'red', textTransform: 'none' }}
-                        onClick={() => signManagement.changeForAnotherView()}
                     >
                         Registre-se
                     </Button>

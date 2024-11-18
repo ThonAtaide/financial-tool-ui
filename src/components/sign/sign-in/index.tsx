@@ -11,15 +11,17 @@ import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { useGlobalLoading, GlobalLoadingContextType } from '../../loading/global-loading/provider';
 import { AuthenticatedUserDataContextType, useAuthData } from '../../auth-provider';
 import { VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
+import { InputFieldData } from '../../types';
+import { validateEmailWithRegex } from '../../../utils/validations';
 
 interface SignManagement {
     changeForAnotherView: Function
 }
 
 const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) => {
-    const [showPassword, setShowPassword] = useState<Boolean>(false);
-    const [email, setUsername] = useState<string | null>('');
-    const [password, setPassword] = useState<string | null>('');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [emailFieldData, setEmailFieldData] = useState<InputFieldData<string>>({ data: '', validationMessage: null });
+    const [passwordFieldData, setPasswordFieldData] = useState<InputFieldData<string>>({ data: '', validationMessage: null });
 
     const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
     const { setAuthenticatedUserData } = useAuthData() as AuthenticatedUserDataContextType;
@@ -28,36 +30,54 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
     const { executeStatelessRequest } = useApiRequestStatelessHook({ apiRequest: sign_in });
     const navigate = useNavigate();
 
-    const onChangeUsername = (newValue: string) => {
-        setUsername(newValue)
+    const onChangeEmail = (newValue: string) => {
+        setEmailFieldData({ data: newValue, validationMessage: null })
     }
 
     const onChangePassword = (newValue: string) => {
-        setPassword(newValue)
+        setPasswordFieldData({ data: newValue, validationMessage: null })
     }
 
-    const handlePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+    const handlePasswordVisibility = () => setShowPassword(!showPassword);
+
+    const validateEmail = () => {
+        if (!validateEmailWithRegex(emailFieldData.data)) {
+            setEmailFieldData({ ...emailFieldData, validationMessage: 'E-mail inválido' });
+            return false;
+        }
+        return true;
+    }
+
+    const validatePassword = () => {
+        if (!passwordFieldData.data
+            || (passwordFieldData.data && passwordFieldData.data.length < 6)
+        ) {
+            setPasswordFieldData({ ...passwordFieldData, validationMessage: 'Senha inválida' });
+            return false;
+        }
+        return true;
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (!validateEmail() || !validatePassword()) {
+            return
+        } 
         startLoading();
-        //TODO alterar os tipos de dados para armazenarem mensagem de aviso
-        executeStatelessRequest({ email: email!, password: password! })
-             .then(data => {
-                 const { nickname } = data;
-                 setAuthenticatedUserData({ name: nickname });
-                 displaySuccessPopup('Usuário logado com sucesso.', `Bem vindo ${nickname}`);
-                 setTimeout(() => {
-                     navigate('/')
-                 }, 2000);
-             }).catch(err => {
-                 setTimeout(() => {
-                     setUsername('');
-                     setPassword('');
-                 }, 500)
-             }).finally(() => finishLoading());
+        executeStatelessRequest({ email: emailFieldData.data!, password: passwordFieldData.data! })
+            .then(data => {
+                const { nickname } = data;
+                setAuthenticatedUserData({ name: nickname });
+                displaySuccessPopup('Usuário logado com sucesso.', `Bem vindo ${nickname}`);
+                setTimeout(() => {
+                    navigate('/')
+                }, 2000);
+            }).catch(err => {
+                setTimeout(() => {
+                    onChangeEmail('');
+                    onChangePassword('');
+                }, 500)
+            }).finally(() => finishLoading());
     }
 
     return (
@@ -116,8 +136,9 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
                     label="Email"
                     variant="outlined"
                     size='small'
-                    value={email}
-                    onChange={(e) => onChangeUsername(e.target.value)}
+                    value={emailFieldData.data}
+                    helperText={emailFieldData.validationMessage}
+                    onChange={(e) => onChangeEmail(e.target.value)}
                 />
             </Box>
             <Box
@@ -132,6 +153,7 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
                     fullWidth
                     label="Senha"
                     variant="outlined"
+                    helperText={passwordFieldData.validationMessage}
                     InputProps={{
                         endAdornment: <IconButton onClick={handlePasswordVisibility}>
                             {showPassword ? <VisibilityOutlined /> : <VisibilityOffOutlined />}
@@ -140,7 +162,7 @@ const SignInCard: React.FC<SignManagement> = (signManagement: SignManagement) =>
 
                     size='small'
                     type={showPassword ? 'text' : 'password'}
-                    value={password}
+                    value={passwordFieldData.data}
                     onChange={(e) => onChangePassword(e.target.value)}
                 />
             </Box>

@@ -5,10 +5,12 @@ import Typography from '@mui/material/Typography';
 import './style.css'
 import SignInCard from './sign-in'
 import SignUpCard from './sign-up';
+import PasswordRecovery from './forgotPassword';
 
 export enum SignViewEnum {
   SIGN_IN,
-  SIGN_UP
+  SIGN_UP,
+  PASSWORD_RECOVERY
 }
 
 export interface SignPageManagement {
@@ -21,6 +23,7 @@ const SignPage: React.FC<SignPageManagement> = (signPageManagement: SignPageMana
     switch(signPageManagement.selectedView) {
       case SignViewEnum.SIGN_IN: return <SignInCard />
       case SignViewEnum.SIGN_UP: return <SignUpCard />
+      case SignViewEnum.PASSWORD_RECOVERY: return <PasswordRecovery />
     }
   }
 

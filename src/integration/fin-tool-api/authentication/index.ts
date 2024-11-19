@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { axios_client } from "..";
 import { LoginResponse, UserRegisterResponse } from "../responses";
-import { LoginRequest, UserRegisterRequest } from "../requests";
+import { LoginRequest, PasswordRecoveryRequest, UserRegisterRequest } from "../requests";
 
 export const sign_in = async (requestBody: LoginRequest): Promise<AxiosResponse<LoginResponse>> => 
   await axios_client.post<LoginResponse>(
@@ -20,3 +20,9 @@ export const registerNewUser = async (requestBody: UserRegisterRequest): Promise
     '/user/sign-up',
     JSON.stringify(requestBody)
   );
+
+  export const recovery_password = async (requestBody: PasswordRecoveryRequest): Promise<AxiosResponse<void>> => 
+    await axios_client.post<void>(
+      '/user/forgotten-password',
+      JSON.stringify(requestBody)
+    );

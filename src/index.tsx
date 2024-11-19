@@ -35,6 +35,10 @@ const router = createBrowserRouter([
     path: "/sign-up",
     element: <SignPage selectedView={SignViewEnum.SIGN_UP} />,
   },
+  {
+    path: "/password-recovery",
+    element: <SignPage selectedView={SignViewEnum.PASSWORD_RECOVERY} />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

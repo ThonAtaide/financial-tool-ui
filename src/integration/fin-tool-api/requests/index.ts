@@ -14,3 +14,6 @@ export interface ExpenseTypeResponse {
     name: string
 }
 
+export interface PasswordRecoveryRequest {
+    email: string
+}

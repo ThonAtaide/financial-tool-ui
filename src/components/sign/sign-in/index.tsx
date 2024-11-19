@@ -1,10 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
-import { Button, CardMedia, Grid, IconButton, TextField } from '@mui/material';
+import { Button, IconButton, TextField } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import logo from '../../../resources/lotus.webp';
 import { sign_in } from '../../../integration/fin-tool-api/authentication'
 import { PopupProviderContextType, usePopup } from '../../popup/provider';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
@@ -13,6 +12,7 @@ import { AuthenticatedUserDataContextType, useAuthData } from '../../auth-provid
 import { VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
 import { InputFieldData } from '../../types';
 import { validateEmailWithRegex } from '../../../utils/validations';
+import SignContentPane from '../userContentPane';
 
 const SignInCard: React.FC<{}> = ({}) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -54,7 +54,7 @@ const SignInCard: React.FC<{}> = ({}) => {
         return true;
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.MouseEvent<HTMLButtonElement | MouseEvent>) => {
         event.preventDefault();
         if (!validateEmail() || !validatePassword()) {
             return
@@ -77,48 +77,7 @@ const SignInCard: React.FC<{}> = ({}) => {
     }
 
     return (
-        <Grid item xs={12} md={6} component="form" onSubmit={(e) => handleSubmit(e)}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}
-            >
-                <CardMedia
-                    component="img"
-                    image={logo}
-                    sx={{ width: '12rem' }}
-                />
-            </Box>
-            <Typography
-                variant='h4'
-                sx={{
-                    fontFamily: 'var(--bs-font-sans-serif)',
-                    fontWeight: '600',
-                    color: 'inherit',
-                    textAlign: 'center'
-                }}
-            >
-                Kathon Finanças
-            </Typography>
-            <Box
-                mt={4}
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}
-            >
-                <Typography
-                    variant='h6'
-                    sx={{
-                        fontFamily: 'var(--bs-font-sans-serif)',
-                        color: 'inherit',
-                        textAlign: 'center'
-                    }}
-                >
-                    Acesse sua conta
-                </Typography>
-            </Box>
+        <SignContentPane title='Acesse sua conta'>
             <Box
                 mt={5}
                 sx={{
@@ -169,7 +128,7 @@ const SignInCard: React.FC<{}> = ({}) => {
                     justifyContent: 'center'
                 }}
             >
-                <Button variant="contained" size='small' fullWidth type='submit'>Entrar</Button>
+                <Button variant="contained" size='small' fullWidth onClick={handleSubmit}>Entrar</Button>
             </Box>
             <Box
                 mt={3}
@@ -209,7 +168,8 @@ const SignInCard: React.FC<{}> = ({}) => {
                     </Button>
                 </Link>
             </Box>
-        </Grid>
+        
+        </SignContentPane>
     )
 }
 

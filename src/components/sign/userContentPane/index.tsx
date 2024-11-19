@@ -7,7 +7,7 @@ export interface ContentPaneI {
     title: string
 }
 
-const ContentPane: React.FC<ContentPaneI> = (contentPane: ContentPaneI) => {
+const SignContentPane: React.FC<ContentPaneI> = (contentPane: ContentPaneI) => {
     return (
         <Grid item xs={12} md={6}>
             <Box
@@ -56,4 +56,4 @@ const ContentPane: React.FC<ContentPaneI> = (contentPane: ContentPaneI) => {
     );
 }
 
-export default ContentPane;
+export default SignContentPane;

@@ -1,8 +1,7 @@
-import { Button, CardMedia, Grid, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import logo from '../../../resources/lotus.webp';
 import { useState } from 'react';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { registerNewUser } from '../../../integration/fin-tool-api/authentication';
@@ -11,6 +10,7 @@ import { GlobalLoadingContextType, useGlobalLoading } from '../../loading/global
 import { AuthenticatedUserDataContextType, useAuthData } from '../../auth-provider';
 import { InputFieldData } from '../../types';
 import { validateEmailWithRegex } from '../../../utils/validations';
+import SignContentPane from '../userContentPane';
 
 const SignUpCard: React.FC<{}> = ({ }) => {
 
@@ -74,48 +74,7 @@ const SignUpCard: React.FC<{}> = ({ }) => {
   const onNameChange = (value: string) => setNameFieldData({ data: value, validationMessage: null })
 
   return (
-    <Grid item xs={12} md={6} >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <CardMedia
-          component="img"
-          image={logo}
-          sx={{ width: '12rem' }}
-        />
-      </Box>
-      <Typography
-        variant='h5'
-        sx={{
-          fontFamily: 'var(--bs-font-sans-serif)',
-          fontWeight: '600',
-          color: 'inherit',
-          textAlign: 'center'
-        }}
-      >
-        Kathon Finanças
-      </Typography>
-      <Box
-        mt={4}
-        sx={{
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <Typography
-          variant='body1'
-          sx={{
-            fontFamily: 'var(--bs-font-sans-serif)',
-            color: 'inherit',
-            textAlign: 'center'
-          }}
-        >
-          Registre-se e controle suas despesas
-        </Typography>
-      </Box>
+    <SignContentPane title='Registre-se e controle suas despesas'>
       <Box
         mt={3}
         sx={{
@@ -215,7 +174,7 @@ const SignUpCard: React.FC<{}> = ({ }) => {
           </Button>
         </Link>
       </Box>
-    </Grid>
+    </SignContentPane>
   )
 }
 

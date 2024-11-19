@@ -1,12 +1,12 @@
-import React, { FormEvent, useState } from 'react';
-import logo from '../../../resources/lotus.webp';
-import { Grid, Box, CardMedia, Typography, TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, TextField, Button } from '@mui/material';
 import { InputFieldData } from '../../types';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { recovery_password } from '../../../integration/fin-tool-api/authentication';
 import { useNavigate } from 'react-router-dom';
 import { GlobalLoadingContextType, useGlobalLoading } from '../../loading/global-loading/provider';
 import { PopupProviderContextType, usePopup } from '../../popup/provider';
+import SignContentPane from '../userContentPane';
 
 const PasswordRecovery: React.FC<{}> = ({ }) => {
     const { executeStatelessRequest } = useApiRequestStatelessHook({ apiRequest: recovery_password });
@@ -17,60 +17,19 @@ const PasswordRecovery: React.FC<{}> = ({ }) => {
 
     const onChangeEmail = (value: string) => setEmailFieldData({ data: value, validationMessage: null })
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.MouseEvent<HTMLButtonElement | MouseEvent>) => {
         event.preventDefault();
         startLoading();
         executeStatelessRequest({ email: emailFieldData.data })
-        .then(() => {
-            displaySuccessPopup('Recuperação de senha solicitada', 'Por favor verifique sua caixa de email e lixo eletrônico.')
-            setTimeout(() => navigate('/sign-in'), 2000);
-        }).catch(err => console.log(err))
-        .finally(() => finishLoading());
+            .then(() => {
+                displaySuccessPopup('Recuperação de senha solicitada', 'Por favor verifique sua caixa de email e lixo eletrônico.')
+                setTimeout(() => navigate('/sign-in'), 2000);
+            }).catch(err => console.log(err))
+            .finally(() => finishLoading());
     }
 
     return (
-        <Grid item xs={12} md={6} component="form" onSubmit={handleSubmit}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}
-            >
-                <CardMedia
-                    component="img"
-                    image={logo}
-                    sx={{ width: '12rem' }}
-                />
-            </Box>
-            <Typography
-                variant='h4'
-                sx={{
-                    fontFamily: 'var(--bs-font-sans-serif)',
-                    fontWeight: '600',
-                    color: 'inherit',
-                    textAlign: 'center'
-                }}
-            >
-                Kathon Finanças
-            </Typography>
-            <Box
-                mt={4}
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}
-            >
-                <Typography
-                    variant='h6'
-                    sx={{
-                        fontFamily: 'var(--bs-font-sans-serif)',
-                        color: 'inherit',
-                        textAlign: 'center'
-                    }}
-                >
-                    Recuperação de acesso
-                </Typography>
-            </Box>
+        <SignContentPane title='Recuperar senha'>
             <Box
                 mt={5}
                 sx={{
@@ -96,9 +55,9 @@ const PasswordRecovery: React.FC<{}> = ({ }) => {
                     justifyContent: 'center'
                 }}
             >
-                <Button variant="contained" size='small' fullWidth type='submit'>Redefinir senha</Button>
+                <Button variant="contained" size='small' fullWidth onClick={handleSubmit}>Redefinir senha</Button>
             </Box>
-        </Grid>
+        </SignContentPane>
     )
 }
 

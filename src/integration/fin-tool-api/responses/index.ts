@@ -15,6 +15,10 @@ export interface UserRegisterResponse {
     nickname: string
 }
 
+export interface RecoveryPasswordInfoResponse {
+    nickname: string
+}
+
 export interface ExpenseTypeResponse {
     id: number,
     name: string

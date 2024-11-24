@@ -17,3 +17,8 @@ export interface ExpenseTypeResponse {
 export interface PasswordRecoveryRequest {
     email: string
 }
+
+export interface PasswordResetRequest {
+    token: string,
+    password: string,
+}

@@ -36,8 +36,12 @@ const router = createBrowserRouter([
     element: <SignPage selectedView={SignViewEnum.SIGN_UP} />,
   },
   {
-    path: "/password-recovery",
+    path: "/forgot-password",
     element: <SignPage selectedView={SignViewEnum.PASSWORD_RECOVERY} />,
+  },
+  {
+    path: "/reset-password",
+    element: <SignPage selectedView={SignViewEnum.PASSWORD_RESET} />,
   },
 ]);
 

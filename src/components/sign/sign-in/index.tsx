@@ -137,7 +137,7 @@ const SignInCard: React.FC<{}> = ({}) => {
                     justifyContent: 'center'
                 }}
             >
-                <a href='/password-recovery'>Esqueceu a senha?</a>
+                <a href='/forgot-password'>Esqueceu a senha?</a>
             </Box>
             <Box
                 mt={3}

@@ -28,7 +28,7 @@ export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {
 
     if (err.response && err.response.status === 401) {
       clearAuthenticatedUserData();
-      navigate('/login');
+      navigate('/sign-in');
     }
     throw err;
   }

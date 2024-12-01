@@ -44,6 +44,20 @@ export interface ExpenseResponse {
     expenseType: ExpenseTypeResponse
 }
 
+export interface SheetMember {
+    id: number,
+    name: string,
+}
+
+export interface SheetResponse {
+    id: number,
+    name: string,
+    createdBy: string,
+    members: Array<SheetMember>,
+    datCreation: Date,
+    datUpdate: Date    
+}
+
 export interface PageableResponse<T> {
     totalPages: number,
     totalElements: number,

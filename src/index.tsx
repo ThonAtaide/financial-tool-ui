@@ -27,6 +27,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import MainComponent from './components/contentPages';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { DarkThemeProvider } from './components/theme-provider';
+import SheetListPanel from './components/contentPages/listSheets';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <MainComponent />,
+    element: <SheetListPanel />,
   },
 ]);
 

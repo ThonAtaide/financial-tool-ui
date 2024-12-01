@@ -21,7 +21,7 @@ import { logout, refresh_user_data } from '../../integration/fin-tool-api/authen
 
 export interface ChildrenDataI {
   selectedSheetId?: number | null
-  children?: React.FC<{}> | null
+  children?: React.ReactNode | null
 }
 
 const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
@@ -96,7 +96,7 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ top: 'auto' }} color="primary">
+      <AppBar position="static" sx={{ top: 'auto' }} color="primary">
         <Container >
           <Toolbar disableGutters sx={{ justifyContent: 'center' }}>
             <Typography

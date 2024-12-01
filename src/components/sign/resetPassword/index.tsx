@@ -3,7 +3,7 @@ import { Box, TextField, Button } from '@mui/material';
 import { InputFieldData } from '../../types';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { reset_password, retrieve_recovery_password_info } from '../../../integration/fin-tool-api/authentication';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { GlobalLoadingContextType, useGlobalLoading } from '../../loading/global-loading/provider';
 import { PopupProviderContextType, usePopup } from '../../popup/provider';
 import SignContentPane from '../userContentPane';

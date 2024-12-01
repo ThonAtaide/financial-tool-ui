@@ -6,7 +6,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ErrorResponse } from "../../../integration/fin-tool-api/responses";
 
 export interface ApiRequestI<T, U> {
-  apiRequest: (input: T) => Promise<AxiosResponse<U>>
+  apiRequest: ((input: T) => Promise<AxiosResponse<U>>) | (() => Promise<AxiosResponse<U>>)
 }
 
 export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {

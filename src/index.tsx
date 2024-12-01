@@ -16,13 +16,17 @@ import { PopupProvider } from './components/popup/provider';
 // import { AuthDataProvider } from './components/auth-provider';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 // import { PopupProvider } from './components/popup/provider';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 // import { PopupProvider } from './components/popup/provider';
 // import Popup from './components/popup/component';
 // import GlobalLoading from './components/loading/global-loading/component';
 // import { AuthDataProvider } from './components/auth-provider';
 import SignPage, { SignViewEnum } from './components/sign';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import MainComponent from './components/contentPages';
+import { createTheme, ThemeProvider } from '@mui/material';
+import { DarkThemeProvider } from './components/theme-provider';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
@@ -43,26 +47,32 @@ const router = createBrowserRouter([
     path: "/reset-password",
     element: <SignPage selectedView={SignViewEnum.PASSWORD_RESET} />,
   },
+  {
+    path: "/",
+    element: <MainComponent />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <AuthDataProvider>
-    {/* <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'> */}
-    <PopupProvider>
-      <GlobalLoadingProvider>
-        <Popup />
-        <GlobalLoading />
-        <RouterProvider
-          future={{
-            v7_startTransition: true,
-          }}
-          router={router}
-        />
-      </GlobalLoadingProvider>
-    </PopupProvider>
-    {/* </LocalizationProvider> */}
-  </AuthDataProvider>
+  <DarkThemeProvider>
+    <AuthDataProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+        <PopupProvider>
+          <GlobalLoadingProvider>
+            <Popup />
+            <GlobalLoading />
+            <RouterProvider
+              future={{
+                v7_startTransition: true,
+              }}
+              router={router}
+            />
+          </GlobalLoadingProvider>
+        </PopupProvider>
+      </LocalizationProvider>
+    </AuthDataProvider>
+  </DarkThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

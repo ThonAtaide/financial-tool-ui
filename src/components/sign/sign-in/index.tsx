@@ -137,7 +137,9 @@ const SignInCard: React.FC<{}> = ({}) => {
                     justifyContent: 'center'
                 }}
             >
-                <a href='/forgot-password'>Esqueceu a senha?</a>
+                <Link to={'/forgot-password'} style={{color: 'white'}}>
+                    Esqueceu a senha?
+                </Link>
             </Box>
             <Box
                 mt={3}
@@ -162,7 +164,7 @@ const SignInCard: React.FC<{}> = ({}) => {
                 <Link to={'/sign-up'}>
                     <Button
                         variant="outlined"
-                        sx={{ color: 'red', borderColor: 'red', textTransform: 'none' }}
+                        sx={{ color: 'white', borderColor: 'white', textTransform: 'none' }}
                     >
                         Registre-se
                     </Button>

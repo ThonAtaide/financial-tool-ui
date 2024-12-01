@@ -168,7 +168,7 @@ const SignUpCard: React.FC<{}> = ({ }) => {
         <Link to={`/sign-in`}>
           <Button
             variant="outlined"
-            sx={{ marginLeft: '1rem', textTransform: 'none' }}
+            sx={{ marginLeft: '1rem', textTransform: 'none', color: 'white', borderColor: 'white' }}
           >
             Entrar
           </Button>

@@ -18,7 +18,9 @@ export const AuthDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setAuthenticatedUserData = (newUserData: UserDataType) => setUserData(newUserData)
 
-  const clearAuthenticatedUserData = () => setUserData(null)
+  const clearAuthenticatedUserData = () => {console.log('Changing user data for null'); 
+    setUserData(null);
+  }
 
   return (
     <AuthenticationDataContext.Provider value={{ userData, setAuthenticatedUserData, clearAuthenticatedUserData }}>

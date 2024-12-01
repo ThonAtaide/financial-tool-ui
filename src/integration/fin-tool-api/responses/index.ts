@@ -15,6 +15,11 @@ export interface UserRegisterResponse {
     nickname: string
 }
 
+export interface UserRefreshResponse {
+    nickname: string,
+    email: string,
+}
+
 export interface RecoveryPasswordInfoResponse {
     nickname: string
 }

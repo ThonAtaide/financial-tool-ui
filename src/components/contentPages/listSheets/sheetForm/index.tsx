@@ -26,8 +26,7 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
             }}
         >
             <DialogTitle textAlign="center">Criar Planilha</DialogTitle>
-            <DialogContent>
-               
+            <DialogContent>               
                 <TextField
                     autoFocus
                     required

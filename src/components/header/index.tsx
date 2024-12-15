@@ -95,7 +95,7 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
   }
 
   return (
-    <>
+    <Box>
       <AppBar position="static" sx={{ top: 'auto' }} color="primary">
         <Container >
           <Toolbar disableGutters sx={{ justifyContent: 'center' }}>
@@ -162,7 +162,7 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
           </Toolbar>
         </Container>
       </AppBar>
-    </>
+    </Box>
   );
 }
 export default ResponsiveAppBar;

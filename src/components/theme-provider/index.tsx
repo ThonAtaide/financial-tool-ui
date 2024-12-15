@@ -9,7 +9,7 @@ const darkTheme = createTheme({
       },
       background: {
         default: '#25292E'
-      },      
+      },   
     },
   });
 

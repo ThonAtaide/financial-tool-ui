@@ -22,3 +22,20 @@ export interface PasswordResetRequest {
     token: string,
     password: string,
 }
+
+export interface ShareSheetRequest {
+    sheetId: number
+}
+
+export interface RetrieveSheetByIdRequest {
+    sheetId: number
+}
+
+export interface CreateSheetRequest {
+    name: string
+}
+
+export interface UpdateSheetRequest {
+    id: number
+    name: string
+}

@@ -24,8 +24,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { AuthDataProvider } from './components/auth-provider';
 import SignPage, { SignViewEnum } from './components/sign';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import MainComponent from './components/contentPages';
-import { createTheme, ThemeProvider } from '@mui/material';
 import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';

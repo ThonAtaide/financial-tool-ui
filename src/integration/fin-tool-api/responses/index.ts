@@ -58,6 +58,10 @@ export interface SheetResponse {
     datUpdate: Date    
 }
 
+export interface ShareSheetResponse {
+    link: string
+}
+
 export interface PageableResponse<T> {
     totalPages: number,
     totalElements: number,

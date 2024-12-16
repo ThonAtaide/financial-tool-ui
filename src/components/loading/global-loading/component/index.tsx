@@ -8,7 +8,7 @@ const GlobalLoading: React.FC<{}> = () => {
   return (isLoading &&
     <Box sx={{ display: 'flex' }}>
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: '#fff', zIndex: 1000 }}
         open={isLoading}
         onClick={finishLoading}
       >

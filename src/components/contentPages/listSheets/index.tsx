@@ -2,99 +2,88 @@ import React, { useEffect, useState } from "react";
 import ResponsiveAppBar from "../../header";
 import { useApiRequestStatelessHook } from "../../hook/api-request-simple";
 import { useGlobalLoading, GlobalLoadingContextType } from "../../loading/global-loading/provider";
-import { fetch_sheets } from "../../../integration/fin-tool-api/sheets";
+import { fetch_sheets, share_sheet } from "../../../integration/fin-tool-api/sheets";
 import { SheetResponse } from "../../../integration/fin-tool-api/responses";
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
+import { Card, CardHeader, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import ShareIcon from '@mui/icons-material/Share';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PersonIcon from '@mui/icons-material/Person';
-import GroupsIcon from '@mui/icons-material/Groups';
 import FabButtonMenu from "../FabButtonMenu";
 import SheetForm from "./sheetForm";
 import AddIcon from '@mui/icons-material/Add';
-import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import NavigationIcon from '@mui/icons-material/Navigation';
+import { makeStyles } from "@mui/styles";
+import clsx from "clsx";
+import { usePopup, PopupProviderContextType } from "../../popup/provider";
 
 
-// const useStyles = makeStyles({
-//     openX: {
-//       transform: "scaleX(1)"
-//     },
-//     closeX: {
-//       transform: "scaleX(-1)"
-//     },
-//     openY: {
-//       transform: "scaleY(1)"
-//     },
-//     closeY: {
-//       transform: "scaleY(-1)"
-//     }
-//   });
-// const useStyles = makeStyles ({
-//     openX: {
-//       transform: "scaleX(1)"
-//     },
-//     closeX: {
-//       transform: "scaleX(-1)"
-//     },
-//     openY: {
-//       transform: "scaleY(1)"
-//     },
-//     closeY: {
-//       transform: "scaleY(-1)"
-//     }
-//   });
+const useStyles = makeStyles(theme => ({
+    open: {
+        transform: "rotate(0.0turn)",
+    },
+    close: {
+        transform: "rotate(0.5turn)",
+    },
+}));
 
 const SheetListPanel: React.FC<{}> = ({ }) => {
 
-    
+    const classes = useStyles();
 
     const [sheets, setSheets] = useState<Array<SheetResponse> | null>(null);
+    const [open, setOpen] = useState<boolean>(false);
     const [selectedSheet, setSelectedSheet] = useState<number | null>(null);
     const [openSheetForm, setOpenSheetForm] = useState<boolean>(false);
     const [anchorElUserSettings, setAnchorElUserSettings] = useState<HTMLButtonElement | null>(null);
     const { executeStatelessRequest: fetchSheets } = useApiRequestStatelessHook({ apiRequest: fetch_sheets });
+    const { executeStatelessRequest: createShareLink } = useApiRequestStatelessHook({ apiRequest: share_sheet });
     const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
-    // const classes = useStyles();
-    useEffect(() => {
-        const retrieveSheets = () => fetchSheets(null)
-            .then(data => setSheets(data.content))
-            .catch(err => console.log(err))
-            .finally(() => finishLoading());
+    const { displaySuccessPopup, displayErrorPopup } = usePopup() as PopupProviderContextType;
+
+    const copyShareLinkToClipBoard = () => {
         startLoading();
-        retrieveSheets();
-    }, [])
-
-    const settings = [
-        { text: 'Excluir', action: () => console.log('removendo') },
-    ];
-
-    const selectSheet = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sheetId: number) => {
-        if (selectedSheet === sheetId) 
-            setSelectedSheet(null);
-        else {
-            setSelectedSheet(sheetId)
-            event.stopPropagation()
-        }
-
-        
-        // setAnchorElUserSettings(event.currentTarget);
+        createShareLink({sheetId: selectedSheet!!})
+        .then(res => {
+            navigator.clipboard.writeText(res.link)
+            displaySuccessPopup("Compartilhamento de Planilha", "Link copiado para área de transferência")        
+        })
+        .catch(err => console.log(err))
+        .finally(() => finishLoading());
     }
 
-    const closeSettingsMenu = () => setAnchorElUserSettings(null);
+    const retrieveSheets = () => {
+        startLoading();
+        fetchSheets(null)
+            .then(data => setSheets(data.content))
+            .catch(err => console.log(err))
+            .finally(() => finishLoading());        
+    }
+
+    useEffect(() => {        
+        retrieveSheets();
+    }, [])    
+
+    const selectSheet = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sheetId: number) => {
+        
+        if (selectedSheet === sheetId) {
+            setSelectedSheet(null);
+            setOpen(false);
+        } else {
+            setOpen(true)
+            setSelectedSheet(sheetId)
+            event.stopPropagation()
+        }        
+    }    
 
     const handleOpenSheetForm = () => setOpenSheetForm(true);
 
-    const handleCloseSheetForm = () => setOpenSheetForm(false);
+    const handleCloseSheetForm = () => {
+        setOpenSheetForm(false);
+        retrieveSheets();
+    }
 
     const renderCard = (sheet: SheetResponse) => {
-        function clsx(arg0: boolean, arg1: any): string | undefined {
-            throw new Error("Function not implemented.");
-        }
 
         return (
             <Grid
@@ -115,7 +104,6 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
                         title={
                             <Tooltip title={`Criado ${new Date(sheet.datCreation).toLocaleDateString()}`}>
                                 <Typography
-                                    // variant="body1"
                                     noWrap
                                     component="a"
                                     href={`/sheet/${sheet.id}`}
@@ -134,12 +122,12 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
                         }
                         action={
                             <IconButton
-                                aria-label="Membros"
-                                onClick={(e) => selectSheet(e, sheet.id)}
-                                // className={clsx(selectedSheet === null && classes.closeX, selectedSheet != null && classes.openX)}
-                            // onClick={(e) => setAnchorElUserSettings(e.currentTarget)}
+                                aria-label="Mais"
+                                onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => selectSheet(e, sheet.id)}
                             >
-                                <ExpandMoreIcon />
+                                <ExpandMoreIcon 
+                                className={clsx(!open && classes.close, open && classes.open)} 
+                                />
                             </IconButton>
                         }
 
@@ -181,12 +169,12 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
                 options: [
                     { label: 'Criar', onClick: handleOpenSheetForm, Icon: AddIcon, color: 'info', show: true },
                     { label: 'Editar', onClick: handleOpenSheetForm, Icon: EditIcon, color: 'info', show: selectedSheet != null },
-                    { label: 'Compartilhar', onClick: handleOpenSheetForm, Icon: ShareIcon, color: 'info', show: selectedSheet != null },
-                    { label: 'Remover', onClick: handleOpenSheetForm, Icon: DeleteIcon, color: 'info', show: selectedSheet != null }
+                    { label: 'Compartilhar', onClick: copyShareLinkToClipBoard, Icon: ShareIcon, color: 'info', show: selectedSheet != null },
+                    // { label: 'Remover', onClick: handleOpenSheetForm, Icon: DeleteIcon, color: 'info', show: selectedSheet != null }
                 ]
             }}
             />
-            <SheetForm open={openSheetForm} handleClose={handleCloseSheetForm} />
+            <SheetForm sheetId={selectedSheet} open={openSheetForm} handleClose={handleCloseSheetForm} />
         </ResponsiveAppBar>
     )
 }

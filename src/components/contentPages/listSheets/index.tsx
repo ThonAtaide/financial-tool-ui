@@ -9,16 +9,16 @@ import { Grid2, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import ShareIcon from '@mui/icons-material/Share';
 import FabButtonMenu from "../FabButtonMenu";
-import SheetForm from "./sheetForm";
+import SheetForm, { SheetFormAction } from "./sheetForm";
 import AddIcon from '@mui/icons-material/Add';
 import { usePopup, PopupProviderContextType } from "../../popup/provider";
 import SheetCard from "./sheetCard";
 
 const SheetListPanel: React.FC<{}> = ({ }) => {
-    
+
     const [sheets, setSheets] = useState<Array<SheetResponse> | null>(null);
     const [selectedSheet, setSelectedSheet] = useState<number | null>(null);
-    const [openSheetForm, setOpenSheetForm] = useState<boolean>(false);  
+    const [sheetFormAction, setSheetFormAction] = useState<SheetFormAction | null>(null);
 
     const { executeStatelessRequest: fetchSheets } = useApiRequestStatelessHook({ apiRequest: fetch_sheets });
     const { executeStatelessRequest: createShareLink } = useApiRequestStatelessHook({ apiRequest: share_sheet });
@@ -54,16 +54,21 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
     ) => {
         if (selectedSheet === sheetId) {
             setSelectedSheet(null);
-        } else {            
-            setSelectedSheet(sheetId)            
+        } else {
+            setSelectedSheet(sheetId)
         }
     }
 
-    const handleOpenSheetForm = () => setOpenSheetForm(true);
+    const handleOpenSheetForm = (action: SheetFormAction) => {
+        console.log(action)
+        setSheetFormAction(action)
+    };
 
-    const handleCloseSheetForm = () => {
-        setOpenSheetForm(false);
-        retrieveSheets();
+    const handleCloseSheetForm = (refresh: Boolean = false) => {
+        setSheetFormAction(null);
+        if(refresh) {
+            retrieveSheets();
+        }
     }
 
     return (
@@ -91,18 +96,27 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
                 display="flex"
                 justifyContent="flex-start"
             >
-                {sheets && sheets.map(item => <SheetCard sheet={item} selectSheet={selectSheet} isSelected={item.id === selectedSheet}/>)}
+                {sheets && sheets.map(item => <SheetCard key={`card-${item.id}`} sheet={item} selectSheet={selectSheet} isSelected={item.id === selectedSheet} />)}
             </Grid2>
             <FabButtonMenu {...{
                 options: [
-                    { label: 'Criar', onClick: handleOpenSheetForm, Icon: AddIcon, color: 'info', show: true },
-                    { label: 'Editar', onClick: handleOpenSheetForm, Icon: EditIcon, color: 'info', show: selectedSheet != null },
+                    { label: 'Criar', onClick: () => handleOpenSheetForm(SheetFormAction.CREATE), Icon: AddIcon, color: 'info', show: true },
+                    { label: 'Editar', onClick: () => handleOpenSheetForm(SheetFormAction.UPDATE), Icon: EditIcon, color: 'info', show: selectedSheet != null },
                     { label: 'Compartilhar', onClick: copyShareLinkToClipBoard, Icon: ShareIcon, color: 'info', show: selectedSheet != null },
                     // { label: 'Remover', onClick: handleOpenSheetForm, Icon: DeleteIcon, color: 'info', show: selectedSheet != null }
                 ]
             }}
             />
-            {openSheetForm && <SheetForm sheetId={selectedSheet} open={openSheetForm} handleClose={handleCloseSheetForm} />}
+            
+            {sheetFormAction !== null &&
+                <SheetForm
+                    sheetId={selectedSheet}
+                    open={sheetFormAction !== null}
+                    handleClose={handleCloseSheetForm}
+                    action={sheetFormAction}
+                />
+            }
+
         </ResponsiveAppBar>
     )
 }

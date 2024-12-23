@@ -4,10 +4,16 @@ import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { GlobalLoadingContextType, useGlobalLoading } from '../../../loading/global-loading/provider';
 import { create_sheet, fetch_sheet_by_id, update_sheet } from '../../../../integration/fin-tool-api/sheets';
 
+export enum SheetFormAction {
+    CREATE,
+    UPDATE,
+}
+
 export interface SheetDataI {
     sheetId?: number | null,
-    handleClose: () => void
-    open: boolean
+    handleClose: (refresh?: Boolean) => void
+    open: boolean,
+    action: SheetFormAction,
 }
 
 const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
@@ -19,7 +25,8 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
     const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
 
     useEffect(() => {
-        if (sheetData.sheetId) {
+        console.log('Abrindo')
+        if (sheetData.action === SheetFormAction.UPDATE && sheetData.sheetId) {
             const findSheet = () => {
                 startLoading();
                 retrieve_sheet({sheetId: sheetData.sheetId!!})
@@ -34,7 +41,7 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
     return (
         <Dialog
             open={sheetData.open}
-            onClose={sheetData.handleClose}
+            onClose={() => sheetData.handleClose()}
             PaperProps={{
                 component: 'form',
                 onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -42,7 +49,7 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                     if (sheetData.sheetId) {                        
                         startLoading();
                         update_existent_sheet({id: sheetData.sheetId, name })
-                            .then(res => sheetData.handleClose())
+                            .then(res => sheetData.handleClose(true))
                             .catch(err => console.log('error'))
                             .finally(() => {
                                 finishLoading();
@@ -50,13 +57,12 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                     } else {
                         startLoading();
                         create_new_sheet({ name })
-                            .then(res => sheetData.handleClose())
+                            .then(res => sheetData.handleClose(true))
                             .catch(err => console.log('error'))
                             .finally(() => {
-                                finishLoading();
+                                finishLoading();                                
                             })
-                    }
-                    
+                    }                    
                 },
             }}
         >
@@ -76,7 +82,7 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={sheetData.handleClose}>Cancelar</Button>
+                <Button onClick={() => sheetData.handleClose()}>Cancelar</Button>
                 <Button type="submit">Salvar</Button>
             </DialogActions>
         </Dialog>

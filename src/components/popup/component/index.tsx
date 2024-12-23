@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { PopupProviderContextType, usePopup } from '../provider'
 import { Alert, AlertTitle, Box } from '@mui/material';
+import zIndex from '@mui/material/styles/zIndex';
 
 const Popup: React.FC = () => {
   const { show, data, clearPopup } = usePopup() as PopupProviderContextType;
@@ -28,7 +29,8 @@ const Popup: React.FC = () => {
         justifyContent: 'center',
         textAlign: 'center',
         top: 0,
-        width: '100%'
+        width: '100%',
+        zIndex: 1000
       }}
     >
       <Alert

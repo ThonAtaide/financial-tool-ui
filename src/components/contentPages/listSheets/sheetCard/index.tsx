@@ -46,7 +46,7 @@ const SheetCard: React.FC<SheetCardParams> = (sheetCardParams: SheetCardParams) 
                             <Typography
                                 noWrap
                                 component="a"
-                                href={`/sheet/${sheet.id}`}
+                                href={`/sheets/${sheet.id}`}
                                 sx={{
                                     fontSize: '1.3rem',
                                     fontWeight: 700,

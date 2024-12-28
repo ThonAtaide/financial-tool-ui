@@ -26,6 +26,8 @@ import SignPage, { SignViewEnum } from './components/sign';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
+import SelectedSheetPage from './components/contentPages/selectedSheetPanel';
+import { ExpensesProvider } from './components/expenses-provider';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
@@ -50,6 +52,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <SheetListPanel />,
   },
+  {
+    path: "/sheets/:id",
+    element: <ExpensesProvider children={<SelectedSheetPage />} />
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

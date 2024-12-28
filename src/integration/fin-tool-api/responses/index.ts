@@ -26,7 +26,8 @@ export interface RecoveryPasswordInfoResponse {
 
 export interface ExpenseTypeResponse {
     id: number,
-    name: string
+    name: string,
+    categoryId: number,
 }
 
 export interface ExpenseCategoryResponse {

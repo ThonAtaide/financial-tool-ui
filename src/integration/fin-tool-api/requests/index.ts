@@ -9,9 +9,9 @@ export interface UserRegisterRequest {
     password: string
 }
 
-export interface ExpenseTypeResponse {
+export interface ExpenseTypeRequest {
     id: number,
-    name: string
+    categoryId: number,
 }
 
 export interface PasswordRecoveryRequest {

@@ -8,8 +8,9 @@ const darkTheme = createTheme({
         main: '#1976d2',
       },
       background: {
-        default: '#25292E'
-      },   
+        default: '#25292E',
+
+      },      
     },
   });
 

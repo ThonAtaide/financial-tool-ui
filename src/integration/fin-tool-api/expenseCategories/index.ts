@@ -2,21 +2,25 @@ import { AxiosResponse } from "axios";
 import { axios_client } from "..";
 import { ExpenseCategoryResponse, PageableResponse } from "../responses";
 
-export const retrieveExpenseCategoriesBy = async (
-    pageSize: number = 100,
-    pageNumber: number = 0,
+export interface RetrieveExpenseCategoriesParams {
+    pageSize: number,
+    pageNumber: number,
     sheetId: number
+}
+
+export const retrieveExpenseCategoriesBy = (
+    params: RetrieveExpenseCategoriesParams
 ): Promise<AxiosResponse<PageableResponse<ExpenseCategoryResponse>>> =>
-    await axios_client.get<PageableResponse<ExpenseCategoryResponse>>(
-        `/sheet/${sheetId}/expense-category?
-        page-number=${pageNumber}
-        &page-size=${pageSize}`
+    axios_client.get<PageableResponse<ExpenseCategoryResponse>>(
+        `/sheet/${params.sheetId}/expense-category?
+        page-number=${params.pageNumber}
+        &page-size=${params.pageSize}`
     );
 
-export const retrieveExpenseCategoriesById = async (
+export const retrieveExpenseCategoriesById = (
     sheetId: number,
     categoryId: number
 ): Promise<AxiosResponse<ExpenseCategoryResponse>> =>
-    await axios_client.get<ExpenseCategoryResponse>(
+    axios_client.get<ExpenseCategoryResponse>(
         `/sheet/${sheetId}/expense-category/${categoryId}`
     );

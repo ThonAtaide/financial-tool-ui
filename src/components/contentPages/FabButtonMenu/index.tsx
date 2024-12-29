@@ -27,6 +27,7 @@ const CustomFabButton: React.FC<CustomFabButtonI> = (dataToMount: CustomFabButto
   const display = show? 'inline-flex': 'none'; 
   return (
     <Fab
+      key={label}
       color={color}
       aria-label={label}
       onClick={onClick}

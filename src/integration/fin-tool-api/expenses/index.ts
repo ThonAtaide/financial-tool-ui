@@ -2,12 +2,13 @@ import { AxiosPromise, AxiosResponse } from "axios";
 import { axios_client } from "..";
 import { ExpenseTypeRequest } from "../requests";
 import { ExpenseTypeResponse, PageableResponse } from "../responses";
+import { ExpenseDomain } from "../../../domain/expense";
 
 export interface UserExpenseRequest {
-    id?: number,
+    id?: number | null,
     description: string,
     amount: number,
-    isFixedExpense: Boolean,
+    isFixedExpense: boolean,
     datPurchase: Date,
     expenseType: number,
 }
@@ -16,31 +17,36 @@ export interface UserExpenseResponse {
     id: number,
     description: string,
     amount: number,
-    isFixedExpense: Boolean,
+    isFixedExpense: boolean,
     datPurchase: Date,
     expenseType: ExpenseTypeResponse
 }
 
-export const createUserExpense = (sheetId: number, userExpenseRequest: UserExpenseRequest)
+export interface SheetIdAndExpenseIdPairI {
+    sheetId: number,
+    expenseId: number,
+}
+
+export const createUserExpense = (expenseDomain: ExpenseDomain)
     : Promise<AxiosResponse<UserExpenseResponse>> =>
     axios_client.post<UserExpenseResponse>(
-        `/sheet/${sheetId}/expense`,
-        JSON.stringify(userExpenseRequest)
+        `/sheet/${expenseDomain.sheetId}/expense`,
+        JSON.stringify(expenseDomain.toUserExpenseRequest())
     )
 
-export const updateExpense = (sheetId: number, expenseId: number, userExpenseRequest: UserExpenseRequest) => {
-    return axios_client.put(`/sheet/${sheetId}/expense/${expenseId}`,
-        JSON.stringify(userExpenseRequest)
+export const updateExpense = (expenseDomain: ExpenseDomain) => {
+    return axios_client.put(`/sheet/${expenseDomain.sheetId}/expense/${expenseDomain.id}`,
+        JSON.stringify(expenseDomain.toUserExpenseRequest())
     )
 }
 
-export const getExpenseById = (sheetId: number, expenseId: number): Promise<AxiosResponse<UserExpenseResponse>> => {
+export const getExpenseById = (sheetIdAndExpenseIdPairI: SheetIdAndExpenseIdPairI): Promise<AxiosResponse<UserExpenseResponse>> => {
     return axios_client
-        .get<UserExpenseResponse>(`/sheet/${sheetId}/expense/${expenseId}`, { data: {} })
+        .get<UserExpenseResponse>(`/sheet/${sheetIdAndExpenseIdPairI.sheetId}/expense/${sheetIdAndExpenseIdPairI.expenseId}`, { data: {} })
 }
 
-export const deleteExpense = async (sheetId: number, expenseId: number): Promise<AxiosResponse<void>> => {
-    return axios_client.delete<void>(`/sheet/${sheetId}/expense/${expenseId}`, { data: {} });
+export const deleteExpense = async (sheetIdAndExpenseIdPairI: SheetIdAndExpenseIdPairI): Promise<AxiosResponse<void>> => {
+    return axios_client.delete<void>(`/sheet/${sheetIdAndExpenseIdPairI.sheetId}/expense/${sheetIdAndExpenseIdPairI.expenseId}`, { data: {} });
 }
 
 export interface UserExpensesFetchRequest {
@@ -54,7 +60,7 @@ export interface UserExpensesFetchRequest {
 
 export const fetchUserExpenses = (userExpensesFetch: UserExpensesFetchRequest)
     : Promise<AxiosResponse<PageableResponse<UserExpenseResponse>>> => {
-        console.log()
+    console.log()
     const {
         sheetId,
         page,

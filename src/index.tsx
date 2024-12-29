@@ -62,7 +62,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <DarkThemeProvider>
     <AuthDataProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='en-gb'>
         <PopupProvider>
           <GlobalLoadingProvider>
             <Popup />

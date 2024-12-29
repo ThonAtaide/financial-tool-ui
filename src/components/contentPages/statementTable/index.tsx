@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, IconButton, Modal, Paper, Tooltip, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -20,6 +20,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { makeStyles } from "@mui/styles";
+import ExpenseForm from '../expenseForm';
 
 export interface StatementTable {
   sheetId: number
@@ -40,6 +41,8 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
   const classes = useStyles();
   const navigate = useNavigate();
   const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
+  const [isExpenseModalOpen, setExpenseModalOpen] = useState<boolean>(false);
+  const [selectedExpense, setSelectedExpense] = useState<number | null>(null);
   // const { executeStatelessRequest: deleteExpenseRequest } = useApiRequestStatelessHook({apiRequest: deleteExpense})
 
   const {
@@ -62,17 +65,15 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
     // { id: 'id', label: '', align: "center", format: (value: any) => buildSettingsColumn(value) }
   ];
 
-  // const updateExpense = (id: number) => {
-  //   selectExpenseToUpdate(id);
-  // }
+  const createNewExpense = () => {
+    setExpenseModalOpen(true);
+  }
 
-  // const removeExpense = async (id) => {
-  //   startLoading();
-  //   await deleteExpenseRequest(id)
-  //     .then(res => refreshPageData())
-  //     .catch(err => {})
-  //     .finally(() => finishLoading());
-  // }
+  const closeExpenseGroupModal = (refresh: boolean = false) => {
+    // if (refresh) refreshPageData();
+    // cleanExpenseToUpdate();
+    setExpenseModalOpen(false);
+  }
 
   const buildSettingsColumn = (id: number) => {
     return (
@@ -136,15 +137,16 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
                 .map((row) => {
                   return (
                     <TableRow
-                     sx={{cursor: 'pointer'}}
+                      onClick={(e) => setSelectedExpense(row.id)}
+                      sx={{ cursor: 'pointer' }}
                       hover
+                      selected={row.id === selectedExpense}
                       role="checkbox"
                       tabIndex={-1}
                       key={row.id}
                     >
                       {columns.map((column) => {
                         let value = row[column.id];
-                        let isFixed = row['isFixedExpense'];
                         if (column.id === 'expenseType') {
                           value = (value as ExpenseTypeResponse).name
                         };
@@ -172,13 +174,25 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
         />
       </Paper>
       <FabButtonMenu options={[
-        { label: 'Criar', onClick: () => console.log(1), Icon: AddIcon, color: 'info', show: true },
-        { label: 'Editar', onClick: () => console.log(2), Icon: EditIcon, color: 'info', show: true },
-        { label: 'Remover', onClick: () => console.log(3), Icon: DeleteIcon, color: 'info', show: true }
-      ]} />
+        { label: 'Criar', onClick: () => setExpenseModalOpen(true), Icon: AddIcon, color: 'info', show: true },
+        { label: 'Editar', onClick: () => setExpenseModalOpen(true), Icon: EditIcon, color: 'info', show: selectedExpense !== null },
+        { label: 'Remover', onClick: () => console.log(3), Icon: DeleteIcon, color: 'info', show: selectedExpense !== null }
+      ]}
+      />
+      <Modal
+        open={isExpenseModalOpen}
+        onClose={(e) => closeExpenseGroupModal()}
+        aria-labelledby="modal-expense-register"
+        aria-describedby="modal-form-to-register-or-edit-user-expenses"
+      >
+
+        <ExpenseForm
+          sheetId={statementTable.sheetId}
+          expenseId={selectedExpense}
+          closeForm={closeExpenseGroupModal} />
+
+      </Modal>
     </Box>
-
-
   );
 };
 export default StatementTable;

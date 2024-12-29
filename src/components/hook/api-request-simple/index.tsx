@@ -17,6 +17,14 @@ export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {
   const { displayErrorPopup } = usePopup() as PopupProviderContextType;
   const navigate = useNavigate();
 
+  const executeStatelessRequest = async (requestArguments: T): Promise<U> => {
+    setLoading(true);
+    return param.apiRequest(requestArguments)
+      .then((res) => res.data)
+      .catch(err => handleError(err))
+      .finally(() => setLoading(false))
+  }
+
   const handleError = (err: AxiosError) => {
     const {
       title,
@@ -31,15 +39,7 @@ export const useApiRequestStatelessHook = <T, U>(param: ApiRequestI<T, U>) => {
       navigate('/sign-in');
     }
     throw err;
-  }
-
-  const executeStatelessRequest = async (requestArguments: T): Promise<U> => {
-    setLoading(true);
-    return param.apiRequest(requestArguments)
-      .then((res) => res.data)
-      .catch(err => handleError(err))
-      .finally(() => setLoading(false))
-  }
+  }  
 
   return { isLoading, executeStatelessRequest };
 }

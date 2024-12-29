@@ -13,6 +13,7 @@ import ResponsiveAppBar from '../../header';
 import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provider';
 import FabButtonMenu from '../FabButtonMenu';
 import StatementTable from '../statementTable';
+import ExpenseForm from '../expenseForm';
 // import { useExpenses } from './expenses-provider';
 
 
@@ -37,7 +38,7 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
     //   // } = useExpenses();
 
     //   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
-    //   const [isExpenseModalOpen, setExpenseModalOpen] = useState(false);
+    //   const [isExpenseModalOpen, setExpenseModalOpen] = useState<boolean>(false);
 
     //   // const getUserBalance = () => {
     //   //   return userExpensesSumByCategoryData
@@ -77,15 +78,15 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
     //     setExpenseModalOpen(true);
     //   }
 
-    //   const closeExpenseGroupModal = (refresh = false) => {
-    //     if (refresh) refreshPageData();
-    //     cleanExpenseToUpdate();
+    //   const closeExpenseGroupModal = (refresh: boolean = false) => {
+    //     // if (refresh) refreshPageData();
+    //     // cleanExpenseToUpdate();
     //     setExpenseModalOpen(false);
     //   }
 
     return (
         <Box >
-            <ResponsiveAppBar selectedSheetId={selectedSheetData?.id}/>
+            <ResponsiveAppBar selectedSheetId={selectedSheetData?.id} />
             <Box
                 padding={4}
                 sx={{
@@ -115,19 +116,19 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
                 display='flex'
                 justifyContent='center'
                 padding={4}
-                sx={{backgroundColor: 'transparent'}}
+                sx={{ backgroundColor: 'transparent' }}
             >
                 <Paper
-                    square={false}                                      
+                    square={false}
                     elevation={6}
-                    sx={{  
-                        width: '100%', 
-                        marginBottom: '5em', 
+                    sx={{
+                        width: '100%',
+                        marginBottom: '5em',
                         borderRadius: '0.3em',
                     }}
                 >
-                    
-                        {/* {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
+
+                    {/* {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
               key='pieChart'
               item
               xs={12}
@@ -140,15 +141,15 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
             >
               <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
             </Grid>} */}
-                        {selectedSheetData && expensesData && expensesData.content && 
-                            <StatementTable
-                    
-                                sheetId={selectedSheetData.id}
-                            // expensesPage={userExpensesStatementData}
-                            // selectExpenseToUpdate={selectExpenseToUpdate}
-                            />
-                        }
-                        {/* {userExpensesSumByFixedOrNot && <Grid
+                    {selectedSheetData && expensesData && expensesData.content &&
+                        <StatementTable
+
+                            sheetId={selectedSheetData.id}
+                        // expensesPage={userExpensesStatementData}
+                        // selectExpenseToUpdate={selectExpenseToUpdate}
+                        />
+                    }
+                    {/* {userExpensesSumByFixedOrNot && <Grid
               key='balance'
               item
               xs={12}
@@ -161,7 +162,7 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
             >
               <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
             </Grid>} */}
-                    
+
                 </Paper>
 
             </Box>
@@ -175,19 +176,7 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
       </Fab> */}
 
 
-            {/* <Modal
-        open={isExpenseModalOpen}
-        // onClose={closeExpenseGroupModal}
-        aria-labelledby="modal-expense-register"
-        aria-describedby="modal-form-to-register-or-edit-user-expenses"
-      >
-        <>
-          <ExpenseForm
-            expenseIdentifier={idFromExpenseToUpdate}
-            closeExpenseFormModal={closeExpenseGroupModal}
-          />
-        </>
-      </Modal> */}
+            
         </Box>
     );
 }

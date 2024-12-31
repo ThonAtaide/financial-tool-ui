@@ -64,13 +64,13 @@ export interface ShareSheetResponse {
 }
 
 export interface PageableResponse<T> {
-    totalPages: number,
-    totalElements: number,
-    numberOfElements: number,
+    content: T[],
+    page: Page,
+}
+
+export interface Page {
     size: number,
-    content: T[]
     number: number,
-    first: Boolean
-    last: Boolean
-    empty: Boolean
+    totalElements: number,
+    totalPages: number,
 }

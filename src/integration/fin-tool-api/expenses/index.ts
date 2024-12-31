@@ -45,7 +45,7 @@ export const getExpenseById = (sheetIdAndExpenseIdPairI: SheetIdAndExpenseIdPair
         .get<UserExpenseResponse>(`/sheet/${sheetIdAndExpenseIdPairI.sheetId}/expense/${sheetIdAndExpenseIdPairI.expenseId}`, { data: {} })
 }
 
-export const deleteExpense = async (sheetIdAndExpenseIdPairI: SheetIdAndExpenseIdPairI): Promise<AxiosResponse<void>> => {
+export const deleteExpense = (sheetIdAndExpenseIdPairI: SheetIdAndExpenseIdPairI): Promise<AxiosResponse<void>> => {
     return axios_client.delete<void>(`/sheet/${sheetIdAndExpenseIdPairI.sheetId}/expense/${sheetIdAndExpenseIdPairI.expenseId}`, { data: {} });
 }
 
@@ -70,7 +70,6 @@ export const fetchUserExpenses = (userExpensesFetch: UserExpensesFetchRequest)
         selectedCategories
     } = userExpensesFetch
     const categories = selectedCategories && selectedCategories.length > 0 && selectedCategories.map(item => item).toString() || []
-    console.log('Buscando despesas')
     return axios_client.get<PageableResponse<UserExpenseResponse>>(
         `/sheet/${sheetId}/expense?from=${from}&until=${until}&categories=${categories}`,
         {

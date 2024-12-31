@@ -47,7 +47,7 @@ const FabButtonMenu: React.FC<FabButtonMenuI> = (menuData: FabButtonMenuI) => {
       justifyContent="center"
       sx={{ position: 'fixed', bottom: '3em', width: '100%', zIndex: 10000, left: 0, right: 0 }}
     >
-      {menuData && menuData.options.map(item => <CustomFabButton {...item} />)}
+      {menuData && menuData.options.map(item => <CustomFabButton key={item.label} {...item} />)}
     </Box>
   )
 }

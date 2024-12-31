@@ -28,6 +28,8 @@ import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
 import SelectedSheetPage from './components/contentPages/selectedSheetPanel';
 import { ExpensesProvider } from './components/expenses-provider';
+// import { de, enGB, zhCN } from 'date-fns/locale';
+import 'dayjs/locale/en-gb';
 // import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 

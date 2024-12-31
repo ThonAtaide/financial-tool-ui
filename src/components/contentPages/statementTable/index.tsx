@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, IconButton, Modal, Paper, Tooltip, Typography } from '@mui/material';
+import React from 'react';
+import { Box, Modal, Paper, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,45 +9,32 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import dayjs from 'dayjs';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import { useNavigate } from "react-router-dom";
-import { GlobalLoadingContextType, useGlobalLoading } from '../../loading/global-loading/provider';
-import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provider';
 import { ExpenseTypeResponse } from '../../../integration/fin-tool-api/responses';
 import FabButtonMenu from '../FabButtonMenu';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { makeStyles } from "@mui/styles";
 import ExpenseForm from '../expenseForm';
+import { StatementTableParams, useStatementTableAdapter } from './adapter';
 
-export interface StatementTable {
-  sheetId: number
-}
 
-const useStyles = makeStyles(theme => ({
-  root: {},
-
-  border: {
-    borderWidth: '1px',
-    borderColor: 'rgba(81, 81, 81, 1)',
-    borderStyle: 'solid',
-  },
-}));
-
-const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable) => {
-
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
-  const [isExpenseModalOpen, setExpenseModalOpen] = useState<boolean>(false);
-  const [selectedExpense, setSelectedExpense] = useState<number | null>(null);
-  // const { executeStatelessRequest: deleteExpenseRequest } = useApiRequestStatelessHook({apiRequest: deleteExpense})
+const StatementTable: React.FC<StatementTableParams> = (params: StatementTableParams) => {
 
   const {
-    expensesData
-  } = useExpenses() as UserExpensesDataCoxtextType;
+    selectedExpense,
+    setSelectedExpense,
+    createNewExpense,
+    updateExpense,
+    closeExpenseGroupModal,
+    isExpenseModalOpen,
+    removeExpense,
+    expensesData,
+    rowsPerPage,
+    updateRowsPerPage,
+    pageNumber,
+    setPageNumber,
+    expenseFormAction,
+  } = useStatementTableAdapter(params);
 
   interface Column {
     id: 'id' | 'description' | 'amount' | 'expenseType' | 'datPurchase';
@@ -62,36 +49,7 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
     { id: 'amount', label: 'Valor', align: "center", format: (value: any) => `${formatBRLCurrency(value)}` },
     { id: 'expenseType', label: 'Categoria', align: "center" },
     { id: 'datPurchase', label: 'Data', align: "center", format: (value: any) => dayjs(value).format('DD/MM/YYYY') },
-    // { id: 'id', label: '', align: "center", format: (value: any) => buildSettingsColumn(value) }
   ];
-
-  const createNewExpense = () => {
-    setExpenseModalOpen(true);
-  }
-
-  const closeExpenseGroupModal = (refresh: boolean = false) => {
-    // if (refresh) refreshPageData();
-    // cleanExpenseToUpdate();
-    setExpenseModalOpen(false);
-  }
-
-  const buildSettingsColumn = (id: number) => {
-    return (
-      <Box display="flex">
-        <Tooltip title="Editar">
-          <IconButton onClick={() => console.log(id)}>
-            <ModeEditOutlineOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Remover">
-          <IconButton onClick={() => console.log(id)}>
-            <DeleteOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    )
-  }
-
 
 
   return (
@@ -106,7 +64,7 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
         }}
         mb={2}
       >
-        Despesas
+        Meus Gastos
       </Typography>
       <Paper
         sx={{
@@ -123,11 +81,16 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
               <TableRow>
                 {columns.map((column) => (
                   <TableCell
-                    sx={{ fontWeight: 'bold' }}
+                    // sx={{ fontWeight: 'bold' }}
                     key={column.id}
                     align="center"
                   >
-                    {column.label}
+                    <Typography
+                      fontWeight='bold'
+                    >
+                      {column.label}
+                    </Typography>
+
                   </TableCell>
                 ))}
               </TableRow>
@@ -137,7 +100,7 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
                 .map((row) => {
                   return (
                     <TableRow
-                      onClick={(e) => setSelectedExpense(row.id)}
+                      onClick={(_e) => setSelectedExpense(row.id)}
                       sx={{ cursor: 'pointer' }}
                       hover
                       selected={row.id === selectedExpense}
@@ -153,7 +116,11 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
                         return (
                           <TableCell
                             key={column.id} align="center">
-                            {column.format ? column.format(value) : value.toString()}
+                            <Typography
+                            >
+                              {column.format ? column.format(value) : value.toString()}
+
+                            </Typography>
                           </TableCell>
                         );
                       })}
@@ -164,33 +131,34 @@ const StatementTable: React.FC<StatementTable> = (statementTable: StatementTable
           </Table>
         </TableContainer>
         <TablePagination
+          labelRowsPerPage="Registros por página:"
           sx={{ height: '5em' }}
-          rowsPerPageOptions={[8]}
+          rowsPerPageOptions={[5, 10]}
           component="div"
-          count={(expensesData && expensesData.totalElements) || 0}
-          rowsPerPage={8}
-          page={expensesData && expensesData.number || 0}
-          onPageChange={(e, newPage) => console.log(newPage)}
+          count={(expensesData && expensesData.page.totalElements) || 0}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(event) => updateRowsPerPage(event.target.value as unknown as number)}
+          page={pageNumber}
+          onPageChange={(_e, newPage) => setPageNumber(newPage)}
         />
       </Paper>
       <FabButtonMenu options={[
-        { label: 'Criar', onClick: () => setExpenseModalOpen(true), Icon: AddIcon, color: 'info', show: true },
-        { label: 'Editar', onClick: () => setExpenseModalOpen(true), Icon: EditIcon, color: 'info', show: selectedExpense !== null },
-        { label: 'Remover', onClick: () => console.log(3), Icon: DeleteIcon, color: 'info', show: selectedExpense !== null }
+        { label: 'Criar', onClick: () => createNewExpense(), Icon: AddIcon, color: 'info', show: true },
+        { label: 'Editar', onClick: () => updateExpense(), Icon: EditIcon, color: 'info', show: selectedExpense !== null },
+        { label: 'Remover', onClick: () => removeExpense(), Icon: DeleteIcon, color: 'info', show: selectedExpense !== null }
       ]}
       />
       <Modal
         open={isExpenseModalOpen}
-        onClose={(e) => closeExpenseGroupModal()}
+        onClose={(_e) => closeExpenseGroupModal()}
         aria-labelledby="modal-expense-register"
         aria-describedby="modal-form-to-register-or-edit-user-expenses"
       >
-
         <ExpenseForm
-          sheetId={statementTable.sheetId}
+          action={expenseFormAction}
+          sheetId={params.sheetId}
           expenseId={selectedExpense}
           closeForm={closeExpenseGroupModal} />
-
       </Modal>
     </Box>
   );

@@ -14,6 +14,7 @@ import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provide
 import FabButtonMenu from '../FabButtonMenu';
 import StatementTable from '../statementTable';
 import ExpenseForm from '../expenseForm';
+import { ptBR } from '@mui/x-date-pickers/locales';
 // import { useExpenses } from './expenses-provider';
 
 
@@ -22,7 +23,6 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
         selectedMonth,
         updateSelectedMonth,
         selectedSheet: selectedSheetData,
-        expensesData
     } = useExpenses() as UserExpensesDataCoxtextType;
     //   const navigate = useNavigate();
     //   // const {
@@ -108,7 +108,7 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
                     value={dayjs(selectedMonth)}
                     views={['month', 'year']}
                     slots={{
-                        openPickerIcon: ArrowDropDownIcon
+                        openPickerIcon: ArrowDropDownIcon,
                     }}
                 />
             </Box>
@@ -141,12 +141,9 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
             >
               <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
             </Grid>} */}
-                    {selectedSheetData && expensesData && expensesData.content &&
+                    {selectedSheetData &&
                         <StatementTable
-
                             sheetId={selectedSheetData.id}
-                        // expensesPage={userExpensesStatementData}
-                        // selectExpenseToUpdate={selectExpenseToUpdate}
                         />
                     }
                     {/* {userExpensesSumByFixedOrNot && <Grid

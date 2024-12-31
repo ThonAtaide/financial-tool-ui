@@ -6,10 +6,16 @@ import { createUserExpense, updateExpense, getExpenseById } from '../../../../in
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { ExpenseDomain } from '../../../../domain/expense';
 
+export enum ExpenseFormActionEnum {
+  CREATE,
+  UPDATE
+}
+
 export interface ExpenseFormDataParamsI {
     expenseId?: number | null,
     sheetId: number,
-    closeForm: (refresh?: boolean) => void
+    closeForm: (refresh?: boolean) => void,
+    action: ExpenseFormActionEnum,
 }
 
 interface TextFieldData<T> {
@@ -24,9 +30,8 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
     const [descriptionField, setDescriptionField] = useState<TextFieldData<string>>({ value: '', helperText: null });
     const [amountField, setAmountField] = useState<TextFieldData<string>>({ value: '', helperText: null });
     const [selectedExpenseTypeField, setSelectedExpenseTypeField] = useState<TextFieldData<number>>({ value: defaultExpenseType.id, helperText: null });
-    const [purchaseDateField, setPurchaseDateField] = useState(dayjs(new Date()).format('YYYY-MM-DD'));
+    const [purchaseDateField, setPurchaseDateField] = useState<dayjs.Dayjs>(dayjs(new Date()));
     const [isFixedField, setIsFixedField] = useState<boolean>(false);
-
     const [expenseCategories, setExpenseCategories] = useState<ExpenseCategoryDomain[]>([]);
     
 
@@ -34,8 +39,6 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
     const { executeStatelessRequest: updateExpenseRequest } = useApiRequestStatelessHook({ apiRequest: updateExpense })
     const { executeStatelessRequest: fetchExpenseByIdRequest } = useApiRequestStatelessHook({ apiRequest: getExpenseById })
     const { executeStatelessRequest: fetchExpenseCategoriesRequest } = useApiRequestStatelessHook({ apiRequest: retrieveExpenseCategoriesBy })
-
-    // const findExpenseType = (expenseTypeId: number): ExpenseTypeDomain =>  
 
     const expenseDescriptionIsValid = (): boolean => {
         if (!descriptionField || !descriptionField.value || descriptionField.value.length < 2) {
@@ -70,9 +73,8 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         return value_as_string.length - (value_as_string.indexOf(".") + 1);
       }
     
-      const fetchExpenseById = () => {
-    
-        if (expenseFormDataParams.expenseId) {
+      const fetchExpenseById = () => {    
+        if (expenseFormDataParams.action === ExpenseFormActionEnum.UPDATE && expenseFormDataParams.expenseId) {
           fetchExpenseByIdRequest({ expenseId: expenseFormDataParams.expenseId, sheetId: expenseFormDataParams.sheetId })
             .then(response => {
               const decimalDigitsCount = countDecimalDigits(response.amount);
@@ -92,8 +94,8 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
               setAmountField({ value: value, helperText: null });
               setIsFixedField(response.isFixedExpense);
               setSelectedExpenseTypeField({ value: response.expenseType.id, helperText: null })
-              setPurchaseDateField(dayjs(response.datPurchase).format('YYYY-MM-DD'));
-            }).catch(err => { });
+              setPurchaseDateField(dayjs(response.datPurchase));
+            }).catch(err => console.log(err));
         }
       }
     
@@ -106,7 +108,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
       
     
       const prepareAmountToSave = (value: string): number => {
-        return value && parseFloat(value.replace('R$', '').replaceAll('.', "").replace(',', '.')) || 0;
+        return value && parseFloat(value.replace(',', '.')) || 0;
       }
     
       const registerNewExpense = () => {
@@ -117,7 +119,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             descriptionField.value,
             prepareAmountToSave(amountField.value),
             isFixedField,
-            new Date(purchaseDateField),
+            purchaseDateField.toDate(),
             findExpenseType(selectedExpenseTypeField.value)!!
           )
         ).then((res) => expenseFormDataParams.closeForm(true))
@@ -132,7 +134,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             descriptionField.value,
             prepareAmountToSave(amountField.value),
             isFixedField,
-            new Date(purchaseDateField),
+            purchaseDateField.toDate(),
             findExpenseType(selectedExpenseTypeField.value)!!
           )
         ).then(response => {
@@ -140,15 +142,14 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         }).catch(err => { });
       }
     
-      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
-        if (!expenseDescriptionIsValid() || !amountIsValid() || !expenseTypeIsValid()) return;
-    
-        if (!expenseFormDataParams.expenseId) {
-          registerNewExpense();
-        } else {
+        if (!expenseDescriptionIsValid() || !amountIsValid() || !expenseTypeIsValid()) return;  
+        
+        if (expenseFormDataParams.action === ExpenseFormActionEnum.UPDATE && expenseFormDataParams.expenseId) {
           updateExistedExpense();
+        } else {
+          registerNewExpense();
         }
       }
 

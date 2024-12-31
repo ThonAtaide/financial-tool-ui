@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Backdrop, CircularProgress, Grid2, ListSubheader } from '@mui/material';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Backdrop, CircularProgress, Grid2, ListSubheader, Popper } from '@mui/material';
 import dayjs from 'dayjs';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { createUserExpense, getExpenseById, updateExpense } from '../../../integration/fin-tool-api/expenses';
@@ -9,6 +9,8 @@ import { ExpenseDomain } from '../../../domain/expense';
 import { NumericFormat } from 'react-number-format';
 import { ExpenseFormDataParamsI, UseExpenseFormAdapter } from './adapter';
 import { JSX } from 'react/jsx-runtime';
+import { DateField, DatePicker } from '@mui/x-date-pickers';
+import zIndex from '@mui/material/styles/zIndex';
 
 const style = {
   position: 'absolute',
@@ -76,10 +78,10 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
       options.push(<ListSubheader key={category.id} >{category.name}</ListSubheader>)
       category.expenseTypes.forEach(expenseType =>
         options.push(
-        <MenuItem key={expenseType.id} value={expenseType.id}>
-          {expenseType.name}
-        </MenuItem>
-      ))      
+          <MenuItem key={expenseType.id} value={expenseType.id}>
+            {expenseType.name}
+          </MenuItem>
+        ))
     })
     return options;
   }
@@ -146,14 +148,18 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
             size={{ xs: 6 }}
             sx={{ display: 'flex', alignSelf: 'flex-end' }}
           >
-            <TextField
-              id="group-name-field"
-              variant="standard"
-              size='small'
-              type='date'
-              defaultChecked
+            <DatePicker
               value={purchaseDateField}
-              onChange={(e) => setPurchaseDateField(e.target.value)}
+              label="Data da despesa"
+              format="DD/MM/YYYY"
+              onChange={(e) => setPurchaseDateField(e!!)}
+              slotProps={{
+                textField: { size: 'small', variant: 'standard' }, 
+                popper: {
+                  sx: { zIndex: '10001' }
+                },
+              }}
+
             />
           </Grid2>
         </Grid2>
@@ -189,7 +195,7 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
             sx={{ display: 'flex', justifyItems: 'end', padding: 0 }}
           >
             <FormControlLabel
-              sx={{color: 'white'}}
+              sx={{ color: 'white' }}
               control={<Switch
                 checked={isFixedField}
                 onChange={(e) => setIsFixedField(e.target.checked)}

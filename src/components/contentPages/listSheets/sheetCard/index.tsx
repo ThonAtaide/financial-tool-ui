@@ -42,7 +42,7 @@ const SheetCard: React.FC<SheetCardParams> = (sheetCardParams: SheetCardParams) 
             <Card key={sheet.id} sx={{ marginTop: '1rem', width: '20rem', maxWidth: '90%' }}>
                 <CardHeader
                     title={
-                        <Tooltip title={`Criado ${new Date(sheet.datCreation).toLocaleDateString()}`}>
+                        <Tooltip title={`Criado por ${sheet.createdBy} em ${new Date(sheet.datCreation).toLocaleDateString()}`}>
                             <Typography
                                 noWrap
                                 component="a"

@@ -10,7 +10,8 @@ export type UserExpensesDataCoxtextType = {
   selectedMonth: dayjs.Dayjs | null
   updateSelectedMonth: (selectedDateValue: dayjs.Dayjs | null) => void
   selectedSheet: SheetResponse | null | undefined
-  expensesData: PageableResponse<UserExpenseResponse> | null
+  getDateStartRange: () => string | null
+  getDateEndRange: () => string | null
 }
 
 const ExpensesContext = createContext<UserExpensesDataCoxtextType | null>(null);
@@ -20,24 +21,19 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const { id } = useParams();
 
   const { data: sheetData, statefullRequestApi: retrieveSheetByIdRequest } = useApiRequestWithStateResult({initialValue: null, apiRequest: fetch_sheet_by_id })
-  const { data: expensesData, statefullRequestApi: retrieveExpenses } = useApiRequestWithStateResult({initialValue: null, apiRequest: fetchUserExpenses});
+  
   const [selectedMonth, setSelectedMonth] = useState<dayjs.Dayjs | null>(dayjs(new Date()));
 
   useEffect(() => {
     if (id) {
       retrieveSheetByIdRequest({sheetId: parseInt(id)})
-      loadUserExpensesStatementData()
     }
     
-  }, []);
+  }, []);  
 
-  const loadUserExpensesStatementData = () => {
-    if (id && selectedMonth) {
-      const from = selectedMonth.startOf('month').format('YYYY-MM-DD')
-      const until = selectedMonth.endOf('month').format('YYYY-MM-DD');
-      retrieveExpenses({ sheetId: parseInt(id), page: 0, pageSize: 10, from, until, selectedCategories: [] })        
-    }    
-  }
+  const getDateStartRange = (): string | null => selectedMonth && selectedMonth.startOf('month').format('YYYY-MM-DD') || null
+
+  const getDateEndRange = (): string | null => selectedMonth && selectedMonth.endOf('month').format('YYYY-MM-DD') || null
 
   const updateSelectedMonth = (selectedDateValue: dayjs.Dayjs | null) => {
     if (selectedDateValue !== selectedMonth) {
@@ -51,7 +47,8 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         selectedMonth,
         updateSelectedMonth,
         selectedSheet: sheetData,
-        expensesData
+        getDateStartRange,
+        getDateEndRange
       }}
     >
       {children}

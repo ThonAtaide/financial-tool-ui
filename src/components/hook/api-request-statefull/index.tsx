@@ -19,11 +19,7 @@ export const useApiRequestWithStateResult = <T, U>(useApiRequestStateful: UseApi
 
   const statefullRequestApi = (requestArguments: T) => {
     executeStatelessRequest(requestArguments)
-      .then(data => {
-        console.log('Retornou')
-        console.log(data)
-        setData(data)
-      })
+      .then(data => setData(data))
       .catch(err => console.log(err));
   }
 

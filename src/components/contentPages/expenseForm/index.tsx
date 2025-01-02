@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Backdrop, CircularProgress, Grid2, ListSubheader, Popper } from '@mui/material';
-import dayjs from 'dayjs';
-import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
-import { createUserExpense, getExpenseById, updateExpense } from '../../../integration/fin-tool-api/expenses';
-import { retrieveExpenseCategoriesBy } from '../../../integration/fin-tool-api/expenseCategories';
-import { ExpenseCategoryDomain, ExpenseTypeDomain } from '../../../domain/expenseType';
+import React, { useEffect } from 'react';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Grid2, ListSubheader } from '@mui/material';
 import { ExpenseDomain } from '../../../domain/expense';
 import { NumericFormat } from 'react-number-format';
 import { ExpenseFormDataParamsI, UseExpenseFormAdapter } from './adapter';
 import { JSX } from 'react/jsx-runtime';
-import { DateField, DatePicker } from '@mui/x-date-pickers';
-import zIndex from '@mui/material/styles/zIndex';
+import { DatePicker } from '@mui/x-date-pickers';
 
 const style = {
   position: 'absolute',

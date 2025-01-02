@@ -15,10 +15,19 @@ import FabButtonMenu from '../FabButtonMenu';
 import StatementTable from '../statementTable';
 import ExpenseForm from '../expenseForm';
 import { ptBR } from '@mui/x-date-pickers/locales';
+import ChartsPanel from '../chartsPanel';
 // import { useExpenses } from './expenses-provider';
 
+export interface SelectedSheetPageParams {
+    sheetPane: SheetPanelEnum
+}
 
-const SelectedSheetPage: React.FC<{}> = ({ }) => {
+export enum SheetPanelEnum {
+    STATEMENTS,
+    CHARTS,
+}
+
+const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSheetPageParams) => {
     const {
         selectedMonth,
         updateSelectedMonth,
@@ -84,6 +93,25 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
     //     setExpenseModalOpen(false);
     //   }
 
+    const renderStatementPage = () => {
+        return selectedSheetData &&
+        <StatementTable
+            sheetId={selectedSheetData.id}
+        />
+    }
+
+    const renderChartsPage = () => {
+        return selectedSheetData &&
+        <ChartsPanel />
+    }
+
+    const renderPane = () => {
+        switch(params.sheetPane) {
+            case SheetPanelEnum.STATEMENTS: return renderStatementPage(); 
+            case SheetPanelEnum.CHARTS: return renderChartsPage();            
+        }
+    }
+
     return (
         <Box >
             <ResponsiveAppBar selectedSheetId={selectedSheetData?.id} />
@@ -127,6 +155,7 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
                         borderRadius: '0.3em',
                     }}
                 >
+                    {renderPane()}
 
                     {/* {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
               key='pieChart'
@@ -141,11 +170,11 @@ const SelectedSheetPage: React.FC<{}> = ({ }) => {
             >
               <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
             </Grid>} */}
-                    {selectedSheetData &&
+                    {/* {selectedSheetData &&
                         <StatementTable
                             sheetId={selectedSheetData.id}
                         />
-                    }
+                    } */}
                     {/* {userExpensesSumByFixedOrNot && <Grid
               key='balance'
               item

@@ -1,7 +1,7 @@
 import { AxiosPromise, AxiosResponse } from "axios";
 import { axios_client } from "..";
 import { ExpenseTypeRequest } from "../requests";
-import { ExpenseTypeResponse, PageableResponse } from "../responses";
+import { ExpenseGroupedByCategoriesSummaryResponse, ExpenseGroupedByIsFixedOrNotResponse, ExpenseTypeResponse, PageableResponse } from "../responses";
 import { ExpenseDomain } from "../../../domain/expense";
 
 export interface UserExpenseRequest {
@@ -58,6 +58,16 @@ export interface UserExpensesFetchRequest {
     selectedCategories: number[],
 }
 
+export interface UserExpensesGroupedByCategoryRequest {
+    sheetId: number,
+    from: string,
+}
+
+export interface UserExpensesGroupedByIsFixedOrNotRequest {
+    sheetId: number,
+    from: string,
+}
+
 export const fetchUserExpenses = (userExpensesFetch: UserExpensesFetchRequest)
     : Promise<AxiosResponse<PageableResponse<UserExpenseResponse>>> => {
     console.log()
@@ -82,19 +92,20 @@ export const fetchUserExpenses = (userExpensesFetch: UserExpensesFetchRequest)
     );
 }
 
-// export const fetchUserExpensesGroupedByCategory = async ({ from }) => {
-//     return await axios_client.get(
-//         `/${EXPENSES_RESOURCE}/grouped-by-categories?monthRange=${from}`,
-//         { data: {} }
-//     );
-// }
+export const fetchUserExpensesGroupedByCategory = (request: UserExpensesGroupedByCategoryRequest)
+: Promise<AxiosResponse<ExpenseGroupedByCategoriesSummaryResponse[]>> => {
+    return axios_client.get<ExpenseGroupedByCategoriesSummaryResponse[]>(
+        `/sheet/${request.sheetId}/expense/grouped-by-categories?monthRange=${request.from}`,
+        { data: {} }
+    );
+}
 
-// export const fetchUserExpensesGroupedByFixedOrNot = async ({ from }) => {
-//     return await axios_client.get(
-//         `/${EXPENSES_RESOURCE}/grouped-by-is-fixed?monthRange=${from}`,
-//         { data: {} }
-
-//     );
-// }
+export const fetchUserExpensesGroupedByFixedOrNot = (request: UserExpensesGroupedByIsFixedOrNotRequest)
+: Promise<AxiosResponse<ExpenseGroupedByIsFixedOrNotResponse[]>> => {
+    return axios_client.get<ExpenseGroupedByIsFixedOrNotResponse[]>(
+        `/sheet/${request.sheetId}/expense/grouped-by-is-fixed?monthRange=${request.from}`,
+        { data: {} }
+    );
+}
 
 

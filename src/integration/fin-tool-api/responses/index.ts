@@ -63,6 +63,18 @@ export interface ShareSheetResponse {
     link: string
 }
 
+
+export interface ExpenseGroupedByCategoriesSummaryResponse {
+    id: number,
+    label: string,
+    amount: number
+}
+
+export interface ExpenseGroupedByIsFixedOrNotResponse {
+    label: string,
+    amount: number
+}
+
 export interface PageableResponse<T> {
     content: T[],
     page: Page,

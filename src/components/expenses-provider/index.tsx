@@ -3,8 +3,7 @@ import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import { fetch_sheet_by_id } from '../../integration/fin-tool-api/sheets';
 import { useApiRequestWithStateResult } from '../hook/api-request-statefull';
-import { fetchUserExpenses, UserExpenseResponse } from '../../integration/fin-tool-api/expenses';
-import { PageableResponse, SheetResponse } from '../../integration/fin-tool-api/responses';
+import { SheetResponse } from '../../integration/fin-tool-api/responses';
 
 export type UserExpensesDataCoxtextType = {
   selectedMonth: dayjs.Dayjs | null

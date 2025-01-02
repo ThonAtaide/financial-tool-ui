@@ -122,8 +122,8 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
         <Container >
           <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
             {buildIconButton("Home", HomeIcon, "/")}
-            {data.selectedSheetId && buildIconButton("Gráficos", BarChartIcon, `sheet/${data.selectedSheetId}/graficos`)}
-            {data.selectedSheetId && buildIconButton("Extrato", ReceiptIcon, `sheet/${data.selectedSheetId}/despesas`)}
+            {data.selectedSheetId && buildIconButton("Gráficos", BarChartIcon, `/sheets/${data.selectedSheetId}/graficos`)}
+            {data.selectedSheetId && buildIconButton("Extrato", ReceiptIcon, `/sheets/${data.selectedSheetId}`)}
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Configurações">

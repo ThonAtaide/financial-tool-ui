@@ -26,7 +26,7 @@ import SignPage, { SignViewEnum } from './components/sign';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
-import SelectedSheetPage from './components/contentPages/selectedSheetPanel';
+import SelectedSheetPage, { SheetPanelEnum } from './components/contentPages/selectedSheetPanel';
 import { ExpensesProvider } from './components/expenses-provider';
 // import { de, enGB, zhCN } from 'date-fns/locale';
 import 'dayjs/locale/en-gb';
@@ -56,7 +56,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/sheets/:id",
-    element: <ExpensesProvider children={<SelectedSheetPage />} />
+    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.STATEMENTS} />} />
+  },
+  {
+    path: "/sheets/:id/graficos",
+    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.CHARTS} />} />
   }
 ]);
 

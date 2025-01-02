@@ -1,5 +1,5 @@
-import React, { useEffect, useState }  from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid2, Typography } from '@mui/material';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchUserExpensesGroupedByFixedOrNot } from '../../../integration/fin-tool-api/expenses';
@@ -14,12 +14,11 @@ export interface ExpenseFixedOrNotInfoSummary {
 
 
 
-const UserBalancePane: React.FC<{}> = () => {  
+const UserBalancePane: React.FC<{}> = () => {
 
   const { selectedMonth, getDateStartRange, selectedSheet } = useExpenses() as UserExpensesDataCoxtextType;
-  const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
-  const { executeStatelessRequest: fetchExpenseFixesOrNotData } = useApiRequestStatelessHook({apiRequest: fetchUserExpensesGroupedByFixedOrNot})
-  
+  const { executeStatelessRequest: fetchExpenseFixesOrNotData } = useApiRequestStatelessHook({ apiRequest: fetchUserExpensesGroupedByFixedOrNot })
+
   const [expensesFixedOrNotData, setExpensesFixedOrNotData] = useState<ExpenseFixedOrNotInfoSummary | null>(null);
 
   useEffect(() => {
@@ -31,23 +30,23 @@ const UserBalancePane: React.FC<{}> = () => {
   }, [selectedMonth]);
 
   const loadFixedOrNotExpenseData = () => {
-    fetchExpenseFixesOrNotData({sheetId: selectedSheet!!.id, from: getDateStartRange()!! })
-    .then(res => {
-      let fixed = 0;
-      let notFixed = 0;
-      res.forEach(item => {
-        if(item.label === 'Recurring') fixed = item.amount;
-        notFixed = item.amount;
+    fetchExpenseFixesOrNotData({ sheetId: selectedSheet!!.id, from: getDateStartRange()!! })
+      .then(res => {
+        let fixed = 0;
+        let notFixed = 0;
+        res.forEach(item => {
+          if (item.label === 'Recurring') fixed = item.amount;
+          notFixed = item.amount;
+        })
+        setExpensesFixedOrNotData({ fixedExpensesAmount: fixed, notFixedExpensesAmount: notFixed })
       })
-      setExpensesFixedOrNotData({ fixedExpensesAmount: fixed, notFixedExpensesAmount: notFixed })
-    })
-    .catch(err => console.log(err));
+      .catch(err => console.log(err));
   }
 
-  
+
 
   const getFixedExpenseChartValue = (amountTotal: number, fixedTotal: number) => {
-    if (getExpensesTotalAmount() === 0){
+    if (getExpensesTotalAmount() === 0) {
       return 0;
     } else {
       return (fixedTotal / amountTotal) * 100;
@@ -55,13 +54,13 @@ const UserBalancePane: React.FC<{}> = () => {
   }
 
   const getExpensesTotalAmount = () => {
-    if (expensesFixedOrNotData) 
+    if (expensesFixedOrNotData)
       return expensesFixedOrNotData.fixedExpensesAmount + expensesFixedOrNotData.notFixedExpensesAmount;
     return 0;
   }
 
   const getExpensesFixedTotalAmount = () => {
-    if (expensesFixedOrNotData) 
+    if (expensesFixedOrNotData)
       return expensesFixedOrNotData.fixedExpensesAmount;
     return 0;
   }
@@ -122,42 +121,43 @@ const UserBalancePane: React.FC<{}> = () => {
         <Box
           display='flex'
           justifyContent='center'
-          sx={{ width: '100%'}}>
-          
+          sx={{ width: '100%' }}>
+
           <LinearProgress
-            variant="determinate" 
-            color='primary' 
-            sx={{ height: '1.5em', width: '90%', borderRadius: '4px' }} 
+            variant="determinate"
+            color='primary'
+            sx={{ height: '1.5em', width: '90%', borderRadius: '4px' }}
             value={value}
-          />         
-          
+            
+          />
+
         </Box>
       </Box>
     );
   };
 
   return (
-    <Box >
-      <Typography
-        variant='h5'
-        sx={{
-          fontFamily: 'var(--bs-font-sans-serif)',
-          fontWeight: '600',
-          textAlign: 'center',
-        }}
-        mb={2}
+    <Box >      
+      <Grid2
+        container
+        display="flex"
+        justifyContent="flex-end"
       >
-        Resumo
-      </Typography>
-      <Box
-        display='flex'
-        flexDirection='column'
-        alignItems='center'
-      >        
-        {balanceCard(`Despesas Totais ${formatBRLCurrency(getExpensesTotalAmount())}`)}
-        {linearChart(`Despesas Fixas - ${getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()).toFixed(2)}%`, getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()))}
-      </Box>
-
+        <Grid2
+          size={{ sm: 12, md:6 }}
+          display="flex"
+          justifyContent="center"
+        >
+          {balanceCard(`Despesas Totais ${formatBRLCurrency(getExpensesTotalAmount())}`)}
+        </Grid2>
+        <Grid2
+          size={{ sm: 12, md:6 }}
+          display="flex"
+          justifyContent="center"
+        >
+          {linearChart(`Despesas Fixas - ${getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()).toFixed(2)}%`, getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()))}
+        </Grid2>
+      </Grid2>
     </Box>
   );
 

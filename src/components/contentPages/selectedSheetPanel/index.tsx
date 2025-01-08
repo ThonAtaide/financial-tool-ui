@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Grid2, Typography, Fab, Modal, Backdrop, CircularProgress, Paper } from '@mui/material';
+import { Box, Grid2, Typography, Fab, Modal, Backdrop, CircularProgress, Paper, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
@@ -16,6 +16,7 @@ import StatementTable from '../statementTable';
 import ExpenseForm from '../expenseForm';
 import { ptBR } from '@mui/x-date-pickers/locales';
 import ChartsPanel from '../chartsPanel';
+import { formatBRLCurrency } from '../../../utils/currencyFormatter';
 // import { useExpenses } from './expenses-provider';
 
 export interface SelectedSheetPageParams {
@@ -32,83 +33,25 @@ const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSh
         selectedMonth,
         updateSelectedMonth,
         selectedSheet: selectedSheetData,
-    } = useExpenses() as UserExpensesDataCoxtextType;
-    //   const navigate = useNavigate();
-    //   // const {
-    //   //   selectedExpensesMonth,
-    //   //   updateSelectedExpensesMonth,
-    //   //   userExpensesStatementData,
-    //   //   isLoadinguserExpensesStatementData,
-    //   //   userExpensesSumByCategoryData,
-    //   //   isLoadingUserExpensesSumByCategoryData,
-    //   //   userExpensesSumByFixedOrNot,
-    //   //   isLoadingUserExpensesSumByFixedOrNot,
-    //   //   refreshPageData,
-    //   // } = useExpenses();
-
-    //   const [idFromExpenseToUpdate, setIdFromExpenseToUpdate] = useState(null);
-    //   const [isExpenseModalOpen, setExpenseModalOpen] = useState<boolean>(false);
-
-    //   // const getUserBalance = () => {
-    //   //   return userExpensesSumByCategoryData
-    //   //     && userExpensesSumByCategoryData.length > 0
-    //   //     && userExpensesSumByCategoryData
-    //   //       .map(item => item.amount)
-    //   //       .reduce((total, item) => total + item) || 0;
-    //   // }
-
-    //   // const getUserExpensesByCategoryDataFormatted = () => {
-    //   //   return userExpensesSumByCategoryData && userExpensesSumByCategoryData.map((item) => {
-    //   //     return { id: item.identifier, label: item.label, value: item.amount }
-    //   //   });
-    //   // }
-
-    //   // const getUserExpenseOrNotFormatted = () => {
-    //   //   if (!userExpensesSumByFixedOrNot) {
-    //   //     return { amountTotal: 0, fixedTotal: 0 }
-    //   //   }
-    //   //   const amountTotal = userExpensesSumByFixedOrNot
-    //   //     .reduce((total, item) => total + item.amount, 0);
-    //   //   const fixedExpenseAmountTotal = userExpensesSumByFixedOrNot
-    //   //     .filter(item => item.label === 'Fixed').reduce((total, item) => total + item.amount, 0);
-    //   //   return ({ amountTotal, fixedTotal: fixedExpenseAmountTotal });
-    //   // }
-
-    //   const selectExpenseToUpdate = (id: number) => {
-    //     setIdFromExpenseToUpdate(id);
-    //     setExpenseModalOpen(true);
-    //   }
-
-    //   const cleanExpenseToUpdate = () => {
-    //     setIdFromExpenseToUpdate(null);
-    //   }
-
-    //   const createNewExpense = () => {
-    //     setExpenseModalOpen(true);
-    //   }
-
-    //   const closeExpenseGroupModal = (refresh: boolean = false) => {
-    //     // if (refresh) refreshPageData();
-    //     // cleanExpenseToUpdate();
-    //     setExpenseModalOpen(false);
-    //   }
+        expensesTotalAmount
+    } = useExpenses() as UserExpensesDataCoxtextType;   
 
     const renderStatementPage = () => {
         return selectedSheetData &&
-        <StatementTable
-            sheetId={selectedSheetData.id}
-        />
+            <StatementTable
+                sheetId={selectedSheetData.id}
+            />
     }
 
     const renderChartsPage = () => {
         return selectedSheetData &&
-        <ChartsPanel />
+            <ChartsPanel />
     }
 
     const renderPane = () => {
-        switch(params.sheetPane) {
-            case SheetPanelEnum.STATEMENTS: return renderStatementPage(); 
-            case SheetPanelEnum.CHARTS: return renderChartsPage();            
+        switch (params.sheetPane) {
+            case SheetPanelEnum.STATEMENTS: return renderStatementPage();
+            case SheetPanelEnum.CHARTS: return renderChartsPage();
         }
     }
 
@@ -140,6 +83,18 @@ const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSh
                     }}
                 />
             </Box>
+            <Box display="flex" justifyContent="flex-end" pr={4}>
+                <Box>
+                    <TextField
+                        slotProps={{
+                            input: {
+                                readOnly: true,
+                            },
+                        }}
+                        value={`Total: ${formatBRLCurrency(expensesTotalAmount)}`}
+                    />
+                </Box>
+            </Box>
             <Box
                 display='flex'
                 justifyContent='center'
@@ -156,53 +111,8 @@ const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSh
                     }}
                 >
                     {renderPane()}
-
-                    {/* {getUserExpensesByCategoryDataFormatted() && getUserExpensesByCategoryDataFormatted().length > 0 && <Grid
-              key='pieChart'
-              item
-              xs={12}
-              sm={12}
-              md={6}
-              lg={6}
-              xl={4}
-              p={3}
-              sx={{ textAlign: 'center' }}
-            >
-              <CustomPieChart title="Despesas por categoria" data={getUserExpensesByCategoryDataFormatted()} />
-            </Grid>} */}
-                    {/* {selectedSheetData &&
-                        <StatementTable
-                            sheetId={selectedSheetData.id}
-                        />
-                    } */}
-                    {/* {userExpensesSumByFixedOrNot && <Grid
-              key='balance'
-              item
-              xs={12}
-              sm={12}
-              md={6}
-              lg={6}
-              xl={4}
-              p={3}
-              sx={{ textAlign: 'center' }}
-            >
-              <UserBalancePane balance={getUserBalance()} fixedExpenseInfo={getUserExpenseOrNotFormatted()} />
-            </Grid>} */}
-
                 </Paper>
-
             </Box>
-            {/* <Fab
-        color="primary"
-        aria-label="add"
-        onClick={createNewExpense}
-        sx={{ position: 'fixed', bottom: 16, right: 16, height: '6rem', width: '6rem' }}
-      >
-        <AddIcon sx={{ height: '3rem', width: '3rem' }} />
-      </Fab> */}
-
-
-            
         </Box>
     );
 }

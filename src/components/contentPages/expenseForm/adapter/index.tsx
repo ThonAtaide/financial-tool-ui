@@ -5,6 +5,7 @@ import { retrieveExpenseCategoriesBy } from '../../../../integration/fin-tool-ap
 import { createUserExpense, updateExpense, getExpenseById } from '../../../../integration/fin-tool-api/expenses';
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { ExpenseDomain } from '../../../../domain/expense';
+import { TreeViewBaseItem } from '@mui/x-tree-view';
 
 export enum ExpenseFormActionEnum {
   CREATE,
@@ -18,12 +19,12 @@ export interface ExpenseFormDataParamsI {
     action: ExpenseFormActionEnum,
 }
 
-interface TextFieldData<T> {
+export interface TextFieldData<T> {
     value: T,
     helperText: string | null
 }
 
-const defaultExpenseType = new ExpenseTypeDomain(99999, 'Default', 999999)
+const defaultExpenseType = new ExpenseTypeDomain(99999, 'Default', 999999, false);
 
 export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataParamsI) => {
 
@@ -32,8 +33,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
     const [selectedExpenseTypeField, setSelectedExpenseTypeField] = useState<TextFieldData<number>>({ value: defaultExpenseType.id, helperText: null });
     const [purchaseDateField, setPurchaseDateField] = useState<dayjs.Dayjs>(dayjs(new Date()));
     const [isFixedField, setIsFixedField] = useState<boolean>(false);
-    const [expenseCategories, setExpenseCategories] = useState<ExpenseCategoryDomain[]>([]);
-    
+    const [expenseCategories, setExpenseCategories] = useState<ExpenseCategoryDomain[]>([]);    
 
     const { executeStatelessRequest: createExpenseRequest } = useApiRequestStatelessHook({ apiRequest: createUserExpense })
     const { executeStatelessRequest: updateExpenseRequest } = useApiRequestStatelessHook({ apiRequest: updateExpense })

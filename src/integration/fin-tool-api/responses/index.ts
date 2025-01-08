@@ -28,6 +28,7 @@ export interface ExpenseTypeResponse {
     id: number,
     name: string,
     categoryId: number,
+    isManagedByCustomer: boolean,
 }
 
 export interface ExpenseCategoryResponse {
@@ -73,6 +74,10 @@ export interface ExpenseGroupedByCategoriesSummaryResponse {
 export interface ExpenseGroupedByIsFixedOrNotResponse {
     label: string,
     amount: number
+}
+
+export interface UserExpensesAmountSumResponse {
+    amount: number,
 }
 
 export interface PageableResponse<T> {

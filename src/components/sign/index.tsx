@@ -37,7 +37,6 @@ const SignPage: React.FC<SignPageManagement> = (signPageManagement: SignPageMana
     >
       <Box
         sx={{
-          marginTop: '2rem',
           display: 'flex',
           justifyContent: 'center'
         }}

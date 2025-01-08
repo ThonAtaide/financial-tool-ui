@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Modal, Paper, Typography } from '@mui/material';
+import { Box, Modal, Paper, Tooltip, Typography } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,6 +16,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpenseForm from '../expenseForm';
 import { StatementTableParams, useStatementTableAdapter } from './adapter';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 
 const StatementTable: React.FC<StatementTableParams> = (params: StatementTableParams) => {
@@ -36,12 +38,20 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
     expenseFormAction,
   } = useStatementTableAdapter(params);
 
+  const formatRecurringColumn = (value: any) => (
+    <>
+      {value && <Tooltip title="Despesa Fixa"> 
+        <PushPinIcon /> 
+      </Tooltip>}
+    </>
+  )
+
   interface Column {
-    id: 'id' | 'description' | 'amount' | 'expenseType' | 'datPurchase';
+    id: 'id' | 'description' | 'amount' | 'expenseType' | 'datPurchase' | 'isFixedExpense';
     label: string;
     minWidth?: number;
     align?: 'center';
-    format?: (value: any) => string;
+    format?: (value: any) => any;
   }
 
   const columns: Column[] = [
@@ -49,6 +59,7 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
     { id: 'amount', label: 'Valor', align: "center", format: (value: any) => `${formatBRLCurrency(value)}` },
     { id: 'expenseType', label: 'Categoria', align: "center" },
     { id: 'datPurchase', label: 'Data', align: "center", format: (value: any) => dayjs(value).format('DD/MM/YYYY') },
+    { id: 'isFixedExpense', label: '', align: "center", format: (value: any) => formatRecurringColumn(value) },
   ];
 
 
@@ -81,7 +92,6 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
               <TableRow>
                 {columns.map((column) => (
                   <TableCell
-                    // sx={{ fontWeight: 'bold' }}
                     key={column.id}
                     align="center"
                   >
@@ -119,7 +129,6 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
                             <Typography
                             >
                               {column.format ? column.format(value) : value.toString()}
-
                             </Typography>
                           </TableCell>
                         );

@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import React from 'react';
 import CustomPieChart from '../customPieChart';
 import UserBalancePane from '../balance';
@@ -20,6 +20,7 @@ const ChartsPanel: React.FC<{}> = ({ }) => {
                 Estatísticas
             </Typography>
             <UserBalancePane />
+            <Divider component="li" />
             <CustomPieChart />
         </Box>
     )

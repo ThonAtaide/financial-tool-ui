@@ -17,11 +17,10 @@ export interface PieChartDataI {
 
 const CustomPieChart: React.FC<{}> = ({}) => {
   
-  const { selectedMonth, selectedSheet } = useExpenses() as UserExpensesDataCoxtextType;
+  const { selectedMonth, selectedSheet, expensesTotalAmount } = useExpenses() as UserExpensesDataCoxtextType;
   const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
   const { executeStatelessRequest: fetchExpenseCategoriesData } = useApiRequestStatelessHook({apiRequest: fetchUserExpensesGroupedByCategory})
-  
-  const [totalBalance, setTotalBalance] = useState<number>(0);
+    
   const [expenseCategoriesData, setExpenseCategoriesData] = useState<PieChartDataI[]>([]);
 
   const loadChartData = () => {
@@ -29,9 +28,7 @@ const CustomPieChart: React.FC<{}> = ({}) => {
     fetchExpenseCategoriesData({sheetId: selectedSheet!.id, from: selectedMonth!.format('YYYY-MM')})
     .then(res => {
       const mappedData = res.map(item => { return {id: item.id, value: item.amount, label: item.label}})
-      setExpenseCategoriesData(mappedData);
-      const total = res.reduce((total, item) => total + item.amount, 0);
-      setTotalBalance(total)
+      setExpenseCategoriesData(mappedData);      
     })
     .catch(err => console.log(err))
     .finally(() => finishLoading());
@@ -63,7 +60,7 @@ const CustomPieChart: React.FC<{}> = ({}) => {
         {...pieParams}
         series={[
           {
-            valueFormatter: (item) => `${formatBRLCurrency(item.value)} - ${((item.value / totalBalance) * 100).toFixed(2)}%`,
+            valueFormatter: (item) => `${formatBRLCurrency(item.value)} - ${((item.value / expensesTotalAmount) * 100).toFixed(2)}%`,
             data: expenseCategoriesData,
             highlightScope: { faded: 'global', highlighted: 'item' },
             faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },

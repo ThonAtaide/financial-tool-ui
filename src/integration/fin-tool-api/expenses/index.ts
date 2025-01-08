@@ -1,7 +1,7 @@
 import { AxiosPromise, AxiosResponse } from "axios";
 import { axios_client } from "..";
 import { ExpenseTypeRequest } from "../requests";
-import { ExpenseGroupedByCategoriesSummaryResponse, ExpenseGroupedByIsFixedOrNotResponse, ExpenseTypeResponse, PageableResponse } from "../responses";
+import { ExpenseGroupedByCategoriesSummaryResponse, ExpenseGroupedByIsFixedOrNotResponse, ExpenseTypeResponse, PageableResponse, UserExpensesAmountSumResponse } from "../responses";
 import { ExpenseDomain } from "../../../domain/expense";
 
 export interface UserExpenseRequest {
@@ -68,6 +68,11 @@ export interface UserExpensesGroupedByIsFixedOrNotRequest {
     from: string,
 }
 
+export interface UserExpensesAmountSumRequest {
+    sheetId: number,
+    from: string,
+}
+
 export const fetchUserExpenses = (userExpensesFetch: UserExpensesFetchRequest)
     : Promise<AxiosResponse<PageableResponse<UserExpenseResponse>>> => {
     console.log()
@@ -108,4 +113,10 @@ export const fetchUserExpensesGroupedByFixedOrNot = (request: UserExpensesGroupe
     );
 }
 
-
+export const fetchUserExpensesMonthAmountSum = (request: UserExpensesAmountSumRequest)
+: Promise<AxiosResponse<UserExpensesAmountSumResponse>> => {
+    return axios_client.get<UserExpensesAmountSumResponse>(
+        `/sheet/${request.sheetId}/expense/consolidated?monthRange=${request.from}`,
+        { data: {} }
+    );
+}

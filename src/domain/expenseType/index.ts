@@ -28,15 +28,18 @@ export class ExpenseTypeDomain {
     id: number;
     name: string;
     categoryId: number;
+    isEditable: boolean;
 
     constructor(
         id: number,
         name: string,
-        categoryId: number
+        categoryId: number,
+        isEditable: boolean,
     ) {
         this.id = id;
         this.name = name;
         this.categoryId = categoryId;
+        this.isEditable = isEditable;
     }
 
     static fromResponse(
@@ -45,7 +48,8 @@ export class ExpenseTypeDomain {
         return new this(
             expenseTypeResponse.id,
             expenseTypeResponse.name,
-            expenseTypeResponse.categoryId
+            expenseTypeResponse.categoryId,
+            expenseTypeResponse.isManagedByCustomer,
         );
     }
 

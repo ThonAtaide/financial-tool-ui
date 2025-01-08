@@ -16,7 +16,7 @@ export interface ExpenseFixedOrNotInfoSummary {
 
 const UserBalancePane: React.FC<{}> = () => {
 
-  const { selectedMonth, getDateStartRange, selectedSheet } = useExpenses() as UserExpensesDataCoxtextType;
+  const { selectedMonth, getDateStartRange, selectedSheet, expensesTotalAmount } = useExpenses() as UserExpensesDataCoxtextType;
   const { executeStatelessRequest: fetchExpenseFixesOrNotData } = useApiRequestStatelessHook({ apiRequest: fetchUserExpensesGroupedByFixedOrNot })
 
   const [expensesFixedOrNotData, setExpensesFixedOrNotData] = useState<ExpenseFixedOrNotInfoSummary | null>(null);
@@ -45,18 +45,12 @@ const UserBalancePane: React.FC<{}> = () => {
 
 
 
-  const getFixedExpenseChartValue = (amountTotal: number, fixedTotal: number) => {
-    if (getExpensesTotalAmount() === 0) {
+  const getFixedExpenseChartPercentValue = (fixedTotal: number) => {
+    if (expensesTotalAmount === 0) {
       return 0;
     } else {
-      return (fixedTotal / amountTotal) * 100;
+      return (fixedTotal / expensesTotalAmount) * 100;
     }
-  }
-
-  const getExpensesTotalAmount = () => {
-    if (expensesFixedOrNotData)
-      return expensesFixedOrNotData.fixedExpensesAmount + expensesFixedOrNotData.notFixedExpensesAmount;
-    return 0;
   }
 
   const getExpensesFixedTotalAmount = () => {
@@ -128,7 +122,6 @@ const UserBalancePane: React.FC<{}> = () => {
             color='primary'
             sx={{ height: '1.5em', width: '90%', borderRadius: '4px' }}
             value={value}
-            
           />
 
         </Box>
@@ -137,27 +130,14 @@ const UserBalancePane: React.FC<{}> = () => {
   };
 
   return (
-    <Box >      
-      <Grid2
-        container
-        display="flex"
-        justifyContent="flex-end"
+    <Box >
+      <Box
+        display='flex'
+        flexDirection='column'
+        alignItems='center'
       >
-        <Grid2
-          size={{ sm: 12, md:6 }}
-          display="flex"
-          justifyContent="center"
-        >
-          {balanceCard(`Despesas Totais ${formatBRLCurrency(getExpensesTotalAmount())}`)}
-        </Grid2>
-        <Grid2
-          size={{ sm: 12, md:6 }}
-          display="flex"
-          justifyContent="center"
-        >
-          {linearChart(`Despesas Fixas - ${getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()).toFixed(2)}%`, getFixedExpenseChartValue(getExpensesTotalAmount(), getExpensesFixedTotalAmount()))}
-        </Grid2>
-      </Grid2>
+        {linearChart(`Despesas Fixas - ${getFixedExpenseChartPercentValue(getExpensesFixedTotalAmount()).toFixed(2)}%`, getFixedExpenseChartPercentValue(getExpensesFixedTotalAmount()))}
+      </Box>
     </Box>
   );
 

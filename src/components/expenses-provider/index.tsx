@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { fetch_sheet_by_id } from '../../integration/fin-tool-api/sheets';
 import { useApiRequestWithStateResult } from '../hook/api-request-statefull';
 import { SheetResponse } from '../../integration/fin-tool-api/responses';
+import { useApiRequestStatelessHook } from '../hook/api-request-simple';
+import { fetchUserExpensesMonthAmountSum } from '../../integration/fin-tool-api/expenses';
 
 export type UserExpensesDataCoxtextType = {
   selectedMonth: dayjs.Dayjs | null
@@ -11,6 +13,7 @@ export type UserExpensesDataCoxtextType = {
   selectedSheet: SheetResponse | null | undefined
   getDateStartRange: () => string | null
   getDateEndRange: () => string | null
+  expensesTotalAmount: number
 }
 
 const ExpensesContext = createContext<UserExpensesDataCoxtextType | null>(null);
@@ -20,15 +23,31 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const { id } = useParams();
 
   const { data: sheetData, statefullRequestApi: retrieveSheetByIdRequest } = useApiRequestWithStateResult({initialValue: null, apiRequest: fetch_sheet_by_id })
-  
+  const { executeStatelessRequest: fetchExpensesTotalAmount } = useApiRequestStatelessHook({apiRequest: fetchUserExpensesMonthAmountSum})
+
   const [selectedMonth, setSelectedMonth] = useState<dayjs.Dayjs | null>(dayjs(new Date()));
+  const [userExpensesAmountSum, setUserExpensesAmountSum] = useState<number>(0);
 
   useEffect(() => {
     if (id) {
       retrieveSheetByIdRequest({sheetId: parseInt(id)})
+      loadUserExpensesTotalAmount();
+    }    
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      loadUserExpensesTotalAmount();
+    }    
+  }, [selectedMonth]);
+
+  const loadUserExpensesTotalAmount = () => {
+    if (id) {
+      fetchExpensesTotalAmount({ sheetId: parseInt(id), from: selectedMonth!.format('YYYY-MM') })
+      .then(res => setUserExpensesAmountSum(res.amount))
+      .catch(err => console.log())
     }
-    
-  }, []);  
+  }
 
   const getDateStartRange = (): string | null => selectedMonth && selectedMonth.startOf('month').format('YYYY-MM-DD') || null
 
@@ -47,7 +66,8 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateSelectedMonth,
         selectedSheet: sheetData,
         getDateStartRange,
-        getDateEndRange
+        getDateEndRange,
+        expensesTotalAmount: userExpensesAmountSum
       }}
     >
       {children}

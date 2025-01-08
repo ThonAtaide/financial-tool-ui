@@ -87,7 +87,9 @@ const StatementTableAdapter = (params: StatementTableParams) => {
                 from,
                 until,
                 selectedCategories: []
-            }).then(res => setExpensesData(res))
+            })
+            .then(res => setExpensesData(res))
+            .catch(err => console.log(err))
             .finally(() => finishLoading())
 
         }

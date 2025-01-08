@@ -13,7 +13,8 @@ export type UserExpensesDataCoxtextType = {
   selectedSheet: SheetResponse | null | undefined
   getDateStartRange: () => string | null
   getDateEndRange: () => string | null
-  expensesTotalAmount: number
+  expensesTotalAmount: number,
+  loadUserExpensesTotalAmount: () => void
 }
 
 const ExpensesContext = createContext<UserExpensesDataCoxtextType | null>(null);
@@ -67,7 +68,8 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         selectedSheet: sheetData,
         getDateStartRange,
         getDateEndRange,
-        expensesTotalAmount: userExpensesAmountSum
+        expensesTotalAmount: userExpensesAmountSum,
+        loadUserExpensesTotalAmount,
       }}
     >
       {children}

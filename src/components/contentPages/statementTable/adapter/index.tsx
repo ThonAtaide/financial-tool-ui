@@ -20,6 +20,7 @@ const StatementTableAdapter = (params: StatementTableParams) => {
         getDateEndRange,
         getDateStartRange,
         selectedMonth,
+        loadUserExpensesTotalAmount,
     } = useExpenses() as UserExpensesDataCoxtextType;
 
     const [isExpenseModalOpen, setExpenseModalOpen] = useState<boolean>(false);
@@ -77,6 +78,7 @@ const StatementTableAdapter = (params: StatementTableParams) => {
 
     const loadUserExpensesStatementData = () => {
         if (selectedMonth) {
+            loadUserExpensesTotalAmount();
             const from = getDateStartRange()!!;
             const until = getDateEndRange()!!;
             startLoading();

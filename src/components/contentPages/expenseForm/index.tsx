@@ -127,7 +127,7 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
             borderBottomWidth: '0.5px',
             borderBottomColor: 'grey'
           }}
-
+          key={`category-sub-header${category.id}`}
         >
           <Typography
             alignContent="center"

@@ -17,7 +17,8 @@ import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
 import SelectedSheetPage, { SheetPanelEnum } from './components/contentPages/selectedSheetPanel';
 import { ExpensesProvider } from './components/expenses-provider';
-import 'dayjs/locale/en-gb';
+import 'dayjs/locale/pt-br';
+
 
 
 const router = createBrowserRouter([
@@ -55,7 +56,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <DarkThemeProvider>
     <AuthDataProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='en-gb'>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='pt-br'>
         <PopupProvider>
           <GlobalLoadingProvider>
             <Popup />

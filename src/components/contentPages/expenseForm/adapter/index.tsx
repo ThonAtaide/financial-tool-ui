@@ -6,6 +6,7 @@ import { createUserExpense, updateExpense, getExpenseById } from '../../../../in
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { ExpenseDomain } from '../../../../domain/expense';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
+import { PopupProviderContextType, usePopup } from '../../../popup/provider';
 
 export enum ExpenseFormActionEnum {
   CREATE,
@@ -39,6 +40,8 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
     const { executeStatelessRequest: updateExpenseRequest } = useApiRequestStatelessHook({ apiRequest: updateExpense })
     const { executeStatelessRequest: fetchExpenseByIdRequest } = useApiRequestStatelessHook({ apiRequest: getExpenseById })
     const { executeStatelessRequest: fetchExpenseCategoriesRequest } = useApiRequestStatelessHook({ apiRequest: retrieveExpenseCategoriesBy })
+
+    const { displaySuccessPopup } = usePopup() as PopupProviderContextType;
 
     const expenseDescriptionIsValid = (): boolean => {
         if (!descriptionField || !descriptionField.value || descriptionField.value.length < 2) {
@@ -122,8 +125,10 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             purchaseDateField.toDate(),
             findExpenseType(selectedExpenseTypeField.value)!!
           )
-        ).then((res) => expenseFormDataParams.closeForm(true))
-          .catch(err => console.log(err));
+        ).then((res) => {
+          displaySuccessPopup('Despesa criada!', 'A despesa foi criada com sucesso.');
+          expenseFormDataParams.closeForm(true)
+        }).catch(err => console.log(err));
       }
     
       const updateExistedExpense = () => {
@@ -138,6 +143,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             findExpenseType(selectedExpenseTypeField.value)!!
           )
         ).then(response => {
+          displaySuccessPopup('Despesa atualizada!', 'A despesa foi atualizada com sucesso.');
           expenseFormDataParams.closeForm(true);
         }).catch(err => { });
       }

@@ -58,8 +58,8 @@ const StatementTableAdapter = (params: StatementTableParams) => {
 
     const closeExpenseGroupModal = (refresh: boolean = false) => {
         if (refresh) {
-            loadUserExpensesStatementData()
             setSelectedExpense(null);
+            loadUserExpensesStatementData();
         }
         setExpenseModalOpen(false);
     }
@@ -70,8 +70,9 @@ const StatementTableAdapter = (params: StatementTableParams) => {
                 sheetId: params.sheetId,
                 expenseId: selectedExpense!!
             }).then(res => {
-                displaySuccessPopup('Despesa removida!', 'A despesa foi removida com sucesso.')
-                loadUserExpensesStatementData()
+                displaySuccessPopup('Despesa removida!', 'A despesa foi removida com sucesso.');
+                setSelectedExpense(null);          
+                loadUserExpensesStatementData();
             }).catch(err => console.log(err))
         }
     }

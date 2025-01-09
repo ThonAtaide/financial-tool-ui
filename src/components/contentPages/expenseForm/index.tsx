@@ -209,8 +209,11 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
 
   return (
     <Box 
+      tabIndex={-1}
       ref={ref} 
       sx={style}
+      component="form"
+      onSubmit={handleSubmit}
     >
       <Typography
         id="modal-modal-title"
@@ -225,7 +228,6 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
       >
         Despesa
       </Typography>
-      <form autoComplete='off' onSubmit={handleSubmit}>
         <Box
           pb={2}
         >
@@ -358,7 +360,6 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
             Fechar
           </Button>
         </Box>
-      </form>
       {expenseTypeFormData.formData && <ExpenseTypeFormDialog
         sheetId={expenseFormDataParams.sheetId}
         isOpen={expenseTypeFormData.isOpen}

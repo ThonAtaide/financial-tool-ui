@@ -1,11 +1,10 @@
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { ExpenseCategoryDomain, ExpenseTypeDomain } from '../../../../domain/expenseType';
-import { retrieveExpenseCategoriesBy } from '../../../../integration/fin-tool-api/expenseCategories';
+import { deleteExpenseType, retrieveExpenseCategoriesBy } from '../../../../integration/fin-tool-api/expenseCategories';
 import { createUserExpense, updateExpense, getExpenseById } from '../../../../integration/fin-tool-api/expenses';
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { ExpenseDomain } from '../../../../domain/expense';
-import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { PopupProviderContextType, usePopup } from '../../../popup/provider';
 
 export enum ExpenseFormActionEnum {
@@ -25,6 +24,15 @@ export interface TextFieldData<T> {
     helperText: string | null
 }
 
+interface ExpenseTypeFormData {
+  isOpen: boolean,
+  formData?: ExpenseTypeData | null
+}
+interface ExpenseTypeData {
+  categoryId: number,
+  expenseTypeId: number | null,
+}
+
 const defaultExpenseType = new ExpenseTypeDomain(99999, 'Default', 999999, false);
 
 export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataParamsI) => {
@@ -35,13 +43,43 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
     const [purchaseDateField, setPurchaseDateField] = useState<dayjs.Dayjs>(dayjs(new Date()));
     const [isFixedField, setIsFixedField] = useState<boolean>(false);
     const [expenseCategories, setExpenseCategories] = useState<ExpenseCategoryDomain[]>([]);    
+    const [collapsedCategories, setCollapsedCategories] = useState<number[]>([]);
+    const [expenseTypeFormData, setExpenseTypeFormData] = useState<ExpenseTypeFormData>({ isOpen: false });
 
     const { executeStatelessRequest: createExpenseRequest } = useApiRequestStatelessHook({ apiRequest: createUserExpense })
     const { executeStatelessRequest: updateExpenseRequest } = useApiRequestStatelessHook({ apiRequest: updateExpense })
     const { executeStatelessRequest: fetchExpenseByIdRequest } = useApiRequestStatelessHook({ apiRequest: getExpenseById })
     const { executeStatelessRequest: fetchExpenseCategoriesRequest } = useApiRequestStatelessHook({ apiRequest: retrieveExpenseCategoriesBy })
+    const { executeStatelessRequest: remove } = useApiRequestStatelessHook({ apiRequest: deleteExpenseType });
 
     const { displaySuccessPopup } = usePopup() as PopupProviderContextType;
+
+    const removeExpenseType = (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>, 
+      expenseTypeId: number
+    ) => {
+        e.preventDefault();
+        
+        // startLoading();
+        remove({ sheetId: expenseFormDataParams.sheetId, expenseTypeId })
+          .then(() => {
+            setSelectedExpenseTypeField({value: 99999, helperText: null})
+            loadExpenseCategories();
+          })
+          .catch(err => console.log(err));
+          // .finally(() => finishLoading());
+      
+    }
+  
+    const clickListSubHeader = (id: number) => {
+      if (collapsedCategories.includes(id)) {
+        setCollapsedCategories(collapsedCategories.filter(item => item !== id))
+      } else {
+        setCollapsedCategories([...collapsedCategories, id])
+      }
+    }
+  
+    
 
     const expenseDescriptionIsValid = (): boolean => {
         if (!descriptionField || !descriptionField.value || descriptionField.value.length < 2) {
@@ -183,6 +221,12 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         setExpenseCategories,
         fetchExpenseById,
         handleSubmit,
-        loadExpenseCategories
+        loadExpenseCategories,
+        collapsedCategories,
+        setCollapsedCategories,
+        expenseTypeFormData,
+        setExpenseTypeFormData,
+        clickListSubHeader,
+        removeExpenseType,
        }
 }

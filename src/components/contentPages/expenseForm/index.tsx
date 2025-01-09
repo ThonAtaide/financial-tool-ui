@@ -48,15 +48,6 @@ function NumberFormatCustom(props: { [x: string]: any; name?: any; inputRef?: an
   );
 }
 
-interface ExpenseTypeFormData {
-  isOpen: boolean,
-  formData?: ExpenseTypeData | null
-}
-interface ExpenseTypeData {
-  categoryId: number,
-  expenseTypeId: number | null,
-}
-
 const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expenseFormDataParams, ref) => {
 
   const {
@@ -74,39 +65,19 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
     loadExpenseCategories,
     fetchExpenseById,
     handleSubmit,
-  } = UseExpenseFormAdapter(expenseFormDataParams);
-
-  const { executeStatelessRequest: remove } = useApiRequestStatelessHook({ apiRequest: deleteExpenseType });
-  const [collapsedCategories, setCollapsedCategories] = useState<number[]>([]);
-  const [expenseTypeFormData, setExpenseTypeFormData] = useState<ExpenseTypeFormData>({ isOpen: false });
+    collapsedCategories,
+    setCollapsedCategories,
+    clickListSubHeader,
+    expenseTypeFormData,
+    setExpenseTypeFormData,
+    removeExpenseType,
+  } = UseExpenseFormAdapter(expenseFormDataParams);  
 
 
   useEffect(() => {
     loadExpenseCategories();
     fetchExpenseById();
   }, []);
-
-  const removeExpenseType = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, expenseTypeId: number) => {
-      e.preventDefault();
-      
-      // startLoading();
-      remove({ sheetId: expenseFormDataParams.sheetId, expenseTypeId })
-        .then(() => {
-          setSelectedExpenseTypeField({value: 99999, helperText: null})
-          loadExpenseCategories();
-        })
-        .catch(err => console.log(err));
-        // .finally(() => finishLoading());
-    
-  }
-
-  const clickListSubHeader = (id: number) => {
-    if (collapsedCategories.includes(id)) {
-      setCollapsedCategories(collapsedCategories.filter(item => item !== id))
-    } else {
-      setCollapsedCategories([...collapsedCategories, id])
-    }
-  }
 
   const renderSubHeaderButton = (id: number) => {
     if (collapsedCategories.includes(id)) {

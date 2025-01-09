@@ -1,5 +1,5 @@
-import { React, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Box, Paper, Typography, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { deleteExpenseGroup } from '../../../utils/backend-client';

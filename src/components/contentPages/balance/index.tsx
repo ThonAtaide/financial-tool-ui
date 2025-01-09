@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid2, Typography } from '@mui/material';
-import { formatBRLCurrency } from '../../../utils/currencyFormatter';
+import { Box, Typography } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchUserExpensesGroupedByFixedOrNot } from '../../../integration/fin-tool-api/expenses';
 import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provider';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
-import { useGlobalLoading, GlobalLoadingContextType } from '../../loading/global-loading/provider';
 
 export interface ExpenseFixedOrNotInfoSummary {
   fixedExpensesAmount: number,
   notFixedExpensesAmount: number,
 }
-
-
 
 const UserBalancePane: React.FC<{}> = () => {
 
@@ -57,35 +53,7 @@ const UserBalancePane: React.FC<{}> = () => {
     if (expensesFixedOrNotData)
       return expensesFixedOrNotData.fixedExpensesAmount;
     return 0;
-  }
-
-  const balanceCard = (text: string) => {
-    return (
-      <Box
-        sx={{
-          width: '80%',
-          backgroundColor: 'rgb(2, 178, 175)',
-          borderRadius: '0.5em',
-          height: '5em',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-        mb={4}
-      >
-        <Typography
-          variant='h6'
-          sx={{
-            fontFamily: 'var(--bs-font-sans-serif)',
-            fontWeight: '600',
-            color: 'black'
-          }}
-        >
-          {text}
-        </Typography>
-      </Box>
-    );
-  };
+  }  
 
   const linearChart = (text: string, value: number) => {
     return (
@@ -115,15 +83,14 @@ const UserBalancePane: React.FC<{}> = () => {
         <Box
           display='flex'
           justifyContent='center'
-          sx={{ width: '100%' }}>
-
+          sx={{ width: '100%' }}
+        >
           <LinearProgress
             variant="determinate"
             color='primary'
             sx={{ height: '1.5em', width: '90%', borderRadius: '4px' }}
             value={value}
           />
-
         </Box>
       </Box>
     );

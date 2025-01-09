@@ -4,8 +4,8 @@ import React, { createContext, useState, useContext } from 'react'
 export type PopupProviderContextType = {
   show: boolean
   data: PopData | null,
-  displaySuccessPopup: (title: string, message: string) => void,
-  displayErrorPopup: (title: string, message: string) => void,
+  displaySuccessPopup: (title: string, message: string | null) => void,
+  displayErrorPopup: (title: string, message: string | null) => void,
   clearPopup: () => void
 }
 

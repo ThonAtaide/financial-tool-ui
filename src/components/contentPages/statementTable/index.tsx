@@ -167,7 +167,8 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
           action={expenseFormAction}
           sheetId={params.sheetId}
           expenseId={selectedExpense}
-          closeForm={closeExpenseGroupModal} />
+          closeForm={closeExpenseGroupModal} 
+        />
       </Modal>
     </Box>
   );

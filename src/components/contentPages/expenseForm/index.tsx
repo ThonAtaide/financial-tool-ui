@@ -57,7 +57,7 @@ interface ExpenseTypeData {
   expenseTypeId: number | null,
 }
 
-const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: ExpenseFormDataParamsI) => {
+const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expenseFormDataParams, ref) => {
 
   const {
     descriptionField,
@@ -208,7 +208,7 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
   }
 
   return (
-    <Box sx={style}>
+    <Box ref={ref} sx={style}>
       <Typography
         id="modal-modal-title"
         variant="h5"
@@ -366,5 +366,5 @@ const ExpenseForm: React.FC<ExpenseFormDataParamsI> = (expenseFormDataParams: Ex
     </Box>
 
   );
-}
+})
 export default ExpenseForm;

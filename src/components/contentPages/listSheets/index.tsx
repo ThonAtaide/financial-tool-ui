@@ -60,7 +60,6 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
     }
 
     const handleOpenSheetForm = (action: SheetFormAction) => {
-        console.log(action)
         setSheetFormAction(action)
     };
 
@@ -103,11 +102,9 @@ const SheetListPanel: React.FC<{}> = ({ }) => {
                     { label: 'Criar', onClick: () => handleOpenSheetForm(SheetFormAction.CREATE), Icon: AddIcon, color: 'info', show: true },
                     { label: 'Editar', onClick: () => handleOpenSheetForm(SheetFormAction.UPDATE), Icon: EditIcon, color: 'info', show: selectedSheet != null },
                     { label: 'Compartilhar', onClick: copyShareLinkToClipBoard, Icon: ShareIcon, color: 'info', show: selectedSheet != null },
-                    // { label: 'Remover', onClick: handleOpenSheetForm, Icon: DeleteIcon, color: 'info', show: selectedSheet != null }
                 ]
             }}
-            />
-            
+            />            
             {sheetFormAction !== null &&
                 <SheetForm
                     sheetId={selectedSheet}

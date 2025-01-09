@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { GlobalLoadingContextType, useGlobalLoading } from '../../../loading/global-loading/provider';
 import { create_sheet, fetch_sheet_by_id, update_sheet } from '../../../../integration/fin-tool-api/sheets';
+import { PopupProvider, PopupProviderContextType, usePopup } from '../../../popup/provider';
 
 export enum SheetFormAction {
     CREATE,
@@ -23,9 +24,9 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
     const { executeStatelessRequest: update_existent_sheet } = useApiRequestStatelessHook({ apiRequest: update_sheet });
     const { executeStatelessRequest: retrieve_sheet } = useApiRequestStatelessHook({ apiRequest: fetch_sheet_by_id });
     const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
+    const { displaySuccessPopup } = usePopup() as PopupProviderContextType;
 
     useEffect(() => {
-        console.log('Abrindo')
         if (sheetData.action === SheetFormAction.UPDATE && sheetData.sheetId) {
             const findSheet = () => {
                 startLoading();
@@ -49,7 +50,10 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                     if (sheetData.sheetId) {                        
                         startLoading();
                         update_existent_sheet({id: sheetData.sheetId, name })
-                            .then(res => sheetData.handleClose(true))
+                            .then(res => {
+                                displaySuccessPopup('Atualização bem sucedida!', 'Sua planilha foi atualizada com sucesso.');
+                                sheetData.handleClose(true);
+                            })
                             .catch(err => console.log('error'))
                             .finally(() => {
                                 finishLoading();
@@ -57,7 +61,10 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                     } else {
                         startLoading();
                         create_new_sheet({ name })
-                            .then(res => sheetData.handleClose(true))
+                            .then(res => {
+                                displaySuccessPopup('Criação bem sucedida!', 'Sua planilha foi criada com sucesso.')
+                                sheetData.handleClose(true)
+                            })
                             .catch(err => console.log('error'))
                             .finally(() => {
                                 finishLoading();                                
@@ -79,6 +86,7 @@ const SheetForm: React.FC<SheetDataI> = (sheetData: SheetDataI) => {
                     variant="standard"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    helperText="É necessário informar um nome."
                 />
             </DialogContent>
             <DialogActions>

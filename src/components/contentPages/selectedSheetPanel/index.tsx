@@ -1,23 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { Box, Grid2, Typography, Fab, Modal, Backdrop, CircularProgress, Paper, TextField } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import React from 'react';
+import { Box, Typography, Paper, TextField } from '@mui/material';
 import dayjs from 'dayjs';
 import { ArrowDropDownIcon, DatePicker } from '@mui/x-date-pickers';
-// import StatementTable from './statementTable';
-// import CustomPieChart from './customPieChart';
-// import UserBalancePane from './balance';
-// import ExpenseForm from './expenseForm';
 import 'dayjs/locale/pt-br';
 import ResponsiveAppBar from '../../header';
 import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provider';
-import FabButtonMenu from '../FabButtonMenu';
 import StatementTable from '../statementTable';
-import ExpenseForm from '../expenseForm';
-import { ptBR } from '@mui/x-date-pickers/locales';
 import ChartsPanel from '../chartsPanel';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
-// import { useExpenses } from './expenses-provider';
 
 export interface SelectedSheetPageParams {
     sheetPane: SheetPanelEnum

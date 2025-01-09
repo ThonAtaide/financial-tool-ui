@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
@@ -9,28 +8,16 @@ import {
 import { AuthDataProvider } from './components/auth-provider/';
 import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 import GlobalLoading from './components/loading/global-loading/component';
-// import LoginPage from './components/login';
 import Popup from './components/popup/component';
 import { PopupProvider } from './components/popup/provider';
-// import LoginPage from './components/login';
-// import { AuthDataProvider } from './components/auth-provider';
-// import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
-// import { PopupProvider } from './components/popup/provider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { PopupProvider } from './components/popup/provider';
-// import Popup from './components/popup/component';
-// import GlobalLoading from './components/loading/global-loading/component';
-// import { AuthDataProvider } from './components/auth-provider';
 import SignPage, { SignViewEnum } from './components/sign';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DarkThemeProvider } from './components/theme-provider';
 import SheetListPanel from './components/contentPages/listSheets';
 import SelectedSheetPage, { SheetPanelEnum } from './components/contentPages/selectedSheetPanel';
 import { ExpensesProvider } from './components/expenses-provider';
-// import { de, enGB, zhCN } from 'date-fns/locale';
 import 'dayjs/locale/en-gb';
-// import { GlobalLoadingProvider } from './components/loading/global-loading/provider';
 
 
 const router = createBrowserRouter([

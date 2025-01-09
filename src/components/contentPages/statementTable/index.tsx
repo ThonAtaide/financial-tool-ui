@@ -16,7 +16,6 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpenseForm from '../expenseForm';
 import { StatementTableParams, useStatementTableAdapter } from './adapter';
-import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
 
@@ -40,7 +39,7 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
 
   const formatRecurringColumn = (value: any) => (
     <>
-      {value && <Tooltip title="Despesa Fixa"> 
+      {value && <Tooltip title="Despesa Recorrente"> 
         <PushPinIcon /> 
       </Tooltip>}
     </>
@@ -61,7 +60,6 @@ const StatementTable: React.FC<StatementTableParams> = (params: StatementTablePa
     { id: 'datPurchase', label: 'Data', align: "center", format: (value: any) => dayjs(value).format('DD/MM/YYYY') },
     { id: 'isFixedExpense', label: '', align: "center", format: (value: any) => formatRecurringColumn(value) },
   ];
-
 
   return (
     <Box p={3}>

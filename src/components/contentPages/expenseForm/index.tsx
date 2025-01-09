@@ -208,7 +208,10 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
   }
 
   return (
-    <Box ref={ref} sx={style}>
+    <Box 
+      ref={ref} 
+      sx={style}
+    >
       <Typography
         id="modal-modal-title"
         variant="h5"

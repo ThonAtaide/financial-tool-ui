@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteExpense, fetchUserExpenses, UserExpenseResponse } from '../../../../integration/fin-tool-api/expenses';
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
-import { useApiRequestWithStateResult } from '../../../hook/api-request-statefull';
 import { useExpenses, UserExpensesDataCoxtextType } from '../../../expenses-provider';
-import GlobalLoading from '../../../loading/global-loading/component';
-import { GlobalLoadingContextType, GlobalLoadingProvider, useGlobalLoading } from '../../../loading/global-loading/provider';
+import { GlobalLoadingContextType, useGlobalLoading } from '../../../loading/global-loading/provider';
 import { PageableResponse } from '../../../../integration/fin-tool-api/responses';
 import { ExpenseFormActionEnum } from '../../expenseForm/adapter';
+import { PopupProviderContextType, usePopup } from '../../../popup/provider';
 
 export interface StatementTableParams {
     sheetId: number
 }
-
-// expensesData: PageableResponse<UserExpenseResponse> | null
 
 const StatementTableAdapter = (params: StatementTableParams) => {    
 
@@ -33,6 +30,7 @@ const StatementTableAdapter = (params: StatementTableParams) => {
     const { executeStatelessRequest: deleteExpenseRequest } = useApiRequestStatelessHook({ apiRequest: deleteExpense })
     const { executeStatelessRequest: retrieveExpenses } = useApiRequestStatelessHook({ apiRequest: fetchUserExpenses });
     const { startLoading, finishLoading } = useGlobalLoading() as GlobalLoadingContextType;
+    const { displaySuccessPopup } = usePopup() as PopupProviderContextType;
 
     useEffect(() => {
         if (selectedMonth)
@@ -71,8 +69,10 @@ const StatementTableAdapter = (params: StatementTableParams) => {
             deleteExpenseRequest({
                 sheetId: params.sheetId,
                 expenseId: selectedExpense!!
-            }).then(res => loadUserExpensesStatementData())
-                .catch(err => console.log(err))
+            }).then(res => {
+                displaySuccessPopup('Despesa removida!', 'A despesa foi removida com sucesso.')
+                loadUserExpensesStatementData()
+            }).catch(err => console.log(err))
         }
     }
 

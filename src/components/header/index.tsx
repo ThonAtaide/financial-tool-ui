@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,7 +10,6 @@ import Container from '@mui/material/Container';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { SvgIconProps } from '@mui/material';
@@ -18,6 +17,7 @@ import { useApiRequestStatelessHook } from '../hook/api-request-simple';
 import { GlobalLoadingContextType, useGlobalLoading } from '../loading/global-loading/provider';
 import { AuthenticatedUserDataContextType, useAuthData } from '../auth-provider';
 import { logout, refresh_user_data } from '../../integration/fin-tool-api/authentication';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export interface ChildrenDataI {
   selectedSheetId?: number | null
@@ -52,7 +52,6 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
 
   useEffect(() => {
     if (!userData) {
-      console.log('aqui')
       startLoading();
       const refresh = () => refreshRequest(null)
         .then(data => setAuthenticatedUserData({ name: data.nickname }))
@@ -75,8 +74,6 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
     action();
     handleCloseSettingsMenu();
   };
-
-
 
   const buildIconButton = (
     title: string,
@@ -121,16 +118,16 @@ const ResponsiveAppBar: React.FC<ChildrenDataI> = (data: ChildrenDataI) => {
       <AppBar position="fixed" sx={{ top: 'auto', bottom: 0 }} color="primary">
         <Container >
           <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-            {buildIconButton("Home", HomeIcon, "/")}
+            {buildIconButton("Inicio", HomeIcon, "/")}
             {data.selectedSheetId && buildIconButton("Gráficos", BarChartIcon, `/sheets/${data.selectedSheetId}/graficos`)}
             {data.selectedSheetId && buildIconButton("Extrato", ReceiptIcon, `/sheets/${data.selectedSheetId}`)}
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Configurações">
+              <Tooltip title="Sair">                
                 <IconButton
-                  onClick={handleOpenSettingsMenu}
+                  onClick={logoutUser}
                 >
-                  <SettingsSuggestIcon fontSize="large" />
+                  <LogoutIcon fontSize='large'/>
                 </IconButton>
               </Tooltip>
               <Menu

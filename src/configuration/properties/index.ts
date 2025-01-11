@@ -1,5 +1,5 @@
 const PROD_PROPERTIES: IConfiguration = {
-    BACKEND_URL: process.env.BACKEND_URL || ''
+    BACKEND_URL: 'https://kathon.click/api'
 }
 
 const DEV_PROPERTIES: IConfiguration = {

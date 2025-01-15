@@ -31,6 +31,14 @@ export interface RetrieveSheetByIdRequest {
     sheetId: number
 }
 
+export interface RetrieveSheetShareInfoRequest {
+    token: string
+}
+
+export interface AcceptShareLinkInviteRequest {
+    token: string
+}
+
 export interface CreateSheetRequest {
     name: string
 }

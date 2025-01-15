@@ -57,13 +57,22 @@ export interface SheetResponse {
     createdBy: string,
     members: Array<SheetMember>,
     datCreation: Date,
-    datUpdate: Date    
+    datUpdate: Date
 }
 
 export interface ShareSheetResponse {
     link: string
 }
 
+export interface RetrieveShareSheetDataResponse {
+    inviterName: string,
+    sheetName: string
+}
+
+export interface AcceptShareLinkInviteResponse {
+    sheetId: number,
+    sheetName: string
+}
 
 export interface ExpenseGroupedByCategoriesSummaryResponse {
     id: number,

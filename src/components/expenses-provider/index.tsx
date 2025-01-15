@@ -13,8 +13,9 @@ export type UserExpensesDataCoxtextType = {
   selectedSheet: SheetResponse | null | undefined
   getDateStartRange: () => string | null
   getDateEndRange: () => string | null
-  expensesTotalAmount: number,
+  expensesTotalAmount: number
   loadUserExpensesTotalAmount: () => void
+  error: any
 }
 
 const ExpensesContext = createContext<UserExpensesDataCoxtextType | null>(null);
@@ -23,18 +24,26 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const { id } = useParams();
 
-  const { data: sheetData, statefullRequestApi: retrieveSheetByIdRequest } = useApiRequestWithStateResult({initialValue: null, apiRequest: fetch_sheet_by_id })
+  const { executeStatelessRequest: retrieveSheetByIdRequest } = useApiRequestStatelessHook({ apiRequest: fetch_sheet_by_id })
   const { executeStatelessRequest: fetchExpensesTotalAmount } = useApiRequestStatelessHook({apiRequest: fetchUserExpensesMonthAmountSum})
 
   const [selectedMonth, setSelectedMonth] = useState<dayjs.Dayjs | null>(dayjs(new Date()));
   const [userExpensesAmountSum, setUserExpensesAmountSum] = useState<number>(0);
+  const [sheetData, setSheetData] = useState<SheetResponse | null>(null);
+  const [error, setError] = useState<any>(null);
 
-  useEffect(() => {
+  useEffect(() => {    
+    loadSheetData();
+    loadUserExpensesTotalAmount();       
+  }, []);
+
+  const loadSheetData = () => {
     if (id) {
       retrieveSheetByIdRequest({sheetId: parseInt(id)})
-      loadUserExpensesTotalAmount();
-    }    
-  }, []);
+      .then(res => setSheetData(res))
+      .catch(err => setError(err));
+    }  
+  }
 
   useEffect(() => {
     if (id) {
@@ -70,6 +79,7 @@ export const ExpensesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         getDateEndRange,
         expensesTotalAmount: userExpensesAmountSum,
         loadUserExpensesTotalAmount,
+        error,
       }}
     >
       {children}

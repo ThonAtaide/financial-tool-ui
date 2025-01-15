@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { axios_client } from "..";
-import { PageableResponse, ShareSheetResponse, SheetResponse } from "../responses";
-import { CreateSheetRequest, RetrieveSheetByIdRequest, ShareSheetRequest, UpdateSheetRequest } from "../requests";
+import { AcceptShareLinkInviteResponse, PageableResponse, RetrieveShareSheetDataResponse, ShareSheetResponse, SheetResponse } from "../responses";
+import { AcceptShareLinkInviteRequest, CreateSheetRequest, RetrieveSheetByIdRequest, RetrieveSheetShareInfoRequest, ShareSheetRequest, UpdateSheetRequest } from "../requests";
 
 export const create_sheet = (request: CreateSheetRequest):
     Promise<AxiosResponse<SheetResponse>> =>
@@ -33,4 +33,16 @@ export const fetch_sheet_by_id = (request: RetrieveSheetByIdRequest):
     Promise<AxiosResponse<SheetResponse>> =>
     axios_client.get<SheetResponse>(
         `/sheet/${request.sheetId}`,
+    );
+
+export const fetch_sheet_share_info = (request: RetrieveSheetShareInfoRequest):
+    Promise<AxiosResponse<RetrieveShareSheetDataResponse>> =>
+    axios_client.get<RetrieveShareSheetDataResponse>(
+        `/sheet/share-link?operation-hash=${request.token}`,
+    );
+
+export const accept_share_link_invite = (request: AcceptShareLinkInviteRequest):
+    Promise<AxiosResponse<AcceptShareLinkInviteResponse>> =>
+    axios_client.post<AcceptShareLinkInviteResponse>(
+        `/sheet/share-link/${request.token}`,
     );

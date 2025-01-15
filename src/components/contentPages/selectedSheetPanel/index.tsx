@@ -8,6 +8,7 @@ import { useExpenses, UserExpensesDataCoxtextType } from '../../expenses-provide
 import StatementTable from '../statementTable';
 import ChartsPanel from '../chartsPanel';
 import { formatBRLCurrency } from '../../../utils/currencyFormatter';
+import ErrorPage from '../../error';
 
 export interface SelectedSheetPageParams {
     sheetPane: SheetPanelEnum
@@ -23,8 +24,9 @@ const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSh
         selectedMonth,
         updateSelectedMonth,
         selectedSheet: selectedSheetData,
-        expensesTotalAmount
-    } = useExpenses() as UserExpensesDataCoxtextType;   
+        expensesTotalAmount,
+        error
+    } = useExpenses() as UserExpensesDataCoxtextType;
 
     const renderStatementPage = () => {
         return selectedSheetData &&
@@ -45,66 +47,68 @@ const SelectedSheetPage: React.FC<SelectedSheetPageParams> = (params: SelectedSh
         }
     }
 
-    return (
-        <Box >
-            <ResponsiveAppBar selectedSheetId={selectedSheetData?.id} />
-            <Box
-                padding={4}
-                sx={{
-                    display: { xs: 'flex', md: 'flex', justifyContent: 'space-between' }
-                }}
-            >
-                <Typography
-                    variant='h4'
+
+    return (error !== null) ? <ErrorPage />
+        : (
+            <Box>
+                <ResponsiveAppBar selectedSheetId={selectedSheetData?.id} />
+                <Box
+                    padding={4}
                     sx={{
-                        fontFamily: 'var(--bs-font-sans-serif)',
-                        fontWeight: '600',
-                        color: "white"
+                        display: { xs: 'flex', md: 'flex', justifyContent: 'space-between' }
                     }}
                 >
-                    Planilha: {selectedSheetData?.name}
-                </Typography>
-                <DatePicker
-                    onAccept={(e) => updateSelectedMonth(e)}
-                    value={dayjs(selectedMonth)}
-                    views={['month', 'year']}
-                    slots={{
-                        openPickerIcon: ArrowDropDownIcon,
-                    }}
-                />
-            </Box>
-            <Box display="flex" justifyContent="flex-end" pr={4}>
-                <Box>
-                    <TextField
-                        slotProps={{
-                            input: {
-                                readOnly: true,
-                            },
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            fontFamily: 'var(--bs-font-sans-serif)',
+                            fontWeight: '600',
+                            color: "white"
                         }}
-                        value={`Total: ${formatBRLCurrency(expensesTotalAmount)}`}
+                    >
+                        Planilha: {selectedSheetData?.name}
+                    </Typography>
+                    <DatePicker
+                        onAccept={(e) => updateSelectedMonth(e)}
+                        value={dayjs(selectedMonth)}
+                        views={['month', 'year']}
+                        slots={{
+                            openPickerIcon: ArrowDropDownIcon,
+                        }}
                     />
                 </Box>
-            </Box>
-            <Box
-                display='flex'
-                justifyContent='center'
-                padding={4}
-                sx={{ backgroundColor: 'transparent' }}
-            >
-                <Paper
-                    square={false}
-                    elevation={6}
-                    sx={{
-                        width: '100%',
-                        marginBottom: '5em',
-                        borderRadius: '0.3em',
-                    }}
+                <Box display="flex" justifyContent="flex-end" pr={4}>
+                    <Box>
+                        <TextField
+                            slotProps={{
+                                input: {
+                                    readOnly: true,
+                                },
+                            }}
+                            value={`Total: ${formatBRLCurrency(expensesTotalAmount)}`}
+                        />
+                    </Box>
+                </Box>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    padding={4}
+                    sx={{ backgroundColor: 'transparent' }}
                 >
-                    {renderPane()}
-                </Paper>
+                    <Paper
+                        square={false}
+                        elevation={6}
+                        sx={{
+                            width: '100%',
+                            marginBottom: '5em',
+                            borderRadius: '0.3em',
+                        }}
+                    >
+                        {renderPane()}
+                    </Paper>
+                </Box>
             </Box>
-        </Box>
-    );
+        );
 }
 
 export default SelectedSheetPage;

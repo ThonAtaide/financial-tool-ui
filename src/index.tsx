@@ -18,6 +18,9 @@ import SheetListPanel from './components/contentPages/listSheets';
 import SelectedSheetPage, { SheetPanelEnum } from './components/contentPages/selectedSheetPanel';
 import { ExpensesProvider } from './components/expenses-provider';
 import 'dayjs/locale/pt-br';
+import ErrorPageReactRouter from './components/error';
+import ErrorBoundary from './components/errorPage';
+import JoinSheetPage from './components/contentPages/joinSheet';
 
 
 
@@ -44,11 +47,17 @@ const router = createBrowserRouter([
   },
   {
     path: "/sheets/:id",
-    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.STATEMENTS} />} />
+    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.STATEMENTS} />} />,
+    errorElement: <ErrorPageReactRouter />,
   },
   {
     path: "/sheets/:id/graficos",
-    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.CHARTS} />} />
+    element: <ExpensesProvider children={<SelectedSheetPage sheetPane={SheetPanelEnum.CHARTS} />} />,
+    errorElement: <ErrorPageReactRouter />,
+  },
+  {
+    path: "/sheets/sharing",
+    element: <JoinSheetPage />
   }
 ]);
 

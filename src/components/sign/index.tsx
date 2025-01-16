@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Grid, Paper } from '@mui/material';
+import { Container, Grid2, Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import './style.css'
@@ -49,13 +49,12 @@ const SignPage: React.FC<SignPageManagement> = (signPageManagement: SignPageMana
             padding: '4rem',
           }}
         >
-          <Grid
+          <Grid2
             container
             columnSpacing={6}
           >
-            <Grid
-              item
-              xs={12} md={6}
+            <Grid2              
+              size={{ xs: 12, md: 6 }}
             >
               <Box mt={16}>
                 <Typography
@@ -94,12 +93,10 @@ const SignPage: React.FC<SignPageManagement> = (signPageManagement: SignPageMana
                   Por isso desenvolvemos uma solução voltada para o gerenciamento de suas despesas.
                 </Typography>
               </Box>
-            </Grid>
-            { renderCard() }
-           
-          </Grid>
+            </Grid2>
+              { renderCard() }       
+          </Grid2>
         </Paper>
-
       </Box>
     </Container>
   )

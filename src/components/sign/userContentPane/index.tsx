@@ -1,4 +1,4 @@
-import { Grid, Box, CardMedia, Typography } from '@mui/material';
+import { Box, CardMedia, Typography, Grid2 } from '@mui/material';
 import React from 'react';
 import logo from '../../../resources/lotus.webp';
 
@@ -9,7 +9,9 @@ export interface ContentPaneI {
 
 const SignContentPane: React.FC<ContentPaneI> = (contentPane: ContentPaneI) => {
     return (
-        <Grid item xs={12} md={6}>
+        <Grid2
+            size={{ xs: 12, md: 6 }}
+        >
             <Box
                 sx={{
                     display: 'flex',
@@ -52,7 +54,7 @@ const SignContentPane: React.FC<ContentPaneI> = (contentPane: ContentPaneI) => {
                 </Typography>
             </Box>
             {contentPane.children}
-        </Grid>
+        </Grid2>
     );
 }
 

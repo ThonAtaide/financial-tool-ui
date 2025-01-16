@@ -56,7 +56,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPageReactRouter />,
   },
   {
-    path: "/sheets/sharing",
+    path: "/sheets/sharing/:token",
     element: <JoinSheetPage />
   }
 ]);

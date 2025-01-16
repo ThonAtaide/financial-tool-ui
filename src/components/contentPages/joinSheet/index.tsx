@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Skeleton } from '@mui/material';
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
 import { accept_share_link_invite, fetch_sheet_share_info } from '../../../integration/fin-tool-api/sheets';
 import { RetrieveShareSheetDataResponse } from '../../../integration/fin-tool-api/responses';
@@ -9,8 +9,7 @@ import ErrorPage from '../../errorPage';
 
 const JoinSheetPage: React.FC<{}> = () => {
     const navigate = useNavigate();
-    const query: URLSearchParams = new URLSearchParams(useLocation().search);
-    const token: string | null = query.get("token");
+    const { token } = useParams();
     const [open, setOpen] = React.useState(false);
     const [error, setError] = React.useState<any>(null);
     const [sheetInfo, setSheetInfo] = React.useState<RetrieveShareSheetDataResponse | null>(null);
@@ -19,17 +18,13 @@ const JoinSheetPage: React.FC<{}> = () => {
     const { executeStatelessRequest: retrieveInfo } = useApiRequestStatelessHook({apiRequest: fetch_sheet_share_info});
     const { executeStatelessRequest: acceptInvite } = useApiRequestStatelessHook({apiRequest: accept_share_link_invite});
     
-    useEffect(() => {
-        if (token) {
-            retrieveInfo({token: token})
+    useEffect(() => { 
+            retrieveInfo({token: token! })
                 .then(res => {
                     setSheetInfo(res);
                     setOpen(true);
                 })
-                .catch(err => navigate("/"));
-        } else {
-            navigate("/");
-        }
+                .catch(err => navigate("/"));        
     }, []);
 
     const handleClose = () => {

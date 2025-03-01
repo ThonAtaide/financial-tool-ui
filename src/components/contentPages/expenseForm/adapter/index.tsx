@@ -6,6 +6,12 @@ import { createUserExpense, updateExpense, getExpenseById } from '../../../../in
 import { useApiRequestStatelessHook } from '../../../hook/api-request-simple';
 import { ExpenseDomain } from '../../../../domain/expense';
 import { PopupProviderContextType, usePopup } from '../../../popup/provider';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const tz = "America/Sao_Paulo";
 
 export enum ExpenseFormActionEnum {
   CREATE,
@@ -36,11 +42,11 @@ interface ExpenseTypeData {
 const defaultExpenseType = new ExpenseTypeDomain(99999, 'Default', 999999, false);
 
 export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataParamsI) => {
-
+    
     const [descriptionField, setDescriptionField] = useState<TextFieldData<string>>({ value: '', helperText: null });
-    const [amountField, setAmountField] = useState<TextFieldData<string>>({ value: '', helperText: null });
+    const [amountField, setAmountField] = useState<TextFieldData<string>>({ value: '0.00', helperText: null });
     const [selectedExpenseTypeField, setSelectedExpenseTypeField] = useState<TextFieldData<number>>({ value: defaultExpenseType.id, helperText: null });
-    const [purchaseDateField, setPurchaseDateField] = useState<dayjs.Dayjs>(dayjs(new Date()));
+    const [purchaseDateField, setPurchaseDateField] = useState<dayjs.Dayjs>(dayjs(new Date()).tz(tz));
     const [isFixedField, setIsFixedField] = useState<boolean>(false);
     const [expenseCategories, setExpenseCategories] = useState<ExpenseCategoryDomain[]>([]);    
     const [collapsedCategories, setCollapsedCategories] = useState<number[]>([]);
@@ -59,16 +65,12 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
       expenseTypeId: number
     ) => {
         e.preventDefault();
-        
-        // startLoading();
         remove({ sheetId: expenseFormDataParams.sheetId, expenseTypeId })
           .then(() => {
             setSelectedExpenseTypeField({value: 99999, helperText: null})
             loadExpenseCategories();
           })
-          .catch(err => console.log(err));
-          // .finally(() => finishLoading());
-      
+          .catch(err => console.log(err));      
     }
   
     const clickListSubHeader = (id: number) => {
@@ -106,33 +108,15 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
           return false;
         }
         return true;
-      }
-
-      const countDecimalDigits = (value: number) => {
-        const value_as_string = value.toString();
-        if (!value_as_string.includes(".")) return 0;
-        return value_as_string.length - (value_as_string.indexOf(".") + 1);
-      }
+      }      
     
       const fetchExpenseById = () => {    
         if (expenseFormDataParams.action === ExpenseFormActionEnum.UPDATE && expenseFormDataParams.expenseId) {
           fetchExpenseByIdRequest({ expenseId: expenseFormDataParams.expenseId, sheetId: expenseFormDataParams.sheetId })
             .then(response => {
-              const decimalDigitsCount = countDecimalDigits(response.amount);
-              let value;
-              if (decimalDigitsCount === 0) {
-                console.log(1);
-                value = response.amount.toString().concat(",00")
-              } else if (decimalDigitsCount === 1) {
-                console.log(2);
-                value = response.amount.toString().replace(".", ",").concat("0")
-              } else {
-                console.log(3);
-                value = response.amount.toString().replace(".", ",")
-              }
-    
+              console.log(response.amount)
               setDescriptionField({ ...descriptionField, value: response.description });
-              setAmountField({ value: value, helperText: null });
+              setAmountField({ value: response.amount, helperText: null });
               setIsFixedField(response.isFixedExpense);
               setSelectedExpenseTypeField({ value: response.expenseType.id, helperText: null })
               setPurchaseDateField(dayjs(response.datPurchase));
@@ -148,8 +132,10 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
       }
       
     
-      const prepareAmountToSave = (value: string): number => {
-        return value && parseFloat(value.replace(',', '.')) || 0;
+      const prepareAmountToSave = (value: string): string => {
+        const x = value && value.replace(',', '.') || "0.00";
+        console.log(x)
+        return x;
       }
     
       const registerNewExpense = () => {
@@ -160,7 +146,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             descriptionField.value,
             prepareAmountToSave(amountField.value),
             isFixedField,
-            purchaseDateField.toDate(),
+            purchaseDateField.tz(tz).format('YYYY-MM-DD'),
             findExpenseType(selectedExpenseTypeField.value)!!
           )
         ).then((res) => {
@@ -177,7 +163,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             descriptionField.value,
             prepareAmountToSave(amountField.value),
             isFixedField,
-            purchaseDateField.toDate(),
+            purchaseDateField.tz(tz).format('YYYY-MM-DD'),
             findExpenseType(selectedExpenseTypeField.value)!!
           )
         ).then(response => {

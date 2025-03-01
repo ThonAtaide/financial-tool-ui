@@ -1,24 +1,23 @@
-import { AxiosPromise, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { axios_client } from "..";
-import { ExpenseTypeRequest } from "../requests";
 import { ExpenseGroupedByCategoriesSummaryResponse, ExpenseGroupedByIsFixedOrNotResponse, ExpenseTypeResponse, PageableResponse, UserExpensesAmountSumResponse } from "../responses";
 import { ExpenseDomain } from "../../../domain/expense";
 
 export interface UserExpenseRequest {
     id?: number | null,
     description: string,
-    amount: number,
+    amount: string,
     isFixedExpense: boolean,
-    datPurchase: Date,
+    datPurchase: string,
     expenseType: number,
 }
 
 export interface UserExpenseResponse {
     id: number,
     description: string,
-    amount: number,
+    amount: string,
     isFixedExpense: boolean,
-    datPurchase: Date,
+    datPurchase: string,
     expenseType: ExpenseTypeResponse
 }
 
@@ -28,13 +27,15 @@ export interface SheetIdAndExpenseIdPairI {
 }
 
 export const createUserExpense = (expenseDomain: ExpenseDomain)
-    : Promise<AxiosResponse<UserExpenseResponse>> =>
-    axios_client.post<UserExpenseResponse>(
+    : Promise<AxiosResponse<UserExpenseResponse>> =>{
+        console.log(expenseDomain)
+        return axios_client.post<UserExpenseResponse>( 
         `/sheet/${expenseDomain.sheetId}/expense`,
         JSON.stringify(expenseDomain.toUserExpenseRequest())
     )
-
+}
 export const updateExpense = (expenseDomain: ExpenseDomain) => {
+    console.log(expenseDomain)
     return axios_client.put(`/sheet/${expenseDomain.sheetId}/expense/${expenseDomain.id}`,
         JSON.stringify(expenseDomain.toUserExpenseRequest())
     )

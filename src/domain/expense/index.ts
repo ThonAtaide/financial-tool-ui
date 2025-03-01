@@ -5,18 +5,18 @@ export class ExpenseDomain {
     id?: number | null;
     sheetId: number;
     description: string;
-    amount: number;
+    amount: string;
     isFixedExpense: boolean;
-    datPurchase: Date;
+    datPurchase: string;
     expenseType: ExpenseTypeDomain;
 
     constructor(
         id: number | null,
         sheetId: number,
         description: string,
-        amount: number,
+        amount: string,
         isFixedExpense: boolean = false,
-        datPurchase: Date,
+        datPurchase: string,
         expenseType: ExpenseTypeDomain,
     ) {
         this.id = id;

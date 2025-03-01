@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Grid2, ListSubheader, Collapse, IconButton, Divider, Popover } from '@mui/material';
-import { ExpenseDomain } from '../../../domain/expense';
+import React, { useEffect } from 'react';
+import { Box, Button, InputLabel, MenuItem, Select, TextField, Typography, FormControl, FormControlLabel, Switch, FormHelperText, Grid2, ListSubheader, IconButton } from '@mui/material';
 import { NumericFormat } from 'react-number-format';
 import { ExpenseFormDataParamsI, UseExpenseFormAdapter } from './adapter';
 import { JSX } from 'react/jsx-runtime';
@@ -10,8 +9,6 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ExpenseTypeFormDialog from './expenseTypeForm';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useApiRequestStatelessHook } from '../../hook/api-request-simple';
-import { deleteExpenseType } from '../../../integration/fin-tool-api/expenseCategories';
 
 const style = {
   position: 'absolute',
@@ -40,9 +37,9 @@ function NumberFormatCustom(props: { [x: string]: any; name?: any; inputRef?: an
           }
         });
       }}
-      decimalSeparator='.'
+      decimalSeparator=','
       prefix='R$ '
-      thousandSeparator
+      thousandSeparator='.'
       decimalScale={2}
     />
   );
@@ -226,7 +223,7 @@ const ExpenseForm = React.forwardRef<HTMLElement, ExpenseFormDataParamsI>((expen
             <TextField
               id="amount-name-field"
               fullWidth
-              value={amountField.value && parseFloat(amountField.value).toFixed(2) || 0.00}
+              value={amountField.value}
               label="Valor"
               helperText={amountField.helperText}
               variant="standard"

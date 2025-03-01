@@ -114,7 +114,6 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         if (expenseFormDataParams.action === ExpenseFormActionEnum.UPDATE && expenseFormDataParams.expenseId) {
           fetchExpenseByIdRequest({ expenseId: expenseFormDataParams.expenseId, sheetId: expenseFormDataParams.sheetId })
             .then(response => {
-              console.log(response.amount)
               setDescriptionField({ ...descriptionField, value: response.description });
               setAmountField({ value: response.amount, helperText: null });
               setIsFixedField(response.isFixedExpense);
@@ -130,21 +129,14 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         .map(item => [item.id, item]));
         return expenseTypes.get(expenseTypeId) || null
       }
-      
-    
-      const prepareAmountToSave = (value: string): string => {
-        const x = value && value.replace(',', '.') || "0.00";
-        console.log(x)
-        return x;
-      }
-    
+          
       const registerNewExpense = () => {
         createExpenseRequest(
           new ExpenseDomain(
             null,
             expenseFormDataParams.sheetId,
             descriptionField.value,
-            prepareAmountToSave(amountField.value),
+            amountField.value,
             isFixedField,
             purchaseDateField.tz(tz).format('YYYY-MM-DD'),
             findExpenseType(selectedExpenseTypeField.value)!!
@@ -161,7 +153,7 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
             expenseFormDataParams.expenseId!!,
             expenseFormDataParams.sheetId,
             descriptionField.value,
-            prepareAmountToSave(amountField.value),
+            amountField.value,
             isFixedField,
             purchaseDateField.tz(tz).format('YYYY-MM-DD'),
             findExpenseType(selectedExpenseTypeField.value)!!

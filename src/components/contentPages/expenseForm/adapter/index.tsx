@@ -114,8 +114,9 @@ export const UseExpenseFormAdapter = (expenseFormDataParams: ExpenseFormDataPara
         if (expenseFormDataParams.action === ExpenseFormActionEnum.UPDATE && expenseFormDataParams.expenseId) {
           fetchExpenseByIdRequest({ expenseId: expenseFormDataParams.expenseId, sheetId: expenseFormDataParams.sheetId })
             .then(response => {
+              const value = Number.parseFloat(response.amount).toFixed(2)
               setDescriptionField({ ...descriptionField, value: response.description });
-              setAmountField({ value: response.amount, helperText: null });
+              setAmountField({ value: value, helperText: null });
               setIsFixedField(response.isFixedExpense);
               setSelectedExpenseTypeField({ value: response.expenseType.id, helperText: null })
               setPurchaseDateField(dayjs(response.datPurchase));
